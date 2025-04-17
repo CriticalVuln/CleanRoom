@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Two‑Column Task Dashboard with Rounded Bars</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Poppins font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      background: #121212;
+      color: #EEE;
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+    }
+    .app-container {
+      width: 100%;
+      max-width: 1000px;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 24px;
+    }
+    .card {
+      background: #1F1F1F;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      margin-bottom: 24px; /* Add margin between cards in the same column */
+    }
+    .dashboard > :last-child {
+        margin-bottom: 0; /* Remove margin from last card */
+    }
+    /* To‑Do Card */
+    .task-input {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .priority-select {
+      display: flex;
+      gap: 8px;
+      margin-right: 8px;
+    }
+    .priority-btn {
+      width: 16px;
+      height: 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+    .priority-btn.selected { opacity: 1; }
+    .priority-btn.low  { background: #4CAF50; }
+    .priority-btn.med  { background: #FFC107; }
+    .priority-btn.high { background: #F44336; }
+
+    .task-input input {
+      flex: 1;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      background: #2A2A2A;
+      color: #FFF;
+      font-size: 14px;
+    }
+    .task-input button {
+      margin-left: 8px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background: #8A4FFF;
+      color: #FFF;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .task-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .task-list li {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #333;
+      position: relative;
+    }
+    .task-list label {
+      margin-left: 8px;
+      flex: 1;
+      color: #EEE;
+    }
+
+    /* Tooltip for task time info */
+    .task-list li .tooltip {
+      display: none;
+      position: absolute;
+      bottom: 100%;
+      left: 8px;
+      background: #2A2A2A;
+      color: #FFF;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+    .task-list li:hover .tooltip {
+      display: block;
+    }
+
+    /* dropdown menu for time fields */
+    .task-dropdown { position: relative; margin-left: 8px; }
+    .task-dropdown summary { list-style: none; cursor: pointer; color: #AAA; font-size: 13px; }
+    .task-dropdown-content {
+      position: absolute; top: 100%; left: 0;
+      background: #2A2A2A; padding: 8px; border-radius: 4px; z-index: 10; display: none;
+    }
+    .task-dropdown[open] .task-dropdown-content { display: block; }
+    .task-dropdown-content label { display: block; color: #EEE; margin-bottom: 4px; font-size: 14px; }
+    .task-dropdown-content input {
+      width: 100%; padding: 4px 8px; margin-top: 2px;
+      border: none; border-radius: 4px; background: #1F1F1F; color: #FFF;
+    }
+
+    /* Chart Card */
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chart-header h3 {
+      margin: 0;
+      font-weight: 600;
+      font-size: 18px;
+    }
+    .timeframe-toggle {
+      display: flex;
+      gap: 8px;
+    }
+    .timeframe-toggle button {
+      background: transparent;
+      border: none;
+      color: #888;
+      font-size: 13px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+    }
+    .timeframe-toggle button.active {
+      color: #FFF;
+      font-weight: 600;
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-top: 12px;
+    }
+    .hours-chart-container {
+        position: relative;
+        height: 150px;
+        margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <div class="dashboard">
+
+      <!-- LEFT COLUMN -->
+      <div>
+        <!-- EXISTING TODO LIST CARD -->
+        <div class="card">
+          <div class="task-input">
+            <div class="priority-select">
+              <button class="priority-btn low selected"  data-priority="low"  title="Low"></button>
+              <button class="priority-btn med"           data-priority="med"  title="Medium"></button>
+              <button class="priority-btn high"          data-priority="high" title="High"></button>
+            </div>
+            <input id="newTask" type="text" placeholder="Enter a new task…">
+            <!-- time fields dropdown -->
+            <details class="task-dropdown">
+              <summary>Options</summary>
+              <div class="task-dropdown-content">
+                <label>Time Allotted
+                  <input id="newTimeAllotted" type="number" min="0" placeholder="hrs">
+                </label>
+                <label>Time Spent
+                  <input id="newTimeSpent"   type="number" min="0" placeholder="hrs">
+                </label>
+              </div>
+            </details>
+            <button id="addBtn">Add Task</button>
+          </div>
+          <ul id="taskList" class="task-list"></ul>
+        </div>
+
+        <!-- HOURS WORKED CARD -->
+        <div class="card">
+          <div class="chart-header">
+            <h3>Hours Worked</h3>
+            <div class="timeframe-toggle">
+              <button data-range="year" class="active">This Year</button>
+              <button data-range="week">This Week</button>
+              <button data-range="day">Today</button>
+            </div>
+          </div>
+          <div class="hours-chart-container">
+            <canvas id="hoursWorkedChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: CHART CARD -->
+      <div class="card">
+        <div class="chart-header">
+          <h3>Overall Performance</h3>
+          <div class="timeframe-toggle">
+            <button data-range="year" class="active">This Year</button>
+            <button data-range="week">This Week</button>
+            <button data-range="day">Today</button>
+          </div>
+        </div>
+        <div class="chart-container">
+          <canvas id="overallPerformanceChart"></canvas>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // TASK STORAGE
+    const tasks = [];
+    let currentPriority = 'low';
+
+    // PRIORITY BUTTON HANDLING
+    document.querySelectorAll('.priority-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.priority-btn').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        currentPriority = btn.dataset.priority;
+      });
+    });
+
+    // CHART.JS SETUP (Overall Performance)
+    const ctxOverall = document.getElementById('overallPerformanceChart').getContext('2d');
+    const gradient = ctxOverall.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(138, 79, 255, 0.4)');
+    gradient.addColorStop(1, 'rgba(138, 79, 255, 0)');
+
+    const overallChart = new Chart(ctxOverall, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Low Assigned',
+            data: [],
+            backgroundColor: '#4CAF50',
+            stack: 'assigned',
+            borderRadius: 6,
+            borderSkipped: 'bottom'
+          },
+          {
+            type: 'bar',
+            label: 'Med Assigned',
+            data: [],
+            backgroundColor: '#FFC107',
+            stack: 'assigned',
+            borderRadius: 6,
+            borderSkipped: 'bottom'
+          },
+          {
+            type: 'bar',
+            label: 'High Assigned',
+            data: [],
+            backgroundColor: '#F44336',
+            stack: 'assigned',
+            borderRadius: 6,
+            borderSkipped: 'bottom'
+          },
+          {
+            type: 'line',
+            label: 'Tasks Assigned',
+            data: [],
+            borderColor: '#FFFFFF',
+            borderDash: [6,6],
+            fill: false,
+            tension: 0.4,
+            pointRadius: 0,
+            yAxisID: 'y'
+          },
+          {
+            type: 'line',
+            label: 'Tasks Completed',
+            data: [],
+            borderColor: '#8A4FFF',
+            backgroundColor: gradient,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: '#8A4FFF',
+            pointBorderColor: '#1F1F1F',
+            pointHoverRadius: 6,
+            yAxisID: 'y'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        elements: { bar: { borderRadius: 8, borderSkipped: false } },
+        interaction: { mode: 'index', intersect: false },
+        scales: { x: { stacked: true, grid: { display: false }, ticks: { color: '#AAA' } }, y: { beginAtZero: true, stacked: false, grid: { color: 'rgba(255,255,255,0.1)', drawBorder: false }, ticks: { color: '#AAA' } } },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            enabled: true,
+            mode: 'index', intersect: false,
+            displayColors: false,
+            backgroundColor: '#2A244B', titleColor: '#FFF', bodyColor: '#FFF', padding: 8,
+            borderColor: '#8A4FFF', borderWidth: 1,
+            callbacks: {
+              title: items => items[0].label + (currentRange === 'year' ? ' 2025' : ''),
+              label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}`
+            }
+          }
+        }
+      }
+    });
+
+    // CHART.JS SETUP (Hours Worked)
+    const ctxHours = document.getElementById('hoursWorkedChart').getContext('2d');
+    const hoursChart = new Chart(ctxHours, {
+        type: 'bar',
+        data: {
+            labels: [], // Labels will be updated dynamically
+            datasets: [
+                {
+                    label: 'Time Allotted',
+                    data: [], // Initial value
+                    backgroundColor: '#4CAF50', // Green
+                    borderRadius: 6,
+                    borderSkipped: false
+                },
+                {
+                    label: 'Time Spent',
+                    data: [], // Initial value
+                    backgroundColor: '#8A4FFF', // Blue/Purple
+                    borderRadius: 6,
+                    borderSkipped: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                x: { // Time axis
+                    grid: { display: false },
+                    ticks: { color: '#AAA' }
+                },
+                y: { // Hours axis
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.1)', drawBorder: false },
+                    ticks: { color: '#AAA' }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'bottom',
+                    labels: { color: '#AAA' }
+                },
+                tooltip: {
+                    enabled: true,
+                    mode: 'index', // Show tooltips for both bars at the same index
+                    intersect: false,
+                    displayColors: false,
+                    backgroundColor: '#2A244B', titleColor: '#FFF', bodyColor: '#FFF', padding: 8,
+                    borderColor: '#8A4FFF', borderWidth: 1,
+                    callbacks: {
+                        title: items => items[0].label + (currentRange === 'year' ? ' 2025' : ''),
+                        label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y} hrs`
+                    }
+                }
+            }
+        }
+    });
+
+    // AGGREGATION LOGIC
+    let currentRange = 'year';
+    function aggregate(range) {
+      const now = new Date();
+      let labels, low, med, high, completed, allottedHours, spentHours;
+      if (range === 'year') {
+        labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        low = Array(12).fill(0); med = Array(12).fill(0); high = Array(12).fill(0); completed = Array(12).fill(0);
+        allottedHours = Array(12).fill(0); spentHours = Array(12).fill(0);
+        tasks.forEach(t => {
+          if (t.created.getFullYear() === now.getFullYear()) {
+            const m = t.created.getMonth();
+            if (t.priority==='low') low[m]++; if (t.priority==='med') med[m]++; if (t.priority==='high') high[m]++;
+            allottedHours[m] += (t.timeAllotted || 0);
+            spentHours[m] += (t.timeSpent || 0);
+          }
+          if (t.completedAt && t.completedAt.getFullYear()===now.getFullYear()) { completed[t.completedAt.getMonth()]++; }
+        });
+      } else if (range === 'week') {
+        const day = now.getDay(), iso = (day+6)%7;
+        const start = new Date(now); start.setDate(now.getDate()-iso); start.setHours(0,0,0,0);
+        const end   = new Date(start); end.setDate(start.getDate()+6); end.setHours(23,59,59,999);
+        labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        low = Array(7).fill(0); med = Array(7).fill(0); high = Array(7).fill(0); completed = Array(7).fill(0);
+        allottedHours = Array(7).fill(0); spentHours = Array(7).fill(0);
+        tasks.forEach(t=>{
+          if (t.created>=start && t.created<=end) {
+            const i=(t.created.getDay()+6)%7;
+            if(t.priority==='low') low[i]++; if(t.priority==='med') med[i]++; if(t.priority==='high') high[i]++;
+            allottedHours[i] += (t.timeAllotted || 0);
+            spentHours[i] += (t.timeSpent || 0);
+          }
+          if(t.completedAt && t.completedAt>=start && t.completedAt<=end) { completed[(t.completedAt.getDay()+6)%7]++; }
+        });
+      } else {
+        labels = Array.from({length:24},(_,i)=>`${i}:00`);
+        low = Array(24).fill(0); med = Array(24).fill(0); high = Array(24).fill(0); completed = Array(24).fill(0);
+        allottedHours = Array(24).fill(0); spentHours = Array(24).fill(0);
+        tasks.forEach(t=>{
+          if (isSameDay(t.created, now)) {
+            const h = t.created.getHours();
+            low[h]+=(t.priority==='low'); med[h]+=(t.priority==='med'); high[h]+=(t.priority==='high');
+            allottedHours[h] += (t.timeAllotted || 0);
+            spentHours[h] += (t.timeSpent || 0);
+          }
+          if (t.completedAt && isSameDay(t.completedAt, now)) { completed[t.completedAt.getHours()]++; }
+        });
+      }
+      const assignedSum = low.map((_,i)=> low[i]+med[i]+high[i]);
+      return {labels, low, med, high, assignedSum, completed, allottedHours, spentHours};
+    }
+    function isSameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+
+    // COMBINED CHART UPDATE FUNCTION
+    function updateChart(range){
+        currentRange=range;
+        const {labels, low, med, high, assignedSum, completed, allottedHours, spentHours} = aggregate(range);
+
+        overallChart.data.labels=labels;
+        overallChart.data.datasets[0].data=low;
+        overallChart.data.datasets[1].data=med;
+        overallChart.data.datasets[2].data=high;
+        overallChart.data.datasets[3].data=assignedSum;
+        overallChart.data.datasets[4].data=completed;
+        overallChart.update();
+
+        hoursChart.data.labels = labels;
+        hoursChart.data.datasets[0].data = allottedHours;
+        hoursChart.data.datasets[1].data = spentHours;
+        hoursChart.update();
+    }
+
+    // TIMEFRAME BUTTONS (Updated Listener)
+    document.querySelectorAll('.timeframe-toggle button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const range = btn.dataset.range;
+        document.querySelectorAll('.timeframe-toggle button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll(`.timeframe-toggle button[data-range="${range}"]`).forEach(b => b.classList.add('active'));
+        updateChart(range);
+      });
+    });
+
+    // TASK UI & LOGIC
+    const taskListEl = document.getElementById('taskList');
+    const newTaskIn  = document.getElementById('newTask');
+    const addBtn     = document.getElementById('addBtn');
+    const newTimeAllotted = document.getElementById('newTimeAllotted');
+    const newTimeSpent   = document.getElementById('newTimeSpent');
+
+    function renderTasks(){
+      taskListEl.innerHTML = '';
+      tasks.forEach(t => {
+        const li = document.createElement('li');
+        const chk = document.createElement('input'); chk.type='checkbox'; chk.checked=t.completed;
+        chk.addEventListener('change',()=>{
+            t.completed=!t.completed;
+            t.completedAt=t.completed?new Date():null;
+            updateChart(currentRange);
+        });
+
+        const priorityIndicator = document.createElement('span');
+        priorityIndicator.classList.add('priority-btn', t.priority, 'selected'); priorityIndicator.title = t.priority.charAt(0).toUpperCase()+t.priority.slice(1);
+
+        const lbl = document.createElement('label'); lbl.textContent = t.text;
+
+        const tooltip = document.createElement('span');
+        tooltip.classList.add('tooltip');
+        tooltip.textContent = `Time Allotted: ${t.timeAllotted}h, Time Spent: ${t.timeSpent}h`;
+
+        li.append(chk, priorityIndicator, lbl, tooltip);
+        taskListEl.appendChild(li);
+      });
+    }
+    function addTask(){
+      const txt=newTaskIn.value.trim(); if(!txt) return;
+      const allotted=parseInt(newTimeAllotted.value)||0;
+      const spent=parseInt(newTimeSpent.value)||0;
+      tasks.push({ id: Date.now(), text: txt, priority: currentPriority, created: new Date(), completed: false, completedAt: null, timeAllotted: allotted, timeSpent: spent });
+      newTaskIn.value=''; newTimeAllotted.value=''; newTimeSpent.value='';
+      updateChart(currentRange);
+      renderTasks();
+    }
+    addBtn.addEventListener('click', addTask);
+    newTaskIn.addEventListener('keydown',e=>{ if(e.key==='Enter') addTask(); });
+
+    // initialize
+    updateChart('year');
+    renderTasks();
+  </script>
+</body>
+</html>
