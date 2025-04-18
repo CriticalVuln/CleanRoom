@@ -88,6 +88,7 @@
       margin: 0;
       max-height: 300px;
       overflow-y: auto;
+      padding-top: 24px; /* ensure first tooltip shows above without being cut off */
     }
     .task-list li {
       display: flex;
@@ -217,6 +218,42 @@
       border: none; border-radius: 4px; background: #1F1F1F; color: #FFF;
     }
 
+    /* iOS‑style toggle switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 20px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #555;
+      border-radius: 34px;
+      transition: .4s;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 2px;
+      bottom: 2px;
+      background: #FFF;
+      border-radius: 50%;
+      transition: .4s;
+    }
+    .switch input:checked + .slider {
+      background: #8A4FFF;
+    }
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
     /* Chart Card */
     .chart-header {
       display: flex;
@@ -246,8 +283,9 @@
         text-align: left; /* Ensure text aligns left */
     }
     #calendarYearDisplay {
-        font-size: 14px;
+        font-size: 16px;   /* Increased from 14px */
         color: #AAA;
+        font-weight: bold; /* Bold year display */
     }
     .calendar-nav-btn {
         background: transparent;
@@ -256,6 +294,7 @@
         font-size: 20px; /* Make arrows larger */
         cursor: pointer;
         padding: 0 5px; /* Add some padding */
+        font-weight: bold; /* Bold arrow buttons */
     }
     .calendar-nav-btn:hover {
         color: #FFF;
@@ -384,6 +423,34 @@
       color: #F44336;
     }
 
+    /* Style for the new placeholder widget */
+    .new-widget-placeholder {
+        height: 260px; /* Adjusted height */
+        width: 50%; /* Half width of the parent container (the column wrapper div) */
+        display: flex; /* Example content alignment */
+        align-items: center;
+        justify-content: center;
+        font-style: italic;
+        color: #666;
+    }
+    /* Style for the new difficulty chart container */
+    .difficulty-chart-container {
+        height: 180px; /* Reduced height for the chart canvas area */
+        margin-top: 8px; /* Space below toggle */
+        position: relative;
+    }
+    /* Specific height for the difficulty chart card */
+    .difficulty-toggle + .difficulty-chart-container {
+        /* Select the container immediately following the toggle */
+        /* This assumes the card structure remains: toggle -> container */
+    }
+    .card:has(.difficulty-toggle) { /* Target the card containing the difficulty toggle */
+        height: 260px;
+        display: flex; /* Use flexbox for internal alignment */
+        flex-direction: column; /* Stack toggle and chart vertically */
+    }
+
+
   </style>
 </head>
 <body>
@@ -407,6 +474,13 @@
               <label>Time Allotted
                 <input id="newTimeAllotted" type="number" min="0" placeholder="hrs">
               </label>
+              <!-- Difficulty toggle → iOS switch -->
+              <label>Difficulty</label>
+              <label class="switch">
+                <input id="newDifficulty" type="checkbox">
+                <span class="slider"></span>
+              </label>
+              <span id="difficultyLabel">Easy</span>
             </div>
           </details>
           <button id="addBtn">Add Task</button>
@@ -432,62 +506,89 @@
 
       <!-- Row container for Hours Worked and future widget -->
       <div class="widget-row">
-        <!-- 3. HOURS WORKED CARD (Now inside widget-row) -->
-        <div class="card">
-          <div class="chart-header">
-            <h3>Hours Worked</h3>
-            <div class="timeframe-toggle">
-              <button data-range="year" class="active">This Year</button>
-              <button data-range="month">This Month</button>
-              <button data-range="week">This Week</button>
-              <button data-range="day">Today</button>
-            </div>
-          </div>
-          <!-- Total Hours Display Area -->
-          <div id="totalHoursDisplay">
-              <span>Total Spent: 0 hrs</span>
-              <span class="delta-indicator"></span> <!-- Added span for delta -->
-          </div>
-          <div class="hours-chart-container">
-            <canvas id="hoursWorkedChart"></canvas>
-          </div>
-        </div>
-
-        <!-- 4. NEW ACTIVITY CALENDAR WIDGET -->
-        <div class="card">
-          <!-- Updated Header Structure -->
-          <div class="chart-header activity-calendar-header">
-            <!-- Title Moved to Left -->
-            <h3>Activity Calendar</h3>
-
-            <!-- Wrapper for Center Elements (Arrows + Year) -->
-            <div class="calendar-title-year-nav">
-                <button class="calendar-nav-btn" id="prevYearBtn">&lt;</button> <!-- Left Arrow -->
-                <div class="calendar-title-year">
-                  <!-- H3 removed from here -->
-                  <span id="calendarYearDisplay">2025</span> <!-- Year Display -->
+        <!-- Column 1: Hours Worked + New Widget -->
+        <div> <!-- Added wrapper div for vertical stacking -->
+            <!-- 3. HOURS WORKED CARD (Now inside wrapper) -->
+            <div class="card">
+              <div class="chart-header">
+                <h3>Hours Worked</h3>
+                <div class="timeframe-toggle">
+                  <button data-range="year" class="active">This Year</button>
+                  <button data-range="month">This Month</button>
+                  <button data-range="week">This Week</button>
+                  <button data-range="day">Today</button>
                 </div>
-                <button class="calendar-nav-btn" id="nextYearBtn">&gt;</button> <!-- Right Arrow -->
+              </div>
+              <!-- Total Hours Display Area -->
+              <div id="totalHoursDisplay">
+                  <span>Total Spent: 0 hrs</span>
+                  <span class="delta-indicator"></span> <!-- Added span for delta -->
+              </div>
+              <div class="hours-chart-container">
+                <canvas id="hoursWorkedChart"></canvas>
+              </div>
             </div>
 
-            <!-- Legend Moved to Right -->
-            <div class="calendar-legend">
-              <span>Less</span>
-              <div class="activity-square heatmap-level-0"></div>
-              <div class="activity-square heatmap-level-1"></div>
-              <div class="activity-square heatmap-level-2"></div>
-              <div class="activity-square heatmap-level-3"></div>
-              <span>More</span>
+            <!-- 5. NEW HALF-WIDTH WIDGET PLACEHOLDER -->
+            <!-- Wrapper for side-by-side placeholders -->
+            <div style="display: flex; gap: 24px;"> <!-- Added flex wrapper -->
+                <!-- Difficulty Completion Chart -->
+                <div class="card"> <!-- Removed new-widget-placeholder class -->
+                    <div class="timeframe-toggle difficulty-toggle"> <!-- New toggle group -->
+                        <button data-range="year" class="active">This Year</button>
+                        <button data-range="month">This Month</button>
+                        <button data-range="week">This Week</button>
+                        <button data-range="day">Today</button>
+                    </div>
+                    <div class="difficulty-chart-container"> <!-- Adjusted container height via CSS -->
+                        <canvas id="difficultyCompletionChart"></canvas> <!-- New canvas -->
+                    </div>
+                </div>
+                <!-- Duplicate placeholder -->
+                <div class="card new-widget-placeholder">
+                    <span>New Widget Area 2</span> <!-- Added second placeholder -->
+                </div>
+            </div> <!-- End flex wrapper -->
+        </div> <!-- End wrapper div -->
+
+        <!-- Column 2: Activity Calendar -->
+        <div> <!-- Added wrapper div for consistency, though only one item -->
+            <!-- 4. NEW ACTIVITY CALENDAR WIDGET -->
+            <div class="card">
+              <!-- Updated Header Structure -->
+              <div class="chart-header activity-calendar-header">
+                <!-- Title Moved to Left -->
+                <h3>Activity Calendar</h3>
+
+                <!-- Wrapper for Center Elements (Arrows + Year) -->
+                <div class="calendar-title-year-nav">
+                    <button class="calendar-nav-btn" id="prevYearBtn">&lt;</button> <!-- Left Arrow -->
+                    <div class="calendar-title-year">
+                      <!-- H3 removed from here -->
+                      <span id="calendarYearDisplay">2025</span> <!-- Year Display -->
+                    </div>
+                    <button class="calendar-nav-btn" id="nextYearBtn">&gt;</button> <!-- Right Arrow -->
+                </div>
+
+                <!-- Legend Moved to Right -->
+                <div class="calendar-legend">
+                  <span>Less</span>
+                  <div class="activity-square heatmap-level-0"></div>
+                  <div class="activity-square heatmap-level-1"></div>
+                  <div class="activity-square heatmap-level-2"></div>
+                  <div class="activity-square heatmap-level-3"></div>
+                  <span>More</span>
+                </div>
+              </div>
+              <!-- End Updated Header Structure -->
+              <div class="calendar-container" id="activityCalendarContainer">
+                <div class="activity-squares-container">
+                  <!-- Squares will be generated here by JS -->
+                </div>
+              </div>
             </div>
-          </div>
-          <!-- End Updated Header Structure -->
-          <div class="calendar-container" id="activityCalendarContainer">
-            <div class="activity-squares-container">
-              <!-- Squares will be generated here by JS -->
-            </div>
-          </div>
-        </div>
-        <!-- End New Activity Calendar Widget -->
+            <!-- End New Activity Calendar Widget -->
+        </div> <!-- End wrapper div -->
 
       </div> <!-- End widget-row -->
 
@@ -499,11 +600,18 @@
     let tasks = []; // Use let instead of const to allow reassignment on load
     let currentPriority = 'low';
     let calendarCurrentYear = new Date().getFullYear(); // Initialize calendar year
+    // Chart Ranges
+    let mainChartRange = 'year'; // For Overall Performance and Hours Worked
+    let difficultyChartRange = 'year'; // For Difficulty Completion
 
     // --- DOM Elements ---
     const calendarYearDisplay = document.getElementById('calendarYearDisplay');
     const prevYearBtn = document.getElementById('prevYearBtn');
     const nextYearBtn = document.getElementById('nextYearBtn');
+    // Difficulty Chart Elements
+    const ctxDifficulty = document.getElementById('difficultyCompletionChart').getContext('2d');
+    const difficultyToggleButtons = document.querySelectorAll('.difficulty-toggle button');
+
 
     // --- LOCAL STORAGE FUNCTIONS ---
     function saveTasks() {
@@ -521,7 +629,6 @@
             }));
         }
     }
-    // --- END LOCAL STORAGE FUNCTIONS ---
 
     // PRIORITY BUTTON HANDLING
     document.querySelectorAll('.priority-btn').forEach(btn => {
@@ -581,7 +688,7 @@
             borderDash: [6,6],
             fill: false,
             tension: 0.4,
-            pointRadius: 0,
+            pointRadius: 0, // Hide points by default
             yAxisID: 'y'
           },
           {
@@ -592,7 +699,7 @@
             backgroundColor: gradient,
             fill: true,
             tension: 0.4,
-            pointRadius: 4,
+            pointRadius: 0, // Hide points by default
             pointBackgroundColor: '#8A4FFF',
             pointBorderColor: '#1F1F1F',
             pointHoverRadius: 6,
@@ -629,8 +736,8 @@
               title: items => {
                 const label = items[0].label;
                 const now = new Date();
-                if (currentRange === 'year') return label + ' ' + now.getFullYear();
-                if (currentRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
+                if (mainChartRange === 'year') return label + ' ' + now.getFullYear();
+                if (mainChartRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
                 return label; // Default
               },
               label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}`
@@ -694,8 +801,8 @@
                         title: items => {
                             const label = items[0].label;
                             const now = new Date();
-                            if (currentRange === 'year') return label + ' ' + now.getFullYear();
-                            if (currentRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
+                            if (mainChartRange === 'year') return label + ' ' + now.getFullYear();
+                            if (mainChartRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
                             return label; // Default
                         },
                         label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y} hrs`
@@ -705,13 +812,84 @@
         }
     });
 
+    // CHART.JS SETUP (Difficulty Completion)
+    const difficultyChart = new Chart(ctxDifficulty, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Easy Completed',
+                    data: [],
+                    borderColor: '#4CAF50', // Green for Easy (remains green)
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    fill: false, // Changed to false to remove fill
+                    tension: 0.4,
+                    pointRadius: 0, // Hide points by default
+                    pointBackgroundColor: '#4CAF50', // Green point
+                    pointBorderColor: '#1F1F1F',
+                    pointHoverRadius: 4, // Keep hover radius
+                },
+                {
+                    label: 'Hard Completed',
+                    data: [],
+                    borderColor: '#F44336', // Changed to Red for Hard
+                    backgroundColor: 'rgba(244, 67, 54, 0.1)', // Red background fill
+                    fill: false, // Changed to false to remove fill
+                    tension: 0.4,
+                    pointRadius: 0, // Hide points by default
+                    pointBackgroundColor: '#F44336', // Red point
+                    pointBorderColor: '#1F1F1F',
+                    pointHoverRadius: 4, // Keep hover radius
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+                x: { 
+                    grid: { 
+                        display: false, // Hide X grid lines again
+                        drawBorder: false 
+                    }, 
+                    ticks: { display: false } // Keep X ticks hidden
+                }, 
+                y: {
+                    beginAtZero: true,
+                    grid: { display: false, color: 'rgba(255,255,255,0.1)', drawBorder: false },
+                    ticks: { 
+                        display: false, // Hide Y-axis ticks (numbers)
+                        color: '#AAA', 
+                        stepSize: 1 
+                    } 
+                }
+            },
+            plugins: {
+                legend: { display: false }, // Hide legend
+                tooltip: { // Keep tooltips, simplified
+                    enabled: true,
+                    mode: 'index', intersect: false,
+                    displayColors: false,
+                    backgroundColor: '#2A244B', titleColor: '#FFF', bodyColor: '#FFF', padding: 8,
+                    borderColor: '#8A4FFF', borderWidth: 1,
+                    callbacks: {
+                        title: items => items[0].label, // Simpler title
+                        label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}`
+                    }
+                }
+            }
+        }
+    });
+
+
     // AGGREGATION LOGIC
-    let currentRange = 'year';
     function aggregate(range) {
       const now = new Date();
       const currentYear = now.getFullYear();
       const currentMonth = now.getMonth();
-      let labels, low, med, high, completed, allottedHours, spentHours;
+      let labels, low, med, high, completed, allottedHours, spentHours, easyCompleted, hardCompleted; // Added easy/hard
       let previousTotalSpent = 0; // Initialize previous total
 
       // --- Calculate Current Period Data ---
@@ -719,6 +897,7 @@
         labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         low = Array(12).fill(0); med = Array(12).fill(0); high = Array(12).fill(0); completed = Array(12).fill(0);
         allottedHours = Array(12).fill(0); spentHours = Array(12).fill(0);
+        easyCompleted = Array(12).fill(0); hardCompleted = Array(12).fill(0); // Init easy/hard
         tasks.forEach(t => {
           // Current year data
           if (t.created.getFullYear() === currentYear) {
@@ -727,7 +906,13 @@
             allottedHours[m] += (t.timeAllotted || 0);
             spentHours[m] += (t.timeSpent || 0);
           }
-          if (t.completedAt && t.completedAt.getFullYear() === currentYear) { completed[t.completedAt.getMonth()]++; }
+          if (t.completedAt && t.completedAt.getFullYear() === currentYear) {
+            const m = t.completedAt.getMonth();
+            completed[m]++;
+            // Only count if difficulty is explicitly set
+            if (t.difficulty === 'easy') easyCompleted[m]++;
+            else if (t.difficulty === 'hard') hardCompleted[m]++;
+          }
           // Previous year data
           if (t.created.getFullYear() === currentYear - 1) {
             previousTotalSpent += (t.timeSpent || 0);
@@ -738,6 +923,7 @@
         labels = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
         low = Array(daysInMonth).fill(0); med = Array(daysInMonth).fill(0); high = Array(daysInMonth).fill(0); completed = Array(daysInMonth).fill(0);
         allottedHours = Array(daysInMonth).fill(0); spentHours = Array(daysInMonth).fill(0);
+        easyCompleted = Array(daysInMonth).fill(0); hardCompleted = Array(daysInMonth).fill(0); // Init easy/hard
         const prevMonthDate = new Date(currentYear, currentMonth, 1);
         prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
         const prevMonth = prevMonthDate.getMonth();
@@ -749,7 +935,13 @@
                 if (t.priority === 'low') low[dayIndex]++; if (t.priority === 'med') med[dayIndex]++; if (t.priority === 'high') high[dayIndex]++;
                 allottedHours[dayIndex] += (t.timeAllotted || 0); spentHours[dayIndex] += (t.timeSpent || 0);
             }
-            if (t.completedAt && t.completedAt.getFullYear() === currentYear && t.completedAt.getMonth() === currentMonth) { completed[t.completedAt.getDate() - 1]++; }
+            if (t.completedAt && t.completedAt.getFullYear() === currentYear && t.completedAt.getMonth() === currentMonth) {
+                const dayIndex = t.completedAt.getDate() - 1;
+                completed[dayIndex]++;
+                // Only count if difficulty is explicitly set
+                if (t.difficulty === 'easy') easyCompleted[dayIndex]++;
+                else if (t.difficulty === 'hard') hardCompleted[dayIndex]++;
+            }
             // Previous month data
             if (t.created.getFullYear() === prevMonthYear && t.created.getMonth() === prevMonth) {
                 previousTotalSpent += (t.timeSpent || 0);
@@ -764,6 +956,7 @@
         labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
         low = Array(7).fill(0); med = Array(7).fill(0); high = Array(7).fill(0); completed = Array(7).fill(0);
         allottedHours = Array(7).fill(0); spentHours = Array(7).fill(0);
+        easyCompleted = Array(7).fill(0); hardCompleted = Array(7).fill(0); // Init easy/hard
         tasks.forEach(t=>{
           // Current week data
           if (t.created>=start && t.created<=end) {
@@ -771,7 +964,13 @@
             if(t.priority==='low') low[i]++; if(t.priority==='med') med[i]++; if(t.priority==='high') high[i]++;
             allottedHours[i] += (t.timeAllotted || 0); spentHours[i] += (t.timeSpent || 0);
           }
-          if(t.completedAt && t.completedAt>=start && t.completedAt<=end) { completed[(t.completedAt.getDay()+6)%7]++; }
+          if(t.completedAt && t.completedAt>=start && t.completedAt<=end) {
+            const i = (t.completedAt.getDay()+6)%7;
+            completed[i]++;
+            // Only count if difficulty is explicitly set
+            if (t.difficulty === 'easy') easyCompleted[i]++;
+            else if (t.difficulty === 'hard') hardCompleted[i]++;
+          }
           // Previous week data
           if (t.created >= prevWeekStart && t.created <= prevWeekEnd) {
             previousTotalSpent += (t.timeSpent || 0);
@@ -781,6 +980,7 @@
         labels = Array.from({length:24},(_,i)=>`${i}:00`);
         low = Array(24).fill(0); med = Array(24).fill(0); high = Array(24).fill(0); completed = Array(24).fill(0);
         allottedHours = Array(24).fill(0); spentHours = Array(24).fill(0);
+        easyCompleted = Array(24).fill(0); hardCompleted = Array(24).fill(0); // Init easy/hard
         const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
         tasks.forEach(t=>{
           // Current day data
@@ -789,7 +989,13 @@
             low[h]+=(t.priority==='low'); med[h]+=(t.priority==='med'); high[h]+=(t.priority==='high');
             allottedHours[h] += (t.timeAllotted || 0); spentHours[h] += (t.timeSpent || 0);
           }
-          if (t.completedAt && isSameDay(t.completedAt, now)) { completed[t.completedAt.getHours()]++; }
+          if (t.completedAt && isSameDay(t.completedAt, now)) {
+            const h = t.completedAt.getHours();
+            completed[h]++;
+            // Only count if difficulty is explicitly set
+            if (t.difficulty === 'easy') easyCompleted[h]++;
+            else if (t.difficulty === 'hard') hardCompleted[h]++;
+          }
           // Previous day (yesterday) data
           if (isSameDay(t.created, yesterday)) {
             previousTotalSpent += (t.timeSpent || 0);
@@ -807,13 +1013,13 @@
           percentageChange = Infinity; // Indicate increase from zero
       } // else percentageChange remains 0
 
-      return {labels, low, med, high, assignedSum, completed, allottedHours, spentHours, totalSpentInRange, percentageChange, previousTotalSpent};
+      // Return all aggregated data
+      return {labels, low, med, high, assignedSum, completed, allottedHours, spentHours, easyCompleted, hardCompleted, totalSpentInRange, percentageChange, previousTotalSpent};
     }
     function isSameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
 
-    // COMBINED CHART UPDATE FUNCTION
-    function updateChart(range){
-        currentRange=range;
+    // CHART UPDATE FUNCTION (Main Charts: Overall Performance & Hours Worked)
+    function updateMainCharts(range){
         const {labels, low, med, high, assignedSum, completed, allottedHours, spentHours, totalSpentInRange, percentageChange, previousTotalSpent} = aggregate(range);
 
         // --- Overall Performance Chart Update ---
@@ -823,6 +1029,14 @@
         overallChart.data.datasets[2].data=high;
         overallChart.data.datasets[3].data=assignedSum;
         overallChart.data.datasets[4].data=completed;
+        // Update tooltip title callback based on mainChartRange
+        overallChart.options.plugins.tooltip.callbacks.title = items => {
+            const label = items[0].label;
+            const now = new Date();
+            if (mainChartRange === 'year') return label + ' ' + now.getFullYear();
+            if (mainChartRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
+            return label; // Default
+        };
         overallChart.update();
 
         // --- Hours Worked Chart Update ---
@@ -830,6 +1044,14 @@
         hoursChart.data.datasets[0].data = allottedHours;
         hoursChart.data.datasets[1].data = spentHours;
         hoursChart.options.scales.x.ticks.autoSkip = range !== 'month';
+        // Update tooltip title callback based on mainChartRange
+        hoursChart.options.plugins.tooltip.callbacks.title = items => {
+            const label = items[0].label;
+            const now = new Date();
+            if (mainChartRange === 'year') return label + ' ' + now.getFullYear();
+            if (mainChartRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
+            return label; // Default
+        };
         hoursChart.update();
 
         // --- Update Total Hours Display & Delta ---
@@ -863,21 +1085,65 @@
         }
     }
 
-    // TIMEFRAME BUTTONS (Updated Listener)
-    document.querySelectorAll('.timeframe-toggle button').forEach(btn => {
+    // CHART UPDATE FUNCTION (Difficulty Completion Chart)
+    function updateDifficultyChart(range) {
+        const { labels, easyCompleted, hardCompleted } = aggregate(range);
+
+        difficultyChart.data.labels = labels;
+        difficultyChart.data.datasets[0].data = easyCompleted;
+        difficultyChart.data.datasets[1].data = hardCompleted;
+        // Update tooltip title callback based on difficultyChartRange
+        difficultyChart.options.plugins.tooltip.callbacks.title = items => {
+            const label = items[0].label;
+            const now = new Date();
+            if (difficultyChartRange === 'year') return label + ' ' + now.getFullYear();
+            if (difficultyChartRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
+            return label; // Default
+        };
+        difficultyChart.options.scales.x.ticks.autoSkip = range !== 'month'; // Match behavior
+        difficultyChart.update();
+    }
+
+
+    // TIMEFRAME BUTTONS (Main Charts Listener)
+    document.querySelectorAll('.timeframe-toggle:not(.difficulty-toggle) button').forEach(btn => { // Exclude difficulty toggle
       btn.addEventListener('click', () => {
         const range = btn.dataset.range;
-        document.querySelectorAll('.timeframe-toggle button').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll(`.timeframe-toggle button[data-range="${range}"]`).forEach(b => b.classList.add('active'));
-        updateChart(range);
+        mainChartRange = range; // Update main range
+        // Update active state ONLY within the specific toggle group (Overall or Hours)
+        const toggleGroup = btn.closest('.timeframe-toggle');
+        toggleGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        // Need to activate button in BOTH main toggles if they exist separately
+        document.querySelectorAll(`.timeframe-toggle:not(.difficulty-toggle) button[data-range="${range}"]`).forEach(b => b.classList.add('active'));
+        updateMainCharts(mainChartRange); // Update main charts
       });
     });
+
+    // TIMEFRAME BUTTONS (Difficulty Chart Listener)
+    difficultyToggleButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const range = btn.dataset.range;
+        difficultyChartRange = range; // Update difficulty range
+        // Update active state ONLY within the difficulty toggle group
+        difficultyToggleButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateDifficultyChart(difficultyChartRange); // Update difficulty chart
+      });
+    });
+
 
     // TASK UI & LOGIC
     const taskListEl = document.getElementById('taskList');
     const newTaskIn  = document.getElementById('newTask');
     const addBtn     = document.getElementById('addBtn');
     const newTimeAllotted = document.getElementById('newTimeAllotted');
+    const newDifficultyIn = document.getElementById('newDifficulty');
+    const difficultyLabel = document.getElementById('difficultyLabel');
+
+    // --- Difficulty toggle setup ---
+    newDifficultyIn.addEventListener('change', () => {
+      difficultyLabel.textContent = newDifficultyIn.checked ? 'Hard' : 'Easy';
+    });
 
     function renderTasks(){
       taskListEl.innerHTML = '';
@@ -895,10 +1161,9 @@
             t.completed=!t.completed;
             t.completedAt=t.completed?new Date():null;
             saveTasks(); // Save tasks when completion status changes
-            updateChart(currentRange); // Update charts to reflect completion
-            // Re-rendering the list isn't strictly necessary on check change, 
-            // but might be needed if completion affects visibility in future filters.
-            // renderTasks(); 
+            updateMainCharts(mainChartRange); // Update main charts
+            updateDifficultyChart(difficultyChartRange); // Update difficulty chart
+            renderActivitySquares(calendarCurrentYear); // Update calendar too
         });
 
         const priorityIndicator = document.createElement('span');
@@ -954,7 +1219,7 @@
             tooltip.textContent = `Time Allotted: ${t.timeAllotted || 0}h, Time Spent: ${t.timeSpent || 0}h`; // Update tooltip
             li.classList.remove('editing'); // Remove editing class
             saveTasks(); // Save to localStorage
-            updateChart(currentRange); // Update charts
+            updateMainCharts(mainChartRange); // Update main charts
         });
         // Allow saving with Enter key in the input
         timeSpentInput.addEventListener('keydown', (e) => {
@@ -981,8 +1246,10 @@
                 if (taskIndex > -1) {
                     tasks.splice(taskIndex, 1); // Remove task from array
                     saveTasks(); // Save updated array
-                    renderTasks(); // Re-render the task list UI (now only showing today's tasks)
-                    updateChart(currentRange); // Update charts
+                    renderTasks(); // Re-render the task list UI
+                    updateMainCharts(mainChartRange); // Update main charts
+                    updateDifficultyChart(difficultyChartRange); // Update difficulty chart
+                    renderActivitySquares(calendarCurrentYear); // Update calendar too
                 }
             });
             li.appendChild(deleteBtn); // Append delete button to the list item
@@ -995,16 +1262,21 @@
     function addTask(){
       const txt=newTaskIn.value.trim(); if(!txt) return;
       const allotted=parseInt(newTimeAllotted.value)||0;
+      // capture difficulty
+      const difficulty = newDifficultyIn.checked ? 'hard' : 'easy';
       const spent = 0; // Default timeSpent to 0
-      tasks.push({ id: Date.now(), text: txt, priority: currentPriority, created: new Date(), completed: false, completedAt: null, timeAllotted: allotted, timeSpent: spent });
+      tasks.push({ id: Date.now(), text: txt, priority: currentPriority, created: new Date(), completed: false, completedAt: null, timeAllotted: allotted, timeSpent: spent, difficulty });
       newTaskIn.value=''; newTimeAllotted.value='';
+      // reset toggle
+      newDifficultyIn.checked = false;
+      difficultyLabel.textContent = 'Easy';
       // Close the details dropdown after adding
       const detailsElement = newTaskIn.closest('.card').querySelector('.task-dropdown');
       if (detailsElement) {
           detailsElement.removeAttribute('open');
       }
       saveTasks(); // Save tasks after adding a new one
-      updateChart(currentRange);
+      updateMainCharts(mainChartRange); // Update main charts
       renderTasks();
     }
     addBtn.addEventListener('click', addTask);
@@ -1066,7 +1338,8 @@
 
     // initialize
     loadTasks(); // Load tasks from localStorage first
-    updateChart('year');
+    updateMainCharts('year'); // Initial update for main charts
+    updateDifficultyChart('year'); // Initial update for difficulty chart
     renderTasks();
     updateCalendarDisplay(); // Initial setup of calendar year display and squares
   </script>
