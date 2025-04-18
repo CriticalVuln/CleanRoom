@@ -105,10 +105,52 @@
         padding: 4px 8px;
         font-size: 12px;
         cursor: pointer;
-        margin-left: auto; /* Push button to the right */
+        margin-left: 8px; /* Add some space between edit/delete */
     }
     .delete-btn:hover {
         opacity: 0.8;
+    }
+
+    /* Styles for Edit button and inline editing */
+    .edit-btn, .save-btn {
+        background: #8A4FFF; /* Use theme color */
+        color: #FFF;
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        font-size: 12px;
+        cursor: pointer;
+        margin-left: auto; /* Push edit/save controls to the right */
+    }
+    .edit-btn:hover, .save-btn:hover {
+        opacity: 0.8;
+    }
+    .edit-container {
+        display: flex;
+        align-items: center;
+        margin-left: auto; /* Push container to the right */
+        gap: 4px; /* Space between input and save button */
+    }
+    .edit-container input[type="number"] {
+        width: 60px; /* Adjust width as needed */
+        padding: 4px 6px;
+        border: none;
+        border-radius: 4px;
+        background: #2A2A2A;
+        color: #FFF;
+        font-size: 12px;
+    }
+    /* Hide edit container by default */
+    .edit-container {
+        display: none;
+    }
+    /* Hide edit button when editing */
+    .task-list li.editing .edit-btn {
+        display: none;
+    }
+    /* Show edit container when editing */
+    .task-list li.editing .edit-container {
+        display: flex;
     }
 
     /* Tooltip for task time info */
@@ -168,36 +210,42 @@
     /* Chart Card */
     .chart-header {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      justify-content: space-between; /* Default alignment */
+      align-items: center; /* Default alignment */
       margin-bottom: 8px; /* Add some space below header */
     }
-    .chart-header h3 {
-      margin: 0;
-      font-weight: 600;
-      font-size: 18px;
+    /* Specific style to center the Activity Calendar header and align items */
+    .activity-calendar-header {
+        justify-content: center; /* Center the main content (title block + arrows) */
+        align-items: center; /* Vertically align arrows with the title block */
+        position: relative; /* Needed if absolute positioning were used for arrows, good practice */
+        gap: 15px; /* Add space between arrows and title block */
     }
-    /* Style for the total hours display */
-    #totalHoursDisplay {
+    .calendar-title-year {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .activity-calendar-header h3 {
+        margin: 0; /* Remove default margins */
+        margin-bottom: 2px; /* Reduced bottom margin to move title up slightly */
+        font-weight: 600;
+        font-size: 18px;
+    }
+    #calendarYearDisplay {
         font-size: 14px;
         color: #AAA;
-        margin-top: 4px; /* Space from the header items */
-        text-align: left; /* Align with the title */
-        width: 100%; /* Take full width */
-        display: flex; /* Use flexbox to align text and delta */
-        align-items: center; /* Vertically align items */
-        gap: 8px; /* Space between main text and delta */
     }
-    /* Style for the delta indicator */
-    .delta-indicator {
-        font-size: 12px;
-        font-weight: 600;
+    .calendar-nav-btn {
+        background: transparent;
+        border: none;
+        color: #AAA;
+        font-size: 20px; /* Make arrows larger */
+        cursor: pointer;
+        padding: 0 5px; /* Add some padding */
     }
-    .delta-indicator.increase {
-        color: #4CAF50; /* Green */
-    }
-    .delta-indicator.decrease {
-        color: #F44336; /* Red */
+    .calendar-nav-btn:hover {
+        color: #FFF;
     }
     .timeframe-toggle {
       display: flex;
@@ -223,7 +271,7 @@
     }
     .hours-chart-container {
         position: relative;
-        height: 150px;
+        height: 150px; /* Updated height for hours chart */
         margin-top: 12px;
     }
     /* New style for two-column widget layout */
@@ -231,11 +279,44 @@
         display: grid;
         grid-template-columns: repeat(2, 1fr); /* Two equal columns */
         gap: 24px; /* Gap between columns */
+        align-items: start; /* Align items to the top, preventing vertical stretching */
     }
     /* Ensure cards within the row don't have extra bottom margin if they are the last */
     .widget-row > .card {
         margin-bottom: 0; /* Remove bottom margin from cards inside the row */
     }
+    /* Style for the new calendar widget container */
+    .calendar-container {
+        position: relative;
+        height: 480px; /* Restored fixed height */
+        margin-top: 12px;
+        overflow: hidden; /* Add overflow hidden to prevent content spillover */
+    }
+
+    /* Styles for the new activity squares */
+    .activity-squares-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0; /* Removed gap between squares */
+      width: 100%; /* Ensure container takes full width */
+      height: 100%; /* Ensure container takes full height */
+      align-content: flex-start; /* Align wrapped lines to the start */
+      justify-content: center; /* Center items horizontally, affecting the last row */
+    }
+
+    .activity-square {
+      /* Final size adjustment */
+      width: 29px; 
+      height: 29px; 
+      background-color: #2A2A2A; /* Default empty color */
+      border-radius: 2px; /* Slightly rounded corners */
+    }
+    /* Example activity levels (can be added dynamically later) */
+    .activity-square.level-1 { background-color: #0e4429; }
+    .activity-square.level-2 { background-color: #006d32; }
+    .activity-square.level-3 { background-color: #26a641; }
+    .activity-square.level-4 { background-color: #39d353; }
+
   </style>
 </head>
 <body>
@@ -258,9 +339,6 @@
             <div class="task-dropdown-content">
               <label>Time Allotted
                 <input id="newTimeAllotted" type="number" min="0" placeholder="hrs">
-              </label>
-              <label>Time Spent
-                <input id="newTimeSpent"   type="number" min="0" placeholder="hrs">
               </label>
             </div>
           </details>
@@ -307,8 +385,28 @@
             <canvas id="hoursWorkedChart"></canvas>
           </div>
         </div>
-        <!-- Future widget will go here -->
-      </div>
+
+        <!-- 4. NEW ACTIVITY CALENDAR WIDGET -->
+        <div class="card">
+          <!-- Updated Header Structure -->
+          <div class="chart-header activity-calendar-header">
+            <button class="calendar-nav-btn" id="prevYearBtn">&lt;</button> <!-- Left Arrow -->
+            <div class="calendar-title-year">
+              <h3>Activity Calendar</h3>
+              <span id="calendarYearDisplay">2025</span> <!-- Year Display -->
+            </div>
+            <button class="calendar-nav-btn" id="nextYearBtn">&gt;</button> <!-- Right Arrow -->
+          </div>
+          <!-- End Updated Header Structure -->
+          <div class="calendar-container" id="activityCalendarContainer">
+            <div class="activity-squares-container">
+              <!-- Squares will be generated here by JS -->
+            </div>
+          </div>
+        </div>
+        <!-- End New Activity Calendar Widget -->
+
+      </div> <!-- End widget-row -->
 
     </div>
   </div>
@@ -317,6 +415,12 @@
     // TASK STORAGE
     let tasks = []; // Use let instead of const to allow reassignment on load
     let currentPriority = 'low';
+    let calendarCurrentYear = new Date().getFullYear(); // Initialize calendar year
+
+    // --- DOM Elements ---
+    const calendarYearDisplay = document.getElementById('calendarYearDisplay');
+    const prevYearBtn = document.getElementById('prevYearBtn');
+    const nextYearBtn = document.getElementById('nextYearBtn');
 
     // --- LOCAL STORAGE FUNCTIONS ---
     function saveTasks() {
@@ -691,13 +795,14 @@
     const newTaskIn  = document.getElementById('newTask');
     const addBtn     = document.getElementById('addBtn');
     const newTimeAllotted = document.getElementById('newTimeAllotted');
-    const newTimeSpent   = document.getElementById('newTimeSpent');
 
     function renderTasks(){
       taskListEl.innerHTML = '';
       const today = new Date(); // Get today's date once for efficiency
       tasks.forEach(t => {
         const li = document.createElement('li');
+        li.dataset.taskId = t.id; // Add data attribute for easier selection
+
         const chk = document.createElement('input'); chk.type='checkbox'; chk.checked=t.completed;
         chk.addEventListener('change',()=>{
             t.completed=!t.completed;
@@ -716,7 +821,54 @@
         tooltip.classList.add('tooltip');
         tooltip.textContent = `Time Allotted: ${t.timeAllotted || 0}h, Time Spent: ${t.timeSpent || 0}h`; // Ensure 0 if undefined
 
-        li.append(chk, priorityIndicator, lbl, tooltip);
+        // --- Edit Functionality Elements ---
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.classList.add('edit-btn');
+
+        const editContainer = document.createElement('span');
+        editContainer.classList.add('edit-container');
+
+        const timeSpentInput = document.createElement('input');
+        timeSpentInput.type = 'number';
+        timeSpentInput.min = '0';
+        timeSpentInput.placeholder = 'hrs spent';
+        timeSpentInput.value = t.timeSpent || 0;
+
+        const saveBtn = document.createElement('button');
+        saveBtn.textContent = 'Save';
+        saveBtn.classList.add('save-btn');
+
+        editContainer.append(timeSpentInput, saveBtn);
+        // --- End Edit Functionality Elements ---
+
+        li.append(chk, priorityIndicator, lbl, tooltip, editBtn, editContainer); // Add edit button and container
+
+        // --- Edit Button Logic ---
+        editBtn.addEventListener('click', () => {
+            li.classList.add('editing'); // Add class to show/hide elements via CSS
+            timeSpentInput.value = t.timeSpent || 0; // Ensure input has current value
+            timeSpentInput.focus(); // Focus the input field
+        });
+
+        // --- Save Button Logic ---
+        saveBtn.addEventListener('click', () => {
+            const newSpentTime = parseInt(timeSpentInput.value) || 0;
+            t.timeSpent = newSpentTime; // Update task object
+            tooltip.textContent = `Time Allotted: ${t.timeAllotted || 0}h, Time Spent: ${t.timeSpent || 0}h`; // Update tooltip
+            li.classList.remove('editing'); // Remove editing class
+            saveTasks(); // Save to localStorage
+            updateChart(currentRange); // Update charts
+        });
+        // Allow saving with Enter key in the input
+        timeSpentInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                saveBtn.click(); // Trigger save button click
+            } else if (e.key === 'Escape') {
+                 li.classList.remove('editing'); // Cancel editing on Escape
+            }
+        });
+
 
         // Add delete button only for tasks created today
         if (isSameDay(t.created, today)) {
@@ -741,9 +893,9 @@
     function addTask(){
       const txt=newTaskIn.value.trim(); if(!txt) return;
       const allotted=parseInt(newTimeAllotted.value)||0;
-      const spent=parseInt(newTimeSpent.value)||0;
+      const spent = 0; // Default timeSpent to 0
       tasks.push({ id: Date.now(), text: txt, priority: currentPriority, created: new Date(), completed: false, completedAt: null, timeAllotted: allotted, timeSpent: spent });
-      newTaskIn.value=''; newTimeAllotted.value=''; newTimeSpent.value='';
+      newTaskIn.value=''; newTimeAllotted.value='';
       // Close the details dropdown after adding
       const detailsElement = newTaskIn.closest('.card').querySelector('.task-dropdown');
       if (detailsElement) {
@@ -756,10 +908,50 @@
     addBtn.addEventListener('click', addTask);
     newTaskIn.addEventListener('keydown',e=>{ if(e.key==='Enter') addTask(); });
 
+    // --- NEW: Activity Squares Logic ---
+    // Modified to accept year - actual filtering/coloring logic based on year not yet added
+    function renderActivitySquares(year) { 
+      const container = document.getElementById('activityCalendarContainer').querySelector('.activity-squares-container');
+      if (!container) return;
+      container.innerHTML = ''; // Clear existing squares
+
+      // TODO: Determine number of days based on leap year if necessary
+      const daysInYear = 365; // Simplified for now
+
+      for (let i = 0; i < daysInYear; i++) {
+        const square = document.createElement('div');
+        square.classList.add('activity-square');
+        // TODO: Add logic later to assign activity levels based on 'year' and task data
+        // Example: const activityLevel = getActivityForDay(year, i); 
+        // if (activityLevel > 0) square.classList.add(`level-${activityLevel}`);
+        container.appendChild(square);
+      }
+    }
+    // --- END: Activity Squares Logic ---
+
+    // --- Calendar Navigation Logic ---
+    function updateCalendarDisplay() {
+        calendarYearDisplay.textContent = calendarCurrentYear;
+        renderActivitySquares(calendarCurrentYear); // Re-render squares for the new year
+        // TODO: Potentially update other parts of the UI that depend on the calendar year
+    }
+
+    prevYearBtn.addEventListener('click', () => {
+        calendarCurrentYear--;
+        updateCalendarDisplay();
+    });
+
+    nextYearBtn.addEventListener('click', () => {
+        calendarCurrentYear++;
+        updateCalendarDisplay();
+    });
+    // --- End Calendar Navigation Logic ---
+
     // initialize
     loadTasks(); // Load tasks from localStorage first
     updateChart('year');
     renderTasks();
+    updateCalendarDisplay(); // Initial setup of calendar year display and squares
   </script>
 </body>
 </html>
