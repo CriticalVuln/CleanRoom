@@ -57,6 +57,8 @@
 
     .task-input input {
       flex: 1;
+      /* match button height */
+      height: 36px;
       padding: 8px 12px;
       border: none;
       border-radius: 4px;
@@ -74,6 +76,11 @@
       font-weight: 600;
       cursor: pointer;
       font-size: 14px; /* Ensure consistent font size */
+    }
+    .task-input button,
+    .task-dropdown summary.options-btn {
+      height: 36px;
+      padding: 0 16px;  /* only left/right padding */
     }
     .task-list {
       list-style: none;
@@ -98,11 +105,11 @@
 
     /* Style for the delete button */
     .delete-btn {
-        background: #F44336; /* Red background */
-        color: #FFF;
+        background: transparent; /* Transparent background */
+        color: #F44336;
         border: none;
         border-radius: 4px;
-        padding: 4px 8px;
+        padding: 4px; /* Adjust click target */
         font-size: 12px;
         cursor: pointer;
         margin-left: 8px; /* Add some space between edit/delete */
@@ -113,11 +120,11 @@
 
     /* Styles for Edit button and inline editing */
     .edit-btn, .save-btn {
-        background: #8A4FFF; /* Use theme color */
-        color: #FFF;
+        background: transparent; /* Transparent background */
+        color: #8A4FFF; /* Use theme color */
         border: none;
         border-radius: 4px;
-        padding: 4px 8px;
+        padding: 4px; /* Adjust click target */
         font-size: 12px;
         cursor: pointer;
         margin-left: auto; /* Push edit/save controls to the right */
@@ -176,17 +183,20 @@
     .task-dropdown { position: relative; margin-left: 8px; }
     /* Style the summary like a button */
     .task-dropdown summary.options-btn {
-      list-style: none; /* Remove default marker */
-      display: inline-block; /* Allow padding and margins */
-      padding: 8px 16px;
+      /* match Add Task button sizing */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 36px;      /* same as input */
+      padding: 0 16px;   /* only horizontal padding */
       border: none;
       border-radius: 4px;
-      background: #8A4FFF; /* Same as Add Task button */
-      color: #FFF;       /* Same as Add Task button */
-      font-weight: 600; /* Same as Add Task button */
-      cursor: pointer;    /* Same as Add Task button */
-      font-size: 14px;  /* Same as Add Task button */
-      line-height: normal; /* Adjust line height if needed */
+      background: #8A4FFF;
+      color: #FFF;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      line-height: normal;
     }
     /* Hide default summary arrow in Webkit browsers */
     .task-dropdown summary.options-btn::-webkit-details-marker {
@@ -216,21 +226,24 @@
     }
     /* Specific style to center the Activity Calendar header and align items */
     .activity-calendar-header {
-        justify-content: center; /* Center the main content (title block + arrows) */
-        align-items: center; /* Vertically align arrows with the title block */
-        position: relative; /* Needed if absolute positioning were used for arrows, good practice */
-        gap: 15px; /* Add space between arrows and title block */
+        justify-content: space-between; /* Distribute items: Title | Nav | Legend */
+        align-items: center; /* Vertically align items */
+        position: relative; /* Keep for potential future use */
     }
-    .calendar-title-year {
+    .calendar-title-year-nav { /* Wrapper for center elements (Arrows + Year) */
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
         display: flex;
-        flex-direction: column;
         align-items: center;
+        gap: 15px; /* Gap between arrows and year */
     }
-    .activity-calendar-header h3 {
-        margin: 0; /* Remove default margins */
-        margin-bottom: 2px; /* Reduced bottom margin to move title up slightly */
+    .activity-calendar-header h3 { /* Style for the title now on the left */
+        margin: 0;
         font-weight: 600;
-        font-size: 18px;
+        font-size: 18px; /* Keep original size or adjust as needed */
+        width: 120px; /* Adjusted width for balance */
+        text-align: left; /* Ensure text aligns left */
     }
     #calendarYearDisplay {
         font-size: 14px;
@@ -246,6 +259,22 @@
     }
     .calendar-nav-btn:hover {
         color: #FFF;
+    }
+    /* Style for the calendar legend (Resized and on the right) */
+    .calendar-legend {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end; /* Align items to the right within the legend */
+        gap: 3px; /* Reduced gap */
+        padding: 3px 6px; /* Slightly reduced padding */
+        border-radius: 4px;
+        font-size: 10px; /* Reduced font size by ~20% */
+        color: #AAA;
+        width: 120px; /* Adjusted width to match title */
+    }
+    .calendar-legend .activity-square {
+        width: 11px; /* Reduced size by ~20% */
+        height: 11px; /* Reduced size by ~20% */
     }
     .timeframe-toggle {
       display: flex;
@@ -287,7 +316,7 @@
     }
     /* Style for the new calendar widget container */
     .calendar-container {
-        position: relative;
+        position: relative; /* Make container relative for absolute positioning of legend */
         height: 480px; /* Restored fixed height */
         margin-top: 12px;
         overflow: hidden; /* Add overflow hidden to prevent content spillover */
@@ -311,11 +340,49 @@
       background-color: #2A2A2A; /* Default empty color */
       border-radius: 2px; /* Slightly rounded corners */
     }
-    /* Example activity levels (can be added dynamically later) */
-    .activity-square.level-1 { background-color: #0e4429; }
-    .activity-square.level-2 { background-color: #006d32; }
-    .activity-square.level-3 { background-color: #26a641; }
-    .activity-square.level-4 { background-color: #39d353; }
+    /* New Heatmap activity levels (Royal Blue theme) */
+    .activity-square.heatmap-level-0 { background-color: #2A2A2A; } /* 0 tasks */
+    .activity-square.heatmap-level-1 { background-color: rgba(65, 105, 225, 0.3); } /* 1-2 tasks (Royal Blue 30%) */
+    .activity-square.heatmap-level-2 { background-color: rgba(65, 105, 225, 0.6); } /* 3-4 tasks (Royal Blue 60%) */
+    .activity-square.heatmap-level-3 { background-color: rgb(65, 105, 225); } /* 5+ tasks (Royal Blue 100%) */
+
+    /* strip box around pencil/trash icons */
+    .edit-btn,
+    .delete-btn {
+      background: none !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0 8px !important;
+      line-height: 1;
+      font-size: 16px; /* adjust icon size if needed */
+    }
+
+    /* restyle icons to match grey/red theme */
+    .edit-btn {
+      color: #CCC;        /* light grey pencil */
+    }
+    .delete-btn {
+      color: rgba(244, 67, 54, 0.7);  /* semi‐light red trashcan */
+    }
+
+    /* icon sizing: pencil stays 16x16, trash slightly larger */
+    .edit-btn svg { width: 16px; height: 16px; }
+    .delete-btn svg { width: 18px; height: 18px; }
+
+    /* icon sizing & colors */
+    .edit-btn svg, .delete-btn svg {
+      vertical-align: middle;
+    }
+    .edit-btn .pencil-icon { fill: #CCC; }                     /* light grey pencil */
+    .delete-btn .trash-icon { fill: rgba(244, 67, 54, 0.7); }   /* soft red trashcan */
+
+    /* color the delta arrow/percent green on increase, red on decrease */
+    .delta-indicator.increase {
+      color: #4CAF50;
+    }
+    .delta-indicator.decrease {
+      color: #F44336;
+    }
 
   </style>
 </head>
@@ -390,12 +457,28 @@
         <div class="card">
           <!-- Updated Header Structure -->
           <div class="chart-header activity-calendar-header">
-            <button class="calendar-nav-btn" id="prevYearBtn">&lt;</button> <!-- Left Arrow -->
-            <div class="calendar-title-year">
-              <h3>Activity Calendar</h3>
-              <span id="calendarYearDisplay">2025</span> <!-- Year Display -->
+            <!-- Title Moved to Left -->
+            <h3>Activity Calendar</h3>
+
+            <!-- Wrapper for Center Elements (Arrows + Year) -->
+            <div class="calendar-title-year-nav">
+                <button class="calendar-nav-btn" id="prevYearBtn">&lt;</button> <!-- Left Arrow -->
+                <div class="calendar-title-year">
+                  <!-- H3 removed from here -->
+                  <span id="calendarYearDisplay">2025</span> <!-- Year Display -->
+                </div>
+                <button class="calendar-nav-btn" id="nextYearBtn">&gt;</button> <!-- Right Arrow -->
             </div>
-            <button class="calendar-nav-btn" id="nextYearBtn">&gt;</button> <!-- Right Arrow -->
+
+            <!-- Legend Moved to Right -->
+            <div class="calendar-legend">
+              <span>Less</span>
+              <div class="activity-square heatmap-level-0"></div>
+              <div class="activity-square heatmap-level-1"></div>
+              <div class="activity-square heatmap-level-2"></div>
+              <div class="activity-square heatmap-level-3"></div>
+              <span>More</span>
+            </div>
           </div>
           <!-- End Updated Header Structure -->
           <div class="calendar-container" id="activityCalendarContainer">
@@ -799,7 +882,11 @@
     function renderTasks(){
       taskListEl.innerHTML = '';
       const today = new Date(); // Get today's date once for efficiency
-      tasks.forEach(t => {
+      
+      // Filter tasks to only include those created today for display
+      const tasksToday = tasks.filter(t => isSameDay(t.created, today));
+
+      tasksToday.forEach(t => { // Iterate over tasksToday instead of all tasks
         const li = document.createElement('li');
         li.dataset.taskId = t.id; // Add data attribute for easier selection
 
@@ -808,8 +895,10 @@
             t.completed=!t.completed;
             t.completedAt=t.completed?new Date():null;
             saveTasks(); // Save tasks when completion status changes
-            updateChart(currentRange);
-            // No need to call renderTasks() here, checkbox state is already updated visually
+            updateChart(currentRange); // Update charts to reflect completion
+            // Re-rendering the list isn't strictly necessary on check change, 
+            // but might be needed if completion affects visibility in future filters.
+            // renderTasks(); 
         });
 
         const priorityIndicator = document.createElement('span');
@@ -823,7 +912,14 @@
 
         // --- Edit Functionality Elements ---
         const editBtn = document.createElement('button');
-        editBtn.textContent = 'Edit';
+        editBtn.innerHTML = `
+          <svg viewBox="0 0 24 24" class="pencil-icon">
+            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71
+                     7.04a1.003 1.003 0 0 0 0-1.41l-2.34-2.34a1.003
+                     1.003 0 0 0-1.41 0l-1.83 1.83 3.75 3.75
+                     1.83-1.83z"/>
+          </svg>`;
+        editBtn.title = 'Edit';
         editBtn.classList.add('edit-btn');
 
         const editContainer = document.createElement('span');
@@ -870,22 +966,28 @@
         });
 
 
-        // Add delete button only for tasks created today
+        // Add delete button (logic remains the same as it already checks for today)
         if (isSameDay(t.created, today)) {
             const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Delete';
+            deleteBtn.innerHTML = `
+              <svg viewBox="0 0 24 24" class="trash-icon">
+                <path d="M16 9v10H8V9h8m-1.5-6h-5l-1
+                         1H5v2h14V4h-4.5l-1-1z"/>
+              </svg>`;
+            deleteBtn.title = 'Delete';
             deleteBtn.classList.add('delete-btn');
             deleteBtn.addEventListener('click', () => {
                 const taskIndex = tasks.findIndex(task => task.id === t.id);
                 if (taskIndex > -1) {
                     tasks.splice(taskIndex, 1); // Remove task from array
                     saveTasks(); // Save updated array
-                    renderTasks(); // Re-render the task list UI
+                    renderTasks(); // Re-render the task list UI (now only showing today's tasks)
                     updateChart(currentRange); // Update charts
                 }
             });
             li.appendChild(deleteBtn); // Append delete button to the list item
         }
+
 
         taskListEl.appendChild(li);
       });
@@ -909,22 +1011,37 @@
     newTaskIn.addEventListener('keydown',e=>{ if(e.key==='Enter') addTask(); });
 
     // --- NEW: Activity Squares Logic ---
-    // Modified to accept year - actual filtering/coloring logic based on year not yet added
-    function renderActivitySquares(year) { 
-      const container = document.getElementById('activityCalendarContainer').querySelector('.activity-squares-container');
+    function renderActivitySquares(year) {
+      const container = document
+        .getElementById('activityCalendarContainer')
+        .querySelector('.activity-squares-container');
       if (!container) return;
-      container.innerHTML = ''; // Clear existing squares
+      container.innerHTML = '';
 
-      // TODO: Determine number of days based on leap year if necessary
-      const daysInYear = 365; // Simplified for now
+      // start of year → next year to compute days count
+      const start = new Date(year, 0, 1);
+      const nextYear = new Date(year + 1, 0, 1);
+      const daysInYear = Math.round((nextYear - start) / (1000 * 60 * 60 * 24));
 
       for (let i = 0; i < daysInYear; i++) {
-        const square = document.createElement('div');
-        square.classList.add('activity-square');
-        // TODO: Add logic later to assign activity levels based on 'year' and task data
-        // Example: const activityLevel = getActivityForDay(year, i); 
-        // if (activityLevel > 0) square.classList.add(`level-${activityLevel}`);
-        container.appendChild(square);
+        // build the date for this square
+        const d = new Date(start);
+        d.setDate(start.getDate() + i);
+
+        // count tasks completed on that day
+        const count = tasks.filter(
+          t => t.completedAt && isSameDay(t.completedAt, d)
+        ).length;
+
+        // determine heatmap level
+        let level = 0;
+        if (count >= 5) level = 3;
+        else if (count >= 3) level = 2;
+        else if (count >= 1) level = 1;
+
+        const sq = document.createElement('div');
+        sq.classList.add('activity-square', `heatmap-level-${level}`);
+        container.appendChild(sq);
       }
     }
     // --- END: Activity Squares Logic ---
