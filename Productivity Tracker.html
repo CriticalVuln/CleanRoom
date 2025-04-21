@@ -147,6 +147,13 @@
         background: #2A2A2A;
         color: #FFF;
         font-size: 12px;
+        appearance: textfield; /* Standard property for compatibility */
+        -moz-appearance: textfield; /* hide Firefox spinner */
+    }
+    .edit-container input[type="number"]::-webkit-outer-spin-button,
+    .edit-container input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none; /* hide Chrome/Safari spinner */
+        margin: 0;
     }
     /* Hide edit container by default */
     .edit-container {
@@ -374,8 +381,8 @@
 
     .activity-square {
       /* Final size adjustment */
-      width: 29px; 
-      height: 29px; 
+      width: 28.5px; 
+      height: 28.5px; 
       background-color: #2A2A2A; /* Default empty color */
       border-radius: 2px; /* Slightly rounded corners */
     }
@@ -440,16 +447,41 @@
         position: relative;
     }
     /* Specific height for the difficulty chart card */
-    .difficulty-toggle + .difficulty-chart-container {
-        /* Select the container immediately following the toggle */
-        /* This assumes the card structure remains: toggle -> container */
-    }
     .card:has(.difficulty-toggle) { /* Target the card containing the difficulty toggle */
         height: 260px;
         display: flex; /* Use flexbox for internal alignment */
         flex-direction: column; /* Stack toggle and chart vertically */
     }
+    /* Style for the new priority/difficulty chart */
+    .priority-difficulty-chart-container {
+        height: 180px; /* Match difficulty chart canvas area height */
+        margin-top: 8px; /* Space below toggle */
+        position: relative;
+    }
+    /* Specific height for the priority/difficulty chart card */
+    .card:has(#priorityDifficultyChart) { /* Target the card containing the new chart */
+        height: 260px; /* Match the other small card height */
+        display: flex;
+        flex-direction: column;
+    }
 
+    /* Remove placeholder styles if they conflict */
+    .new-widget-placeholder {
+        /* Keep general styles if needed, but height/content might be overridden */
+        /* height: 260px; */ /* Now controlled by card:has() */
+        /* width: 50%; */ /* Width is handled by the grid/flex layout */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-style: italic;
+        color: #666;
+    }
+    /* Ensure the specific card for the new chart doesn't act like a placeholder */
+    .card:has(#priorityDifficultyChart).new-widget-placeholder {
+        font-style: normal;
+        color: inherit;
+        /* Override other placeholder styles if necessary */
+    }
 
   </style>
 </head>
@@ -544,9 +576,17 @@
                         <canvas id="difficultyCompletionChart"></canvas> <!-- New canvas -->
                     </div>
                 </div>
-                <!-- Duplicate placeholder -->
-                <div class="card new-widget-placeholder">
-                    <span>New Widget Area 2</span> <!-- Added second placeholder -->
+                <!-- Priority vs Difficulty Chart -->
+                <div class="card"> <!-- Removed new-widget-placeholder class -->
+                    <div class="timeframe-toggle priority-difficulty-toggle"> <!-- New toggle group -->
+                        <button data-range="year">This Year</button>
+                        <button data-range="month">This Month</button>
+                        <button data-range="week">This Week</button>
+                        <button data-range="day" class="active">Today</button> <!-- Default to Today -->
+                    </div>
+                    <div class="priority-difficulty-chart-container"> <!-- New container -->
+                        <canvas id="priorityDifficultyChart"></canvas> <!-- New canvas -->
+                    </div>
                 </div>
             </div> <!-- End flex wrapper -->
         </div> <!-- End wrapper div -->
@@ -601,8 +641,7 @@
     let currentPriority = 'low';
     let calendarCurrentYear = new Date().getFullYear(); // Initialize calendar year
     // Chart Ranges
-    let mainChartRange = 'year'; // For Overall Performance and Hours Worked
-    let difficultyChartRange = 'year'; // For Difficulty Completion
+    let mainChartRange = 'year'; // For ALL charts except calendar
 
     // --- DOM Elements ---
     const calendarYearDisplay = document.getElementById('calendarYearDisplay');
@@ -611,6 +650,9 @@
     // Difficulty Chart Elements
     const ctxDifficulty = document.getElementById('difficultyCompletionChart').getContext('2d');
     const difficultyToggleButtons = document.querySelectorAll('.difficulty-toggle button');
+    // Priority/Difficulty Chart Elements
+    const ctxPriorityDifficulty = document.getElementById('priorityDifficultyChart').getContext('2d');
+    const priorityDifficultyToggleButtons = document.querySelectorAll('.priority-difficulty-toggle button'); // Keep reference for updating active state
 
 
     // --- LOCAL STORAGE FUNCTIONS ---
@@ -883,37 +925,145 @@
         }
     });
 
+    // --- NEW: Center Text Plugin for Doughnut Chart ---
+    const centerTextPlugin = {
+      id: 'centerText',
+      afterDraw: (chart) => {
+        if (chart.config.type === 'doughnut' && chart.config.options.plugins.centerText?.display) {
+          const ctx = chart.ctx;
+          const { width, height } = chart.chartArea;
+          const numberText = chart.config.options.plugins.centerText.text || '0'; // Get number from options
+          const labelText = "tasks completed"; // Second line text
+
+          ctx.save();
+          const centerX = width / 2;
+          const centerY = height / 2;
+          const lineHeight = 10; // Adjust spacing between lines
+
+          // Draw the number
+          ctx.font = 'bold 24px Poppins'; // Make number slightly larger
+          ctx.fillStyle = '#EEE';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'bottom'; // Align bottom of number text
+          ctx.fillText(numberText, centerX, centerY + lineHeight / 2); // Position number slightly above center point
+
+          // Draw the label below the number
+          ctx.font = 'normal 12px Poppins'; // Smaller font for label
+          ctx.fillStyle = '#AAA'; // Slightly dimmer color for label
+          ctx.textBaseline = 'top'; // Align top of label text
+          ctx.fillText(labelText, centerX, centerY + lineHeight / 2 + 2); // Position label slightly below center point + spacing
+
+          ctx.restore();
+        }
+      }
+    };
+    // Register the plugin globally (or locally in the chart options)
+    // Chart.register(centerTextPlugin); // Global registration - alternatively, add to chart options
+
+    // CHART.JS SETUP (Priority vs Difficulty Doughnut)
+    const priorityDifficultyChart = new Chart(ctxPriorityDifficulty, {
+        type: 'doughnut',
+        data: {
+            // Update labels to be more specific for tooltips
+            labels: ['Priority: High', 'Priority: Med', 'Priority: Low', 'Difficulty: Easy', 'Difficulty: Hard'],
+            datasets: [
+                {
+                    label: 'Priority', // Outer ring
+                    data: [0, 0, 0], // Start with 0, will be updated
+                    backgroundColor: [
+                        '#F44336', // High
+                        '#FFC107', // Med
+                        '#4CAF50'  // Low
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#1F1F1F', // Match card background for separation
+                },
+                {
+                    label: 'Difficulty', // Inner ring
+                    data: [0, 0], // Start with 0, will be updated
+                    // Use the same colors as the difficulty line chart for consistency
+                    backgroundColor: [
+                        '#4CAF50', // Easy (Green)
+                        '#F44336'  // Hard (Red)
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#1F1F1F',
+                    weight: 0.7 // Makes the inner ring slightly smaller relative to outer
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%', // Increased cutout percentage to make rings thinner
+            plugins: {
+                centerText: {
+                  display: true,
+                  text: '0' // Initial text value (number)
+                },
+                legend: {
+                    display: false // Hide default legend
+                },
+                tooltip: {
+                    enabled: true, // Enable tooltips
+                    callbacks: {
+                        label: function(context) {
+                            // Use the specific label defined in data.labels
+                            let label = context.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed !== null) {
+                                // Show the actual count
+                                label += context.parsed;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        },
+        plugins: [centerTextPlugin]
+    });
 
     // AGGREGATION LOGIC
     function aggregate(range) {
       const now = new Date();
       const currentYear = now.getFullYear();
       const currentMonth = now.getMonth();
-      let labels, low, med, high, completed, allottedHours, spentHours, easyCompleted, hardCompleted; // Added easy/hard
-      let previousTotalSpent = 0; // Initialize previous total
+      let labels, low, med, high, completed, allottedHours, spentHours, easyCompleted, hardCompleted;
+      // Add temporary arrays for priority completion counts within the range
+      let completedLowArr, completedMedArr, completedHighArr;
+      let previousTotalSpent = 0;
 
       // --- Calculate Current Period Data ---
       if (range === 'year') {
         labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         low = Array(12).fill(0); med = Array(12).fill(0); high = Array(12).fill(0); completed = Array(12).fill(0);
         allottedHours = Array(12).fill(0); spentHours = Array(12).fill(0);
-        easyCompleted = Array(12).fill(0); hardCompleted = Array(12).fill(0); // Init easy/hard
+        easyCompleted = Array(12).fill(0); hardCompleted = Array(12).fill(0);
+        // Initialize temporary priority completion arrays
+        completedLowArr = Array(12).fill(0); completedMedArr = Array(12).fill(0); completedHighArr = Array(12).fill(0);
         tasks.forEach(t => {
-          // Current year data
+          // Current year assignment data
           if (t.created.getFullYear() === currentYear) {
             const m = t.created.getMonth();
             if (t.priority==='low') low[m]++; if (t.priority==='med') med[m]++; if (t.priority==='high') high[m]++;
             allottedHours[m] += (t.timeAllotted || 0);
             spentHours[m] += (t.timeSpent || 0);
           }
+          // Current year completion data
           if (t.completedAt && t.completedAt.getFullYear() === currentYear) {
             const m = t.completedAt.getMonth();
             completed[m]++;
-            // Only count if difficulty is explicitly set
             if (t.difficulty === 'easy') easyCompleted[m]++;
             else if (t.difficulty === 'hard') hardCompleted[m]++;
+            // Count completed by priority into temporary arrays
+            if (t.priority === 'low') completedLowArr[m]++;
+            if (t.priority === 'med') completedMedArr[m]++;
+            if (t.priority === 'high') completedHighArr[m]++;
           }
-          // Previous year data
+          // Previous year data for delta calculation
           if (t.created.getFullYear() === currentYear - 1) {
             previousTotalSpent += (t.timeSpent || 0);
           }
@@ -923,26 +1073,32 @@
         labels = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
         low = Array(daysInMonth).fill(0); med = Array(daysInMonth).fill(0); high = Array(daysInMonth).fill(0); completed = Array(daysInMonth).fill(0);
         allottedHours = Array(daysInMonth).fill(0); spentHours = Array(daysInMonth).fill(0);
-        easyCompleted = Array(daysInMonth).fill(0); hardCompleted = Array(daysInMonth).fill(0); // Init easy/hard
+        easyCompleted = Array(daysInMonth).fill(0); hardCompleted = Array(daysInMonth).fill(0);
+        // Initialize temporary priority completion arrays
+        completedLowArr = Array(daysInMonth).fill(0); completedMedArr = Array(daysInMonth).fill(0); completedHighArr = Array(daysInMonth).fill(0);
         const prevMonthDate = new Date(currentYear, currentMonth, 1);
         prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
         const prevMonth = prevMonthDate.getMonth();
         const prevMonthYear = prevMonthDate.getFullYear();
         tasks.forEach(t => {
-            // Current month data
+            // Current month assignment data
             if (t.created.getFullYear() === currentYear && t.created.getMonth() === currentMonth) {
                 const dayIndex = t.created.getDate() - 1;
                 if (t.priority === 'low') low[dayIndex]++; if (t.priority === 'med') med[dayIndex]++; if (t.priority === 'high') high[dayIndex]++;
                 allottedHours[dayIndex] += (t.timeAllotted || 0); spentHours[dayIndex] += (t.timeSpent || 0);
             }
+            // Current month completion data
             if (t.completedAt && t.completedAt.getFullYear() === currentYear && t.completedAt.getMonth() === currentMonth) {
                 const dayIndex = t.completedAt.getDate() - 1;
                 completed[dayIndex]++;
-                // Only count if difficulty is explicitly set
                 if (t.difficulty === 'easy') easyCompleted[dayIndex]++;
                 else if (t.difficulty === 'hard') hardCompleted[dayIndex]++;
+                // Count completed by priority into temporary arrays
+                if (t.priority === 'low') completedLowArr[dayIndex]++;
+                if (t.priority === 'med') completedMedArr[dayIndex]++;
+                if (t.priority === 'high') completedHighArr[dayIndex]++;
             }
-            // Previous month data
+            // Previous month data for delta calculation
             if (t.created.getFullYear() === prevMonthYear && t.created.getMonth() === prevMonth) {
                 previousTotalSpent += (t.timeSpent || 0);
             }
@@ -956,22 +1112,28 @@
         labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
         low = Array(7).fill(0); med = Array(7).fill(0); high = Array(7).fill(0); completed = Array(7).fill(0);
         allottedHours = Array(7).fill(0); spentHours = Array(7).fill(0);
-        easyCompleted = Array(7).fill(0); hardCompleted = Array(7).fill(0); // Init easy/hard
+        easyCompleted = Array(7).fill(0); hardCompleted = Array(7).fill(0);
+        // Initialize temporary priority completion arrays
+        completedLowArr = Array(7).fill(0); completedMedArr = Array(7).fill(0); completedHighArr = Array(7).fill(0);
         tasks.forEach(t=>{
-          // Current week data
+          // Current week assignment data
           if (t.created>=start && t.created<=end) {
             const i=(t.created.getDay()+6)%7;
             if(t.priority==='low') low[i]++; if(t.priority==='med') med[i]++; if(t.priority==='high') high[i]++;
             allottedHours[i] += (t.timeAllotted || 0); spentHours[i] += (t.timeSpent || 0);
           }
+          // Current week completion data
           if(t.completedAt && t.completedAt>=start && t.completedAt<=end) {
             const i = (t.completedAt.getDay()+6)%7;
             completed[i]++;
-            // Only count if difficulty is explicitly set
             if (t.difficulty === 'easy') easyCompleted[i]++;
             else if (t.difficulty === 'hard') hardCompleted[i]++;
+            // Count completed by priority into temporary arrays
+            if (t.priority === 'low') completedLowArr[i]++;
+            if (t.priority === 'med') completedMedArr[i]++;
+            if (t.priority === 'high') completedHighArr[i]++;
           }
-          // Previous week data
+          // Previous week data for delta calculation
           if (t.created >= prevWeekStart && t.created <= prevWeekEnd) {
             previousTotalSpent += (t.timeSpent || 0);
           }
@@ -980,23 +1142,29 @@
         labels = Array.from({length:24},(_,i)=>`${i}:00`);
         low = Array(24).fill(0); med = Array(24).fill(0); high = Array(24).fill(0); completed = Array(24).fill(0);
         allottedHours = Array(24).fill(0); spentHours = Array(24).fill(0);
-        easyCompleted = Array(24).fill(0); hardCompleted = Array(24).fill(0); // Init easy/hard
+        easyCompleted = Array(24).fill(0); hardCompleted = Array(24).fill(0);
+        // Initialize temporary priority completion arrays
+        completedLowArr = Array(24).fill(0); completedMedArr = Array(24).fill(0); completedHighArr = Array(24).fill(0);
         const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
         tasks.forEach(t=>{
-          // Current day data
+          // Current day assignment data
           if (isSameDay(t.created, now)) {
             const h = t.created.getHours();
             low[h]+=(t.priority==='low'); med[h]+=(t.priority==='med'); high[h]+=(t.priority==='high');
             allottedHours[h] += (t.timeAllotted || 0); spentHours[h] += (t.timeSpent || 0);
           }
+          // Current day completion data
           if (t.completedAt && isSameDay(t.completedAt, now)) {
             const h = t.completedAt.getHours();
             completed[h]++;
-            // Only count if difficulty is explicitly set
             if (t.difficulty === 'easy') easyCompleted[h]++;
             else if (t.difficulty === 'hard') hardCompleted[h]++;
+            // Count completed by priority into temporary arrays
+            if (t.priority === 'low') completedLowArr[h]++;
+            if (t.priority === 'med') completedMedArr[h]++;
+            if (t.priority === 'high') completedHighArr[h]++;
           }
-          // Previous day (yesterday) data
+          // Previous day data for delta calculation
           if (isSameDay(t.created, yesterday)) {
             previousTotalSpent += (t.timeSpent || 0);
           }
@@ -1013,8 +1181,27 @@
           percentageChange = Infinity; // Indicate increase from zero
       } // else percentageChange remains 0
 
-      // Return all aggregated data
-      return {labels, low, med, high, assignedSum, completed, allottedHours, spentHours, easyCompleted, hardCompleted, totalSpentInRange, percentageChange, previousTotalSpent};
+      // --- Calculate total completed counts by priority for the range ---
+      const totalCompletedLow = completedLowArr.reduce((sum, count) => sum + count, 0);
+      const totalCompletedMed = completedMedArr.reduce((sum, count) => sum + count, 0);
+      const totalCompletedHigh = completedHighArr.reduce((sum, count) => sum + count, 0);
+      const totalCompletedPriority = totalCompletedLow + totalCompletedMed + totalCompletedHigh; // Sum for center text
+
+      // --- Calculate total completed counts by difficulty for the range ---
+      const totalCompletedEasy = easyCompleted.reduce((sum, count) => sum + count, 0);
+      const totalCompletedHard = hardCompleted.reduce((sum, count) => sum + count, 0);
+
+
+      // Return all aggregated data, including the *new* priority and difficulty completion totals
+      return {
+          // Original data for other charts
+          labels, low, med, high, assignedSum, completed, allottedHours, spentHours,
+          easyCompleted, hardCompleted, totalSpentInRange, percentageChange, previousTotalSpent,
+          // New data for priority/difficulty chart
+          totalCompletedLow, totalCompletedMed, totalCompletedHigh,
+          totalCompletedEasy, totalCompletedHard,
+          totalCompleted: totalCompletedPriority // Add the overall total completed count
+      };
     }
     function isSameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
 
@@ -1092,45 +1279,63 @@
         difficultyChart.data.labels = labels;
         difficultyChart.data.datasets[0].data = easyCompleted;
         difficultyChart.data.datasets[1].data = hardCompleted;
-        // Update tooltip title callback based on difficultyChartRange
+        // Update tooltip title callback based on the passed range
         difficultyChart.options.plugins.tooltip.callbacks.title = items => {
             const label = items[0].label;
             const now = new Date();
-            if (difficultyChartRange === 'year') return label + ' ' + now.getFullYear();
-            if (difficultyChartRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
+            if (range === 'year') return label + ' ' + now.getFullYear(); // Use passed range
+            if (range === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear(); // Use passed range
             return label; // Default
         };
         difficultyChart.options.scales.x.ticks.autoSkip = range !== 'month'; // Match behavior
         difficultyChart.update();
     }
 
+    // CHART UPDATE FUNCTION (Priority vs Difficulty Chart) - Updated
+    function updatePriorityDifficultyChart(range) { // Accepts range, which will be mainChartRange
+        // Aggregate data, getting all necessary properties
+        const aggregatedData = aggregate(range); // Use the passed range
+        const { totalCompletedLow, totalCompletedMed, totalCompletedHigh, totalCompletedEasy, totalCompletedHard, totalCompleted } = aggregatedData; // Get totalCompleted
 
-    // TIMEFRAME BUTTONS (Main Charts Listener)
-    document.querySelectorAll('.timeframe-toggle:not(.difficulty-toggle) button').forEach(btn => { // Exclude difficulty toggle
+        // --- Prepare data for the outer ring (Priority) ---
+        let priorityData = [totalCompletedHigh, totalCompletedMed, totalCompletedLow];
+        const totalCompletedPriority = totalCompletedHigh + totalCompletedMed + totalCompletedLow;
+        if (totalCompletedPriority === 0) {
+            priorityData = [0, 0, 0];
+        }
+        priorityDifficultyChart.data.datasets[0].data = priorityData;
+
+        // --- Prepare data for the inner ring (Difficulty) ---
+        let difficultyData = [totalCompletedEasy, totalCompletedHard];
+        const totalCompletedDifficulty = totalCompletedEasy + totalCompletedHard;
+        if (totalCompletedDifficulty === 0) {
+            difficultyData = [0, 0];
+        }
+        priorityDifficultyChart.data.datasets[1].data = difficultyData;
+
+        // --- Update center text ---
+        priorityDifficultyChart.config.options.plugins.centerText.text = totalCompleted.toString(); // Update text in options
+
+        console.log(`Updating Priority/Difficulty chart for range: ${range}. Priority: [H:${totalCompletedHigh}, M:${totalCompletedMed}, L:${totalCompletedLow}], Difficulty: [E:${totalCompletedEasy}, H:${totalCompletedHard}], Total: ${totalCompleted}`);
+
+        priorityDifficultyChart.update(); // Update the chart
+    }
+
+    // TIMEFRAME BUTTONS (Main Listener - NOW INCLUDES ALL CHARTS)
+    document.querySelectorAll('.timeframe-toggle button').forEach(btn => { // Select ALL toggle buttons
       btn.addEventListener('click', () => {
         const range = btn.dataset.range;
         mainChartRange = range; // Update main range
-        // Update active state ONLY within the specific toggle group (Overall or Hours)
-        const toggleGroup = btn.closest('.timeframe-toggle');
-        toggleGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        // Need to activate button in BOTH main toggles if they exist separately
-        document.querySelectorAll(`.timeframe-toggle:not(.difficulty-toggle) button[data-range="${range}"]`).forEach(b => b.classList.add('active'));
-        updateMainCharts(mainChartRange); // Update main charts
+
+        // Update active state in ALL toggle groups
+        document.querySelectorAll('.timeframe-toggle button').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll(`.timeframe-toggle button[data-range="${range}"]`).forEach(b => b.classList.add('active'));
+
+        updateMainCharts(mainChartRange); // Update main charts (Overall, Hours)
+        updateDifficultyChart(mainChartRange); // Update difficulty chart
+        updatePriorityDifficultyChart(mainChartRange); // Update priority/difficulty chart
       });
     });
-
-    // TIMEFRAME BUTTONS (Difficulty Chart Listener)
-    difficultyToggleButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const range = btn.dataset.range;
-        difficultyChartRange = range; // Update difficulty range
-        // Update active state ONLY within the difficulty toggle group
-        difficultyToggleButtons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        updateDifficultyChart(difficultyChartRange); // Update difficulty chart
-      });
-    });
-
 
     // TASK UI & LOGIC
     const taskListEl = document.getElementById('taskList');
@@ -1162,7 +1367,8 @@
             t.completedAt=t.completed?new Date():null;
             saveTasks(); // Save tasks when completion status changes
             updateMainCharts(mainChartRange); // Update main charts
-            updateDifficultyChart(difficultyChartRange); // Update difficulty chart
+            updateDifficultyChart(mainChartRange); // Use mainChartRange
+            updatePriorityDifficultyChart(mainChartRange); // Use mainChartRange
             renderActivitySquares(calendarCurrentYear); // Update calendar too
         });
 
@@ -1181,7 +1387,7 @@
           <svg viewBox="0 0 24 24" class="pencil-icon">
             <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71
                      7.04a1.003 1.003 0 0 0 0-1.41l-2.34-2.34a1.003
-                     1.003 0 0 0-1.41 0l-1.83 1.83 3.75 3.75
+                     1.003 1.003 0 0 0-1.41 0l-1.83 1.83 3.75 3.75
                      1.83-1.83z"/>
           </svg>`;
         editBtn.title = 'Edit';
@@ -1220,6 +1426,8 @@
             li.classList.remove('editing'); // Remove editing class
             saveTasks(); // Save to localStorage
             updateMainCharts(mainChartRange); // Update main charts
+            updateDifficultyChart(mainChartRange); // Use mainChartRange
+            updatePriorityDifficultyChart(mainChartRange); // Use mainChartRange
         });
         // Allow saving with Enter key in the input
         timeSpentInput.addEventListener('keydown', (e) => {
@@ -1248,7 +1456,8 @@
                     saveTasks(); // Save updated array
                     renderTasks(); // Re-render the task list UI
                     updateMainCharts(mainChartRange); // Update main charts
-                    updateDifficultyChart(difficultyChartRange); // Update difficulty chart
+                    updateDifficultyChart(mainChartRange); // Use mainChartRange
+                    updatePriorityDifficultyChart(mainChartRange); // Use mainChartRange
                     renderActivitySquares(calendarCurrentYear); // Update calendar too
                 }
             });
@@ -1277,6 +1486,8 @@
       }
       saveTasks(); // Save tasks after adding a new one
       updateMainCharts(mainChartRange); // Update main charts
+      updateDifficultyChart(mainChartRange); // Use mainChartRange
+      updatePriorityDifficultyChart(mainChartRange); // Use mainChartRange
       renderTasks();
     }
     addBtn.addEventListener('click', addTask);
@@ -1338,8 +1549,12 @@
 
     // initialize
     loadTasks(); // Load tasks from localStorage first
-    updateMainCharts('year'); // Initial update for main charts
-    updateDifficultyChart('year'); // Initial update for difficulty chart
+    // Set initial active buttons for ALL toggles based on mainChartRange
+    document.querySelectorAll(`.timeframe-toggle button[data-range="${mainChartRange}"]`).forEach(b => b.classList.add('active'));
+
+    updateMainCharts(mainChartRange); // Initial update for main charts
+    updateDifficultyChart(mainChartRange); // Initial update for difficulty chart using main range
+    updatePriorityDifficultyChart(mainChartRange); // Initial update for new chart using main range
     renderTasks();
     updateCalendarDisplay(); // Initial setup of calendar year display and squares
   </script>
