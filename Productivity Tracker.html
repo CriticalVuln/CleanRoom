@@ -272,8 +272,44 @@
     .activity-calendar-header {
         justify-content: space-between; /* Distribute items: Title | Nav | Legend */
         align-items: center; /* Vertically align items */
-        position: relative; /* Keep for potential future use */
+        position: relative; /* Ensure positioning context for toggle */
     }
+    /* NEW: Container for the toggle switch */
+    .calendar-view-toggle-container {
+        position: absolute;
+        left: 50%;
+        top: 5px; /* Adjust vertical position as needed */
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: 8px; /* Space between label and switch */
+    }
+    .calendar-view-toggle-container label {
+        font-size: 12px;
+        color: #A0A0A0;
+    }
+    /* NEW: Styles to hide/show navigation based on view mode */
+    .calendar-view-year .calendar-title-month-nav,
+    .calendar-view-month .calendar-title-year-nav {
+        display: none; /* Hide the inactive navigation */
+    }
+    .calendar-view-month .calendar-title-month-nav,
+    .calendar-view-year .calendar-title-year-nav {
+        display: flex; /* Show the active navigation */
+        align-items: center;
+        gap: 15px;
+        /* Center the active navigation */
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        /* Adjust top position if toggle is present */
+        top: 35px; /* Position below the toggle */
+    }
+    /* Adjust header title position when month view is active */
+     .calendar-view-month .activity-calendar-header h3 {
+         /* Optionally adjust if needed, maybe more margin-bottom */
+         margin-bottom: 10px; /* Add space below title if nav moves down */
+     }
     .calendar-title-year-nav { /* Wrapper for center elements (Arrows + Year) */
         position: absolute;
         left: 50%;
@@ -318,9 +354,11 @@
         color: #A0A0A0; /* Secondary Text */
         width: 120px; /* Adjusted width to match title */
     }
+    /* MODIFIED: Ensure legend squares keep their fixed size regardless of view */
     .calendar-legend .activity-square {
-        width: 11px; /* Reduced size by ~20% */
-        height: 11px; /* Reduced size by ~20% */
+        width: 11px !important; /* Use !important to override month view grid styles */
+        height: 11px !important; /* Use !important to override month view grid styles */
+        aspect-ratio: unset !important; /* Remove aspect ratio if applied */
     }
     .timeframe-toggle {
       display: flex;
@@ -372,21 +410,48 @@
     .activity-squares-container {
       display: flex;
       flex-wrap: wrap;
-      gap: 0; /* Removed gap between squares */
-      width: 100%; /* Ensure container takes full width */
-      height: 100%; /* Ensure container takes full height */
-      align-content: flex-start; /* Align wrapped lines to the start */
-      justify-content: center; /* Center items horizontally, affecting the last row */
+      justify-content: center; /* MODIFIED: Center items horizontally */
+      gap: 2px; /* Add gap for year view too */
+      grid-template-columns: none;
+      align-content: normal;
+      padding: 5px; /* Consistent padding */
+      height: auto; /* Allow height to be determined by content in year view */
     }
 
+    /* NEW/MODIFIED: Styles for Month View Grid */
+    .calendar-view-month .activity-squares-container {
+        display: grid; /* Use grid for month view */
+        grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
+        justify-content: stretch; /* Stretch items to fill grid cells */
+        align-content: start; /* Align rows to the top */
+        gap: 2px; /* Keep the gap */
+        padding: 5px; /* Keep padding */
+        height: 100%; /* Ensure it tries to fill the container height */
+    }
+
+    /* Base style for activity squares (used in year view) */
     .activity-square {
-      /* Final size adjustment */
-      width: 28.5px;
-      height: 28.5px;
+      width: 26px; /* Adjusted fixed width for year view */
+      height: 26px; /* Adjusted fixed height for year view */
       background-color: #211D30; /* Darker empty color */
       border-radius: 2px; /* Slightly rounded corners */
     }
-    /* New Heatmap activity levels (Cyan theme) */
+
+    /* NEW/MODIFIED: Adjust square size for month view grid */
+    .calendar-view-month .activity-square {
+        width: auto; /* Let grid determine width */
+        height: auto; /* Let grid determine height */
+        aspect-ratio: 1 / 1; /* Keep squares square ONLY in month view */
+    }
+
+    /* NEW: Style for padding squares in month view */
+    .padding-square {
+        background-color: transparent !important; /* Make padding invisible */
+        pointer-events: none; /* Ignore hover events */
+        border: none !important; /* Remove any borders */
+        box-shadow: none !important; /* Remove any shadows */
+    }
+
     .activity-square.heatmap-level-0 { background-color: #211D30; } /* 0 tasks */
     .activity-square.heatmap-level-1 { background-color: rgba(99, 255, 218, 0.3); } /* 1-2 tasks (Cyan 30%) */
     .activity-square.heatmap-level-2 { background-color: rgba(99, 255, 218, 0.6); } /* 3-4 tasks (Cyan 60%) */
@@ -594,23 +659,36 @@
         <!-- Column 2: Activity Calendar -->
         <div> <!-- Added wrapper div for consistency, though only one item -->
             <!-- 4. NEW ACTIVITY CALENDAR WIDGET -->
-            <div class="card">
-              <!-- Updated Header Structure -->
-              <div class="chart-header activity-calendar-header">
-                <!-- Title Moved to Left -->
-                <h3>Activity Calendar</h3>
+            <div class="card" id="activityCalendarCard"> <!-- Add ID to card -->
+              <div class="activity-calendar-header">
+                <h3>Activity</h3>
 
-                <!-- Wrapper for Center Elements (Arrows + Year) -->
+                <!-- NEW: View Toggle Switch -->
+                <div class="calendar-view-toggle-container">
+                  <label for="calendarViewToggle">Year</label>
+                  <label class="switch">
+                    <input type="checkbox" id="calendarViewToggle">
+                    <span class="slider round"></span>
+                  </label>
+                  <label for="calendarViewToggle">Month</label>
+                </div>
+                <!-- End NEW View Toggle Switch -->
+
+                <!-- Year Navigation (Initially Visible) -->
                 <div class="calendar-title-year-nav">
-                    <button class="calendar-nav-btn" id="prevYearBtn">&lt;</button> <!-- Left Arrow -->
-                    <div class="calendar-title-year">
-                      <!-- H3 removed from here -->
-                      <span id="calendarYearDisplay">2025</span> <!-- Year Display -->
-                    </div>
-                    <button class="calendar-nav-btn" id="nextYearBtn">&gt;</button> <!-- Right Arrow -->
+                  <button id="prevYearBtn" class="calendar-nav-btn">&#9664;</button>
+                  <span id="calendarYearDisplay"></span>
+                  <button id="nextYearBtn" class="calendar-nav-btn">&#9654;</button>
                 </div>
 
-                <!-- Legend Moved to Right -->
+                <!-- NEW: Month Navigation (Initially Hidden) -->
+                <div class="calendar-title-month-nav" style="display: none;"> <!-- Hide initially -->
+                  <button id="prevMonthBtn" class="calendar-nav-btn">&#9664;</button>
+                  <span id="calendarMonthYearDisplay"></span> <!-- Combined Month/Year Display -->
+                  <button id="nextMonthBtn" class="calendar-nav-btn">&#9654;</button>
+                </div>
+                <!-- End NEW Month Navigation -->
+
                 <div class="calendar-legend">
                   <span>Less</span>
                   <div class="activity-square heatmap-level-0"></div>
@@ -620,10 +698,9 @@
                   <span>More</span>
                 </div>
               </div>
-              <!-- End Updated Header Structure -->
-              <div class="calendar-container" id="activityCalendarContainer">
+              <div id="activityCalendarContainer" class="calendar-container">
                 <div class="activity-squares-container">
-                  <!-- Squares will be generated here by JS -->
+                  <!-- Activity squares will be rendered here -->
                 </div>
               </div>
             </div>
@@ -644,15 +721,23 @@
     let tasks = []; // Use let instead of const to allow reassignment on load
     let currentPriority = 'low';
     let calendarCurrentYear = new Date().getFullYear(); // Initialize calendar year
+    let calendarCurrentMonth = new Date().getMonth(); // Initialize calendar month (0-11)
+    let calendarViewMode = 'year'; // NEW: 'year' or 'month'
+
     // Chart Ranges
     let mainChartRange = 'year'; // For ALL charts except calendar
     // NEW: Tooltip Element Reference
     const calendarTooltip = document.getElementById('calendarTooltip');
 
     // --- DOM Elements ---
+    const activityCalendarCard = document.getElementById('activityCalendarCard'); // NEW: Calendar Card
+    const calendarViewToggle = document.getElementById('calendarViewToggle'); // NEW: Toggle Switch
     const calendarYearDisplay = document.getElementById('calendarYearDisplay');
     const prevYearBtn = document.getElementById('prevYearBtn');
     const nextYearBtn = document.getElementById('nextYearBtn');
+    const calendarMonthYearDisplay = document.getElementById('calendarMonthYearDisplay'); // NEW: Month Display
+    const prevMonthBtn = document.getElementById('prevMonthBtn'); // NEW: Month Nav
+    const nextMonthBtn = document.getElementById('nextMonthBtn'); // NEW: Month Nav
     // Difficulty Chart Elements
     const ctxDifficulty = document.getElementById('difficultyCompletionChart').getContext('2d');
     const difficultyToggleButtons = document.querySelectorAll('.difficulty-toggle button');
@@ -676,6 +761,13 @@
                 completedAt: task.completedAt ? new Date(task.completedAt) : null
             }));
         }
+    }
+
+    // --- NEW: Helper to get month name ---
+    function getMonthName(monthIndex) {
+        const monthNames = ["January", "February", "March", "April", "May", "June",
+                          "July", "August", "September", "October", "November", "December"];
+        return monthNames[monthIndex];
     }
 
     // PRIORITY BUTTON HANDLING
@@ -1505,30 +1597,45 @@
     addBtn.addEventListener('click', addTask);
     newTaskIn.addEventListener('keydown',e=>{ if(e.key==='Enter') addTask(); });
 
-    // --- NEW: Activity Squares Logic ---
-    function renderActivitySquares(year) {
+    // --- NEW: Activity Squares Logic (MODIFIED) ---
+    function renderActivitySquares(year, month) { // Added month parameter
       const container = document
         .getElementById('activityCalendarContainer')
         .querySelector('.activity-squares-container');
       if (!container) return;
-      container.innerHTML = '';
+      container.innerHTML = ''; // Clear previous squares
 
-      // start of year → next year to compute days count
-      const start = new Date(year, 0, 1);
-      const nextYear = new Date(year + 1, 0, 1);
-      const daysInYear = Math.round((nextYear - start) / (1000 * 60 * 60 * 24));
+      let startDate, daysCount;
+      let firstDayOfMonth = 0; // For month view padding
 
-      for (let i = 0; i < daysInYear; i++) {
-        // build the date for this square
-        const d = new Date(start);
-        d.setDate(start.getDate() + i);
+      if (month !== undefined && month !== null) { // MONTH VIEW
+          startDate = new Date(year, month, 1);
+          const nextMonth = new Date(year, month + 1, 1);
+          daysCount = Math.round((nextMonth - startDate) / (1000 * 60 * 60 * 24));
+          firstDayOfMonth = (startDate.getDay() + 6) % 7; // 0=Mon, 6=Sun
 
-        // count tasks completed on that day
+          // Add padding squares for the start of the month
+          for (let i = 0; i < firstDayOfMonth; i++) {
+              const padSq = document.createElement('div');
+              padSq.classList.add('activity-square', 'padding-square'); // Add padding class
+              container.appendChild(padSq);
+          }
+
+      } else { // YEAR VIEW (Original Logic)
+          startDate = new Date(year, 0, 1);
+          const nextYearDate = new Date(year + 1, 0, 1);
+          daysCount = Math.round((nextYearDate - startDate) / (1000 * 60 * 60 * 24));
+      }
+
+
+      for (let i = 0; i < daysCount; i++) {
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + i);
+
         const completedCount = tasks.filter(
           t => t.completedAt && isSameDay(t.completedAt, d)
         ).length;
 
-        // determine heatmap level
         let level = 0;
         if (completedCount >= 5) level = 3;
         else if (completedCount >= 3) level = 2;
@@ -1536,11 +1643,13 @@
 
         const sq = document.createElement('div');
         sq.classList.add('activity-square', `heatmap-level-${level}`);
+        sq.dataset.date = d.toISOString().split('T')[0]; // Store date for tooltip
 
-        // --- NEW: Tooltip Event Listeners ---
+        // --- Tooltip Event Listeners (Modified to use dataset.date) ---
         sq.addEventListener('mouseover', (event) => {
-            const tasksForDay = tasks.filter(t => isSameDay(t.created, d));
-            let tooltipContent = `<strong>${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</strong><br>`; // Show date
+            const squareDate = new Date(event.target.dataset.date + 'T00:00:00'); // Ensure correct date object
+            const tasksForDay = tasks.filter(t => isSameDay(t.created, squareDate)); // Use created date for listing tasks
+            let tooltipContent = `<strong>${squareDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</strong><br>`;
 
             if (tasksForDay.length > 0) {
                 tooltipContent += '<ul>';
@@ -1554,20 +1663,18 @@
 
             calendarTooltip.innerHTML = tooltipContent;
 
-            // Position tooltip near the mouse cursor, slightly offset
-            // Adjust positioning to prevent going off-screen if needed (basic example)
+            // Positioning logic (remains the same)
             let left = event.pageX + 15;
             let top = event.pageY + 15;
-            const tooltipRect = calendarTooltip.getBoundingClientRect(); // Get dimensions after content is set
+            const tooltipRect = calendarTooltip.getBoundingClientRect();
             const bodyRect = document.body.getBoundingClientRect();
 
             if (left + tooltipRect.width > bodyRect.right) {
-                left = event.pageX - tooltipRect.width - 15; // Move to the left of cursor
+                left = event.pageX - tooltipRect.width - 15;
             }
             if (top + tooltipRect.height > bodyRect.bottom) {
-                top = event.pageY - tooltipRect.height - 15; // Move above cursor
+                top = event.pageY - tooltipRect.height - 15;
             }
-
 
             calendarTooltip.style.left = `${left}px`;
             calendarTooltip.style.top = `${top}px`;
@@ -1579,27 +1686,59 @@
         });
         // --- END: Tooltip Event Listeners ---
 
-
         container.appendChild(sq);
       }
     }
     // --- END: Activity Squares Logic ---
 
-    // --- Calendar Navigation Logic ---
+    // --- Calendar Navigation Logic (MODIFIED) ---
     function updateCalendarDisplay() {
-        calendarYearDisplay.textContent = calendarCurrentYear;
-        renderActivitySquares(calendarCurrentYear); // Re-render squares for the new year
-        // TODO: Potentially update other parts of the UI that depend on the calendar year
+        activityCalendarCard.classList.remove('calendar-view-year', 'calendar-view-month'); // Clear old classes
+        activityCalendarCard.classList.add(`calendar-view-${calendarViewMode}`); // Add current view class
+
+        if (calendarViewMode === 'year') {
+            calendarYearDisplay.textContent = calendarCurrentYear;
+            renderActivitySquares(calendarCurrentYear); // Render year view
+        } else { // month view
+            calendarMonthYearDisplay.textContent = `${getMonthName(calendarCurrentMonth)} ${calendarCurrentYear}`;
+            renderActivitySquares(calendarCurrentYear, calendarCurrentMonth); // Render month view
+        }
+        // Update toggle state visually (in case it was changed programmatically)
+        calendarViewToggle.checked = (calendarViewMode === 'month');
     }
 
+    // Year Navigation
     prevYearBtn.addEventListener('click', () => {
         calendarCurrentYear--;
         updateCalendarDisplay();
     });
-
     nextYearBtn.addEventListener('click', () => {
         calendarCurrentYear++;
         updateCalendarDisplay();
+    });
+
+    // NEW: Month Navigation
+    prevMonthBtn.addEventListener('click', () => {
+        calendarCurrentMonth--;
+        if (calendarCurrentMonth < 0) {
+            calendarCurrentMonth = 11;
+            calendarCurrentYear--;
+        }
+        updateCalendarDisplay();
+    });
+    nextMonthBtn.addEventListener('click', () => {
+        calendarCurrentMonth++;
+        if (calendarCurrentMonth > 11) {
+            calendarCurrentMonth = 0;
+            calendarCurrentYear++;
+        }
+        updateCalendarDisplay();
+    });
+
+    // NEW: Toggle Switch Listener
+    calendarViewToggle.addEventListener('change', (event) => {
+        calendarViewMode = event.target.checked ? 'month' : 'year';
+        updateCalendarDisplay(); // Update view when toggle changes
     });
     // --- End Calendar Navigation Logic ---
 
@@ -1612,7 +1751,7 @@
     updateDifficultyChart(mainChartRange); // Initial update for difficulty chart using main range
     updatePriorityDifficultyChart(mainChartRange); // Initial update for new chart using main range
     renderTasks();
-    updateCalendarDisplay(); // Initial setup of calendar year display and squares
+    updateCalendarDisplay(); // Initial setup of calendar view, display, and squares
   </script>
 </body>
 </html>
