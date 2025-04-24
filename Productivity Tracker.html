@@ -11,8 +11,8 @@
   <style>
     * { box-sizing: border-box; }
     body {
-      background: #121212;
-      color: #EEE;
+      background: #0D0B14; /* Darker background */
+      color: #E0E0E0; /* Lighter default text */
       font-family: "Poppins", sans-serif;
       margin: 0;
       padding: 40px;
@@ -25,7 +25,7 @@
     }
     /* Removed .dashboard ruleset as it was empty */
     .card {
-      background: #1F1F1F;
+      background: #1A1625; /* Darker card background */
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
@@ -62,7 +62,7 @@
       padding: 8px 12px;
       border: none;
       border-radius: 4px;
-      background: #2A2A2A;
+      background: #211D30; /* Darker input background */
       color: #FFF;
       font-size: 14px;
     }
@@ -71,8 +71,8 @@
       padding: 8px 16px;
       border: none;
       border-radius: 4px;
-      background: #8A4FFF;
-      color: #FFF;
+      background: #63FFDA; /* Accent Cyan/Turquoise */
+      color: #0D0B14; /* Dark text for contrast on light button */
       font-weight: 600;
       cursor: pointer;
       font-size: 14px; /* Ensure consistent font size */
@@ -94,20 +94,20 @@
       display: flex;
       align-items: center;
       padding: 8px 0;
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid #4F4B68; /* Darker border */
       position: relative;
     }
     .task-list label {
       margin-left: 8px;
       flex: 1;
-      color: #EEE;
+      color: #E0E0E0; /* Lighter text */
       margin-right: 8px; /* Add margin to separate label from potential delete button */
     }
 
     /* Style for the delete button */
     .delete-btn {
         background: transparent; /* Transparent background */
-        color: #F44336;
+        color: #FF6B6B; /* Accent Red */
         border: none;
         border-radius: 4px;
         padding: 4px; /* Adjust click target */
@@ -122,7 +122,7 @@
     /* Styles for Edit button and inline editing */
     .edit-btn, .save-btn {
         background: transparent; /* Transparent background */
-        color: #8A4FFF; /* Use theme color */
+        color: #A076F9; /* Accent Purple */
         border: none;
         border-radius: 4px;
         padding: 4px; /* Adjust click target */
@@ -144,7 +144,7 @@
         padding: 4px 6px;
         border: none;
         border-radius: 4px;
-        background: #2A2A2A;
+        background: #211D30; /* Darker input background */
         color: #FFF;
         font-size: 12px;
         appearance: textfield; /* Standard property for compatibility */
@@ -174,7 +174,7 @@
       position: absolute;
       bottom: 100%;
       left: 8px;
-      background: #2A2A2A;
+      background: #211D30; /* Darker tooltip background */
       color: #FFF;
       padding: 4px 8px;
       border-radius: 4px;
@@ -199,8 +199,8 @@
       padding: 0 16px;   /* only horizontal padding */
       border: none;
       border-radius: 4px;
-      background: #8A4FFF;
-      color: #FFF;
+      background: #63FFDA; /* Accent Cyan/Turquoise */
+      color: #0D0B14; /* Dark text for contrast on light button */
       font-weight: 600;
       font-size: 14px;
       cursor: pointer;
@@ -215,14 +215,14 @@
       top: calc(100% + 4px); /* Position below the button */
       left: 0;
       min-width: 150px; /* Give it some minimum width */
-      background: #2A2A2A; padding: 8px; border-radius: 4px; z-index: 10; display: none;
+      background: #211D30; padding: 8px; border-radius: 4px; z-index: 10; display: none; /* Darker dropdown background */
       box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* Add shadow */
     }
     .task-dropdown[open] .task-dropdown-content { display: block; }
-    .task-dropdown-content label { display: block; color: #EEE; margin-bottom: 4px; font-size: 14px; }
+    .task-dropdown-content label { display: block; color: #E0E0E0; margin-bottom: 4px; font-size: 14px; } /* Lighter text */
     .task-dropdown-content input {
       width: 100%; padding: 4px 8px; margin-top: 2px;
-      border: none; border-radius: 4px; background: #1F1F1F; color: #FFF;
+      border: none; border-radius: 4px; background: #0D0B14; color: #FFF; /* Match body background */
     }
 
     /* iOS‑style toggle switch */
@@ -239,7 +239,7 @@
       position: absolute;
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: #555;
+      background: #4F4B68; /* Neutral Dark */
       border-radius: 34px;
       transition: .4s;
     }
@@ -255,7 +255,7 @@
       transition: .4s;
     }
     .switch input:checked + .slider {
-      background: #8A4FFF;
+      background: #A076F9; /* Accent Purple */
     }
     .switch input:checked + .slider:before {
       transform: translateX(20px);
@@ -291,13 +291,13 @@
     }
     #calendarYearDisplay {
         font-size: 16px;   /* Increased from 14px */
-        color: #AAA;
+        color: #A0A0A0; /* Secondary Text */
         font-weight: bold; /* Bold year display */
     }
     .calendar-nav-btn {
         background: transparent;
         border: none;
-        color: #AAA;
+        color: #A0A0A0; /* Secondary Text */
         font-size: 20px; /* Make arrows larger */
         cursor: pointer;
         padding: 0 5px; /* Add some padding */
@@ -315,7 +315,7 @@
         padding: 3px 6px; /* Slightly reduced padding */
         border-radius: 4px;
         font-size: 10px; /* Reduced font size by ~20% */
-        color: #AAA;
+        color: #A0A0A0; /* Secondary Text */
         width: 120px; /* Adjusted width to match title */
     }
     .calendar-legend .activity-square {
@@ -329,14 +329,14 @@
     .timeframe-toggle button {
       background: transparent;
       border: none;
-      color: #888;
+      color: #A0A0A0; /* Secondary Text */
       font-size: 13px;
       cursor: pointer;
       padding: 4px 8px;
       border-radius: 4px;
     }
     .timeframe-toggle button.active {
-      color: #FFF;
+      color: #FFF; /* Keep white for active */
       font-weight: 600;
     }
     .chart-container {
@@ -381,16 +381,16 @@
 
     .activity-square {
       /* Final size adjustment */
-      width: 28.5px; 
-      height: 28.5px; 
-      background-color: #2A2A2A; /* Default empty color */
+      width: 28.5px;
+      height: 28.5px;
+      background-color: #211D30; /* Darker empty color */
       border-radius: 2px; /* Slightly rounded corners */
     }
-    /* New Heatmap activity levels (Royal Blue theme) */
-    .activity-square.heatmap-level-0 { background-color: #2A2A2A; } /* 0 tasks */
-    .activity-square.heatmap-level-1 { background-color: rgba(65, 105, 225, 0.3); } /* 1-2 tasks (Royal Blue 30%) */
-    .activity-square.heatmap-level-2 { background-color: rgba(65, 105, 225, 0.6); } /* 3-4 tasks (Royal Blue 60%) */
-    .activity-square.heatmap-level-3 { background-color: rgb(65, 105, 225); } /* 5+ tasks (Royal Blue 100%) */
+    /* New Heatmap activity levels (Cyan theme) */
+    .activity-square.heatmap-level-0 { background-color: #211D30; } /* 0 tasks */
+    .activity-square.heatmap-level-1 { background-color: rgba(99, 255, 218, 0.3); } /* 1-2 tasks (Cyan 30%) */
+    .activity-square.heatmap-level-2 { background-color: rgba(99, 255, 218, 0.6); } /* 3-4 tasks (Cyan 60%) */
+    .activity-square.heatmap-level-3 { background-color: #63FFDA; } /* 5+ tasks (Cyan 100%) */
 
     /* strip box around pencil/trash icons */
     .edit-btn,
@@ -405,10 +405,10 @@
 
     /* restyle icons to match grey/red theme */
     .edit-btn {
-      color: #CCC;        /* light grey pencil */
+      color: #A0A0A0;        /* Secondary Text grey pencil */
     }
     .delete-btn {
-      color: rgba(244, 67, 54, 0.7);  /* semi‐light red trashcan */
+      color: #FF6B6B;  /* Accent Red trashcan */
     }
 
     /* icon sizing: pencil stays 16x16, trash slightly larger */
@@ -419,15 +419,15 @@
     .edit-btn svg, .delete-btn svg {
       vertical-align: middle;
     }
-    .edit-btn .pencil-icon { fill: #CCC; }                     /* light grey pencil */
-    .delete-btn .trash-icon { fill: rgba(244, 67, 54, 0.7); }   /* soft red trashcan */
+    .edit-btn .pencil-icon { fill: #A0A0A0; }                     /* Secondary Text grey pencil */
+    .delete-btn .trash-icon { fill: #FF6B6B; }   /* Accent Red trashcan */
 
     /* color the delta arrow/percent green on increase, red on decrease */
     .delta-indicator.increase {
-      color: #4CAF50;
+      color: #63FFDA; /* Accent Cyan */
     }
     .delta-indicator.decrease {
-      color: #F44336;
+      color: #FF6B6B; /* Accent Red */
     }
 
     /* Style for the new placeholder widget */
@@ -635,6 +635,10 @@
     </div>
   </div>
 
+  <!-- NEW: Tooltip for Activity Calendar -->
+  <div id="calendarTooltip" style="position: absolute; display: none; background-color: #2a263a; color: #e0e0e0; border: 1px solid #4f4b68; padding: 8px; border-radius: 4px; z-index: 1000; pointer-events: none; font-size: 12px; max-width: 250px; line-height: 1.4;"></div>
+  <!-- End NEW Tooltip -->
+
   <script>
     // TASK STORAGE
     let tasks = []; // Use let instead of const to allow reassignment on load
@@ -642,6 +646,8 @@
     let calendarCurrentYear = new Date().getFullYear(); // Initialize calendar year
     // Chart Ranges
     let mainChartRange = 'year'; // For ALL charts except calendar
+    // NEW: Tooltip Element Reference
+    const calendarTooltip = document.getElementById('calendarTooltip');
 
     // --- DOM Elements ---
     const calendarYearDisplay = document.getElementById('calendarYearDisplay');
@@ -683,9 +689,10 @@
 
     // CHART.JS SETUP (Overall Performance)
     const ctxOverall = document.getElementById('overallPerformanceChart').getContext('2d');
-    const gradient = ctxOverall.createLinearGradient(0, 0, 0, 300);
-    gradient.addColorStop(0, 'rgba(138, 79, 255, 0.4)');
-    gradient.addColorStop(1, 'rgba(138, 79, 255, 0)');
+    // New gradient using Cyan
+    const gradientCyan = ctxOverall.createLinearGradient(0, 0, 0, 300);
+    gradientCyan.addColorStop(0, 'rgba(99, 255, 218, 0.4)'); // #63FFDA with 40% opacity
+    gradientCyan.addColorStop(1, 'rgba(99, 255, 218, 0)'); // #63FFDA with 0% opacity
 
     const overallChart = new Chart(ctxOverall, {
       type: 'bar',
@@ -696,54 +703,54 @@
             type: 'bar',
             label: 'Low Assigned',
             data: [],
-            backgroundColor: '#4CAF50',
+            backgroundColor: '#73BFFF', // Light Blue (like SaaS)
             stack: 'assigned',
             borderRadius: 6,
             borderSkipped: 'bottom',
-            barPercentage: 0.5 // Added to reduce bar width
+            barPercentage: 0.5
           },
           {
             type: 'bar',
             label: 'Med Assigned',
             data: [],
-            backgroundColor: '#FFC107',
+            backgroundColor: '#63FFDA', // Cyan (like Product)
             stack: 'assigned',
             borderRadius: 6,
             borderSkipped: 'bottom',
-            barPercentage: 0.5 // Added to reduce bar width
+            barPercentage: 0.5
           },
           {
             type: 'bar',
             label: 'High Assigned',
             data: [],
-            backgroundColor: '#F44336',
+            backgroundColor: '#FFD700', // Yellow (like CRM)
             stack: 'assigned',
             borderRadius: 6,
             borderSkipped: 'bottom',
-            barPercentage: 0.5 // Added to reduce bar width
+            barPercentage: 0.5
           },
           {
             type: 'line',
             label: 'Tasks Assigned',
             data: [],
-            borderColor: '#FFFFFF',
+            borderColor: '#A0A0A0', // Secondary Text Grey
             borderDash: [6,6],
             fill: false,
             tension: 0.4,
-            pointRadius: 0, // Hide points by default
+            pointRadius: 0,
             yAxisID: 'y'
           },
           {
             type: 'line',
             label: 'Tasks Completed',
             data: [],
-            borderColor: '#8A4FFF',
-            backgroundColor: gradient,
+            borderColor: '#63FFDA', // Cyan
+            backgroundColor: gradientCyan, // Use new Cyan gradient
             fill: true,
             tension: 0.4,
-            pointRadius: 0, // Hide points by default
-            pointBackgroundColor: '#8A4FFF',
-            pointBorderColor: '#1F1F1F',
+            pointRadius: 0,
+            pointBackgroundColor: '#63FFDA', // Cyan point
+            pointBorderColor: '#1A1625', // Match card background
             pointHoverRadius: 6,
             yAxisID: 'y'
           }
@@ -754,17 +761,17 @@
         maintainAspectRatio: false,
         elements: { bar: { borderRadius: 8, borderSkipped: false } },
         interaction: { mode: 'index', intersect: false },
-        scales: { 
-          x: { stacked: true, grid: { display: false }, ticks: { color: '#AAA' } }, 
-          y: { 
-            beginAtZero: true, 
-            stacked: false, 
-            grid: { display: false, color: 'rgba(255,255,255,0.1)', drawBorder: false }, 
-            ticks: { 
-              color: '#AAA',
-              stepSize: 1 // Ensure y-axis increments by whole numbers
-            } 
-          } 
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: '#A0A0A0' } }, // Secondary Text Ticks
+          y: {
+            beginAtZero: true,
+            stacked: false,
+            grid: { display: true, color: 'rgba(79, 75, 104, 0.3)', drawBorder: false }, // Darker Grid Lines
+            ticks: {
+              color: '#A0A0A0', // Secondary Text Ticks
+              stepSize: 1
+            }
+          }
         },
         plugins: {
           legend: { display: false },
@@ -772,8 +779,8 @@
             enabled: true,
             mode: 'index', intersect: false,
             displayColors: false,
-            backgroundColor: '#2A244B', titleColor: '#FFF', bodyColor: '#FFF', padding: 8,
-            borderColor: '#8A4FFF', borderWidth: 1,
+            backgroundColor: '#211D30', titleColor: '#FFF', bodyColor: '#FFF', padding: 8, // Darker Tooltip BG
+            borderColor: '#63FFDA', borderWidth: 1, // Cyan Border
             callbacks: {
               title: items => {
                 const label = items[0].label;
@@ -794,19 +801,19 @@
     const hoursChart = new Chart(ctxHours, {
         type: 'bar',
         data: {
-            labels: [], // Labels will be updated dynamically
+            labels: [],
             datasets: [
                 {
                     label: 'Time Allotted',
-                    data: [], // Initial value
-                    backgroundColor: '#4CAF50', // Green
+                    data: [],
+                    backgroundColor: '#4F4B68', // Neutral Dark Grey
                     borderRadius: 6,
                     borderSkipped: false
                 },
                 {
                     label: 'Time Spent',
-                    data: [], // Initial value
-                    backgroundColor: '#8A4FFF', // Blue/Purple
+                    data: [],
+                    backgroundColor: '#A076F9', // Accent Purple
                     borderRadius: 6,
                     borderSkipped: false
                 }
@@ -816,29 +823,29 @@
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: { // Time axis
+                x: {
                     grid: { display: false },
-                    ticks: { color: '#AAA' }
+                    ticks: { color: '#A0A0A0' } // Secondary Text Ticks
                 },
-                y: { // Hours axis
+                y: {
                     beginAtZero: true,
-                    grid: { display: false, color: 'rgba(255,255,255,0.1)', drawBorder: false },
-                    ticks: { color: '#AAA' }
+                    grid: { display: true, color: 'rgba(79, 75, 104, 0.3)', drawBorder: false }, // Darker Grid Lines
+                    ticks: { color: '#A0A0A0' } // Secondary Text Ticks
                 }
             },
             plugins: {
                 legend: {
                     display: true,
                     position: 'bottom',
-                    labels: { color: '#AAA' }
+                    labels: { color: '#A0A0A0' } // Secondary Text Legend
                 },
                 tooltip: {
                     enabled: true,
-                    mode: 'index', // Show tooltips for both bars at the same index
+                    mode: 'index',
                     intersect: false,
                     displayColors: false,
-                    backgroundColor: '#2A244B', titleColor: '#FFF', bodyColor: '#FFF', padding: 8,
-                    borderColor: '#8A4FFF', borderWidth: 1,
+                    backgroundColor: '#211D30', titleColor: '#FFF', bodyColor: '#FFF', padding: 8, // Darker Tooltip BG
+                    borderColor: '#A076F9', borderWidth: 1, // Purple Border
                     callbacks: {
                         title: items => {
                             const label = items[0].label;
@@ -863,26 +870,26 @@
                 {
                     label: 'Easy Completed',
                     data: [],
-                    borderColor: '#4CAF50', // Green for Easy (remains green)
-                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                    fill: false, // Changed to false to remove fill
+                    borderColor: '#63FFDA', // Cyan for Easy
+                    backgroundColor: 'rgba(99, 255, 218, 0.1)', // Cyan fill (low opacity)
+                    fill: false,
                     tension: 0.4,
-                    pointRadius: 0, // Hide points by default
-                    pointBackgroundColor: '#4CAF50', // Green point
-                    pointBorderColor: '#1F1F1F',
-                    pointHoverRadius: 4, // Keep hover radius
+                    pointRadius: 0,
+                    pointBackgroundColor: '#63FFDA', // Cyan point
+                    pointBorderColor: '#1A1625', // Match card background
+                    pointHoverRadius: 4,
                 },
                 {
                     label: 'Hard Completed',
                     data: [],
-                    borderColor: '#F44336', // Changed to Red for Hard
-                    backgroundColor: 'rgba(244, 67, 54, 0.1)', // Red background fill
-                    fill: false, // Changed to false to remove fill
+                    borderColor: '#A076F9', // Purple for Hard
+                    backgroundColor: 'rgba(160, 118, 249, 0.1)', // Purple fill (low opacity)
+                    fill: false,
                     tension: 0.4,
-                    pointRadius: 0, // Hide points by default
-                    pointBackgroundColor: '#F44336', // Red point
-                    pointBorderColor: '#1F1F1F',
-                    pointHoverRadius: 4, // Keep hover radius
+                    pointRadius: 0,
+                    pointBackgroundColor: '#A076F9', // Purple point
+                    pointBorderColor: '#1A1625', // Match card background
+                    pointHoverRadius: 4,
                 }
             ]
         },
@@ -891,31 +898,31 @@
             maintainAspectRatio: false,
             interaction: { mode: 'index', intersect: false },
             scales: {
-                x: { 
-                    grid: { 
-                        display: false, // Hide X grid lines again
-                        drawBorder: false 
-                    }, 
-                    ticks: { display: false } // Keep X ticks hidden
-                }, 
+                x: {
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    ticks: { display: false }
+                },
                 y: {
                     beginAtZero: true,
-                    grid: { display: false, color: 'rgba(255,255,255,0.1)', drawBorder: false },
-                    ticks: { 
-                        display: false, // Hide Y-axis ticks (numbers)
-                        color: '#AAA', 
-                        stepSize: 1 
-                    } 
+                    grid: { display: false, color: 'rgba(79, 75, 104, 0.3)', drawBorder: false }, // Darker Grid Lines (kept false)
+                    ticks: {
+                        display: false,
+                        color: '#A0A0A0', // Secondary Text Ticks
+                        stepSize: 1
+                    }
                 }
             },
             plugins: {
-                legend: { display: false }, // Hide legend
-                tooltip: { // Keep tooltips, simplified
+                legend: { display: false },
+                tooltip: {
                     enabled: true,
                     mode: 'index', intersect: false,
                     displayColors: false,
-                    backgroundColor: '#2A244B', titleColor: '#FFF', bodyColor: '#FFF', padding: 8,
-                    borderColor: '#8A4FFF', borderWidth: 1,
+                    backgroundColor: '#211D30', titleColor: '#FFF', bodyColor: '#FFF', padding: 8, // Darker Tooltip BG
+                    borderColor: '#63FFDA', borderWidth: 1, // Cyan Border (matches Easy)
                     callbacks: {
                         title: items => items[0].label, // Simpler title
                         label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}`
@@ -942,14 +949,14 @@
 
           // Draw the number
           ctx.font = 'bold 24px Poppins'; // Make number slightly larger
-          ctx.fillStyle = '#EEE';
+          ctx.fillStyle = '#E0E0E0'; // Lighter text
           ctx.textAlign = 'center';
           ctx.textBaseline = 'bottom'; // Align bottom of number text
           ctx.fillText(numberText, centerX, centerY + lineHeight / 2); // Position number slightly above center point
 
           // Draw the label below the number
           ctx.font = 'normal 12px Poppins'; // Smaller font for label
-          ctx.fillStyle = '#AAA'; // Slightly dimmer color for label
+          ctx.fillStyle = '#A0A0A0'; // Secondary Text
           ctx.textBaseline = 'top'; // Align top of label text
           ctx.fillText(labelText, centerX, centerY + lineHeight / 2 + 2); // Position label slightly below center point + spacing
 
@@ -971,23 +978,22 @@
                     label: 'Priority', // Outer ring
                     data: [0, 0, 0], // Start with 0, will be updated
                     backgroundColor: [
-                        '#F44336', // High
-                        '#FFC107', // Med
-                        '#4CAF50'  // Low
+                        '#FF6B6B', // High (Red)
+                        '#FFD700', // Med (Yellow)
+                        '#63FFDA'  // Low (Cyan)
                     ],
                     borderWidth: 2,
-                    borderColor: '#1F1F1F', // Match card background for separation
+                    borderColor: '#1A1625', // Match card background for separation
                 },
                 {
                     label: 'Difficulty', // Inner ring
                     data: [0, 0], // Start with 0, will be updated
-                    // Use the same colors as the difficulty line chart for consistency
                     backgroundColor: [
-                        '#4CAF50', // Easy (Green)
-                        '#F44336'  // Hard (Red)
+                        '#63FFDA', // Easy (Cyan)
+                        '#A076F9'  // Hard (Purple)
                     ],
                     borderWidth: 2,
-                    borderColor: '#1F1F1F',
+                    borderColor: '#1A1625',
                     weight: 0.7 // Makes the inner ring slightly smaller relative to outer
                 }
             ]
@@ -1006,6 +1012,11 @@
                 },
                 tooltip: {
                     enabled: true, // Enable tooltips
+                    backgroundColor: '#211D30', // Darker Tooltip BG
+                    titleColor: '#FFF',
+                    bodyColor: '#FFF',
+                    borderColor: '#A0A0A0', // Secondary Text Border
+                    borderWidth: 1,
                     callbacks: {
                         label: function(context) {
                             // Use the specific label defined in data.labels
@@ -1141,22 +1152,23 @@
       } else { // day
         labels = Array.from({length:24},(_,i)=>`${i}:00`);
         low = Array(24).fill(0); med = Array(24).fill(0); high = Array(24).fill(0); completed = Array(24).fill(0);
-        allottedHours = Array(24).fill(0); spentHours = Array(24).fill(0);
+        allottedHours = Array(24).fill(0); spentHours = Array(24).fill(0); // Initialize spentHours
         easyCompleted = Array(24).fill(0); hardCompleted = Array(24).fill(0);
         // Initialize temporary priority completion arrays
         completedLowArr = Array(24).fill(0); completedMedArr = Array(24).fill(0); completedHighArr = Array(24).fill(0);
         const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
         tasks.forEach(t=>{
-          // Current day assignment data
+          // Current day assignment data (Keep allotted time based on creation)
           if (isSameDay(t.created, now)) {
             const h = t.created.getHours();
             low[h]+=(t.priority==='low'); med[h]+=(t.priority==='med'); high[h]+=(t.priority==='high');
-            allottedHours[h] += (t.timeAllotted || 0); spentHours[h] += (t.timeSpent || 0);
+            allottedHours[h] += (t.timeAllotted || 0);
           }
           // Current day completion data
           if (t.completedAt && isSameDay(t.completedAt, now)) {
             const h = t.completedAt.getHours();
             completed[h]++;
+            spentHours[h] += (t.timeSpent || 0); // ADD spentHours aggregation based on completion hour
             if (t.difficulty === 'easy') easyCompleted[h]++;
             else if (t.difficulty === 'hard') hardCompleted[h]++;
             // Count completed by priority into temporary arrays
@@ -1164,7 +1176,7 @@
             if (t.priority === 'med') completedMedArr[h]++;
             if (t.priority === 'high') completedHighArr[h]++;
           }
-          // Previous day data for delta calculation
+          // Previous day data for delta calculation (Aggregate spent time based on creation for previous day comparison)
           if (isSameDay(t.created, yesterday)) {
             previousTotalSpent += (t.timeSpent || 0);
           }
@@ -1512,18 +1524,62 @@
         d.setDate(start.getDate() + i);
 
         // count tasks completed on that day
-        const count = tasks.filter(
+        const completedCount = tasks.filter(
           t => t.completedAt && isSameDay(t.completedAt, d)
         ).length;
 
         // determine heatmap level
         let level = 0;
-        if (count >= 5) level = 3;
-        else if (count >= 3) level = 2;
-        else if (count >= 1) level = 1;
+        if (completedCount >= 5) level = 3;
+        else if (completedCount >= 3) level = 2;
+        else if (completedCount >= 1) level = 1;
 
         const sq = document.createElement('div');
         sq.classList.add('activity-square', `heatmap-level-${level}`);
+
+        // --- NEW: Tooltip Event Listeners ---
+        sq.addEventListener('mouseover', (event) => {
+            const tasksForDay = tasks.filter(t => isSameDay(t.created, d));
+            let tooltipContent = `<strong>${d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</strong><br>`; // Show date
+
+            if (tasksForDay.length > 0) {
+                tooltipContent += '<ul>';
+                tasksForDay.forEach(task => {
+                    tooltipContent += `<li style="margin-left: 15px; padding-left: 5px; list-style-type: disc; color: ${task.completed ? '#63FFDA' : '#A0A0A0'};">${task.text} ${task.completed ? '(✓)' : ''}</li>`;
+                });
+                tooltipContent += '</ul>';
+            } else {
+                tooltipContent += 'No tasks created this day.';
+            }
+
+            calendarTooltip.innerHTML = tooltipContent;
+
+            // Position tooltip near the mouse cursor, slightly offset
+            // Adjust positioning to prevent going off-screen if needed (basic example)
+            let left = event.pageX + 15;
+            let top = event.pageY + 15;
+            const tooltipRect = calendarTooltip.getBoundingClientRect(); // Get dimensions after content is set
+            const bodyRect = document.body.getBoundingClientRect();
+
+            if (left + tooltipRect.width > bodyRect.right) {
+                left = event.pageX - tooltipRect.width - 15; // Move to the left of cursor
+            }
+            if (top + tooltipRect.height > bodyRect.bottom) {
+                top = event.pageY - tooltipRect.height - 15; // Move above cursor
+            }
+
+
+            calendarTooltip.style.left = `${left}px`;
+            calendarTooltip.style.top = `${top}px`;
+            calendarTooltip.style.display = 'block';
+        });
+
+        sq.addEventListener('mouseout', () => {
+            calendarTooltip.style.display = 'none';
+        });
+        // --- END: Tooltip Event Listeners ---
+
+
         container.appendChild(sq);
       }
     }
