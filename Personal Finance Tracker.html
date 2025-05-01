@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Personal Finance Tracker</title>
+
+  <!-- Your original inline styles -->
+  <style>
+    /* Copied from Productivity Tracker */
+    * { box-sizing: border-box; }
+    body {
+      background: #0D0B14; /* Darker background */
+      color: #E0E0E0; /* Lighter default text */
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column; /* Stack nav button and content */
+      align-items: center; /* Center content horizontally */
+    }
+    .app-container {
+      width: 100%;
+      max-width: 1000px; /* Adjust max-width as needed */
+      background: #1A1625; /* Darker card background */
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      margin-top: 70px; /* Add space below the fixed nav button */
+    }
+    /* Copied from Productivity Tracker */
+    .card {
+      background: #1A1625; /* Darker card background */
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      margin-bottom: 24px; /* Add margin between cards */
+    }
+    /* Container for the chart to control its height */
+    .chart-container {
+      position: relative;
+      height: 300px; /* Match Productivity Tracker Overall Performance chart height */
+      margin-top: 12px; /* Add some space above the chart */
+    }
+    /* --- End Copied/Adapted Styles --- */
+
+    h1 {
+        color: #FFF; /* White heading */
+        font-weight: 600;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    #csvPicker {
+        display: block; /* Make it a block element */
+        margin: 0 auto 20px auto; /* Center it and add bottom margin */
+        padding: 10px;
+        border: 1px solid #4F4B68; /* Darker border */
+        border-radius: 4px;
+        background: #211D30; /* Darker input background */
+        color: #E0E0E0; /* Lighter text */
+        cursor: pointer;
+    }
+    /* Style the file input button text */
+    #csvPicker::file-selector-button {
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        background: #63FFDA; /* Accent Cyan/Turquoise */
+        color: #0D0B14; /* Dark text for contrast */
+        font-weight: 600;
+        cursor: pointer;
+        margin-right: 10px;
+    }
+    #total {
+        text-align: center;
+        font-size: 1.1em;
+        color: #FFF; /* White text for total */
+    }
+    /* Copied from Productivity Tracker */
+    .nav-button {
+        position: fixed;
+        left: 15px;
+        top: 15px;
+        background: #63FFDA; /* Accent Cyan/Turquoise */
+        color: #000000; /* Black emoji */
+        padding: 10px 15px;
+        border: none;
+        border-radius: 8px;
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        font-size: 20px;
+        line-height: 1;
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        z-index: 1001;
+    }
+    .nav-button:hover {
+        opacity: 0.9;
+    }
+    .content {
+      width: 100%;
+      max-width: 1400px; /* Match Productivity Tracker app-container width */
+      margin-top: 70px; /* Add space below the fixed nav button */
+      /* Center the content container itself */
+      margin-left: auto;
+      margin-right: auto;
+    }
+    /* Copied from Productivity Tracker */
+  </style>
+
+  <!-- Poppins font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- ―――---- added helper libraries ----――― -->
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script> <!-- Papa Parse CDN :contentReference[oaicite:0]{index=0} -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script> <!-- Chart.js UMD bundle :contentReference[oaicite:1]{index=1} -->
+  <!-- ADDED: Date Adapter for Chart.js Time Scale -->
+  <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script> <!-- date-fns library -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- date-fns adapter -->
+</head>
+<body>
+  <!-- Nav button (unchanged) -->
+  <a href="Productivity Tracker.html" class="nav-button">📊</a>
+
+  <div class="content">
+    <h1>Personal Finance Tracker</h1>
+
+    <!-- ―――---- added UI controls ----――― -->
+    <input id="csvPicker" type="file" accept=".csv"> <!-- REVERTED: Accept only CSV -->
+    <!-- accept='.csv' restricts picker to statement files :contentReference[oaicite:2]{index=2} -->
+
+    <!-- NEW: Card structure for chart -->
+    <div class="card">
+      <p id="total"></p>
+      <div class="chart-container">
+        <canvas id="spendChart"></canvas> <!-- Removed width/height attributes -->
+      </div>
+    </div>
+    <!-- END: Card structure -->
+  </div>
+
+  <!-- ―――---- parsing + charting logic ----――― -->
+  <script>
+    // --- Event Listener for File Picker ---
+    document.getElementById('csvPicker').addEventListener('change', e => {
+      const f = e.target.files[0];
+      if (!f) return;
+      Papa.parse(f, {
+        header: true,        // Use first row as headers
+        dynamicTyping: true, // Automatically convert types (careful with numbers)
+        skipEmptyLines: true,
+        complete: res => handleRows(res.data) // Call handleRows when done
+      });
+    });
+
+    let chart; // Keep a reference to the chart outside the function
+
+    // --- Function to Process CSV Rows and Update Chart/Total ---
+    function handleRows(rows) {
+      const monthly = {};
+      let totalSpent = 0; // Initialize total spent
+
+      rows.forEach(r => {
+        // --- Get and Parse Data ---
+        const rawAmt = r.Amount; // Use correct header 'Amount'
+        const rawDt = r.Transaction_Date; // Use correct header 'Transaction_Date'
+
+        // Trim whitespace and convert amount
+        const trimmedAmt = String(rawAmt).trim();
+        const amt = Number(trimmedAmt);
+        const dt = new Date(rawDt);
+
+        // Skip rows with invalid amount or date
+        if (isNaN(amt) || isNaN(dt) || dt.toString() === 'Invalid Date') {
+          console.warn(`Skipping row: Invalid data. Date='${rawDt}', Amount='${rawAmt}'`);
+          return;
+        }
+
+        // --- Calculate Total Spent (Positive numbers are spending) ---
+        if (amt > 0) {
+          totalSpent += amt;
+        }
+
+        // --- Aggregate Monthly Net Amount for Chart ---
+        const key = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}`;
+        monthly[key] = (monthly[key] ?? 0) + amt; // Sum net amount per month
+      });
+
+      // --- Display Grand Total Spent ---
+      document.getElementById('total').textContent =
+        `Total spend in file: $${totalSpent.toFixed(2)}`;
+
+      // --- Draw / Redraw Chart ---
+      const labels = Object.keys(monthly).sort();
+      const values = labels.map(k => monthly[k]);
+
+      if (chart) chart.destroy(); // Destroy previous chart instance if exists
+
+      chart = new Chart(document.getElementById('spendChart'), {
+        type: 'line',
+        data: {
+          labels: labels, // Use sorted month keys as labels
+          datasets: [{
+            label: 'Monthly Net ($)', // Changed label for clarity
+            data: values, // Use aggregated monthly values
+            tension: 0.3,
+            borderColor: '#00FFFF', // Neon Blue/Aqua line
+            backgroundColor: 'rgba(0, 255, 255, 0.1)', // Lighter neon blue fill
+            fill: true,
+            pointRadius: 3,
+            pointBackgroundColor: '#00FFFF', // Neon Blue/Aqua point
+            pointBorderColor: '#1A1625', // Match card background
+            pointHoverRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: {
+              type: 'time',
+              time: { unit: 'month' },
+              grid: { display: false },
+              ticks: { color: '#A0A0A0' }
+            },
+            y: {
+              // beginAtZero: true, // Removed to better show negative values if present
+              grid: { display: true, color: 'rgba(79, 75, 104, 0.3)', drawBorder: false },
+              ticks: { color: '#A0A0A0' }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              enabled: true,
+              mode: 'index', intersect: false,
+              displayColors: false,
+              backgroundColor: '#211D30',
+              titleColor: '#FFF',
+              bodyColor: '#FFF',
+              padding: 8,
+              borderColor: '#00FFFF', // Neon Blue/Aqua Border for tooltip
+              borderWidth: 1,
+              callbacks: {
+                title: items => items[0].label, // Show month/year
+                label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}` // Format currency
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>

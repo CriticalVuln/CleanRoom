@@ -439,9 +439,14 @@
 
     /* NEW/MODIFIED: Adjust square size for month view grid */
     .calendar-view-month .activity-square {
-        width: auto; /* Let grid determine width */
-        height: auto; /* Let grid determine height */
-        aspect-ratio: 1 / 1; /* Keep squares square ONLY in month view */
+        width: auto;
+        height: auto;
+        aspect-ratio: 1 / 1;
+    }
+    /* Highlight Fridays with red outline without breaking grid */
+    .calendar-view-month .activity-square.friday {
+        box-sizing: border-box;
+        border: 1px solid #FF0000;
     }
 
     /* NEW: Style for padding squares in month view */
@@ -548,9 +553,89 @@
         /* Override other placeholder styles if necessary */
     }
 
+    /* NEW: Styles for the navigation button */
+    .nav-button {
+        position: fixed;
+        left: 15px;
+        top: 15px; /* Changed from 50% */
+        transform: none; /* Removed translateY */
+        background: #63FFDA; /* Accent Cyan/Turquoise */
+        color: #000000; /* MODIFIED: Changed text/emoji color to black */
+        padding: 10px 15px;
+        border: none;
+        border-radius: 8px;
+        font-family: "Poppins", sans-serif;
+        font-weight: 600;
+        font-size: 20px; /* Increased size for emoji */
+        line-height: 1; /* Ensure emoji fits vertically */
+        cursor: pointer;
+        text-decoration: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        z-index: 1001; /* Ensure it's above other elements */
+    }
+    .nav-button:hover {
+        opacity: 0.9;
+    }
+
+    /* NEW: Weekly Review Modal Styles */
+    #weeklyReviewModal {
+        background: #1A1625; /* Darker card background */
+        color: #E0E0E0; /* Lighter text */
+        border: 1px solid #4F4B68; /* Darker border */
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+        width: 90%;
+        max-width: 500px;
+        font-family: "Poppins", sans-serif;
+    }
+    #weeklyReviewModal::backdrop {
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(3px);
+    }
+    #weeklyReviewModal h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-weight: 600;
+        color: #FFF; /* White title */
+    }
+    #weeklyReviewModal textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 10px;
+        border: none;
+        border-radius: 4px;
+        background: #211D30; /* Darker input background */
+        color: #FFF;
+        font-family: "Poppins", sans-serif;
+        font-size: 14px;
+        resize: vertical; /* Allow vertical resize */
+        margin-bottom: 15px;
+    }
+    #weeklyReviewModal button {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        background: #63FFDA; /* Accent Cyan/Turquoise */
+        color: #0D0B14; /* Dark text for contrast */
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 14px;
+        float: right; /* Align button to the right */
+    }
+    #weeklyReviewModal button:disabled {
+        background: #4F4B68; /* Neutral Dark for disabled */
+        color: #A0A0A0; /* Secondary text for disabled */
+        cursor: not-allowed;
+    }
+
   </style>
 </head>
 <body>
+
+  <!-- MODIFIED: Navigation Button -->
+  <a href="Personal Finance Tracker.html" class="nav-button">💲</a> <!-- Changed text to emoji -->
+  <!-- End MODIFIED Navigation Button -->
 
   <div class="app-container">
     <div class="dashboard">
@@ -716,6 +801,15 @@
   <div id="calendarTooltip" style="position: absolute; display: none; background-color: #2a263a; color: #e0e0e0; border: 1px solid #4f4b68; padding: 8px; border-radius: 4px; z-index: 1000; pointer-events: none; font-size: 12px; max-width: 250px; line-height: 1.4;"></div>
   <!-- End NEW Tooltip -->
 
+  <!-- NEW: Weekly Review Modal -->
+  <dialog id="weeklyReviewModal">
+    <h3>Weekly Review</h3>
+    <p>What did you get done this week?</p>
+    <textarea id="weeklyReviewText" placeholder="Enter your accomplishments..."></textarea>
+    <button id="saveWeeklyReviewBtn" disabled>Save & Close</button>
+  </dialog>
+  <!-- End NEW Weekly Review Modal -->
+
   <script>
     // TASK STORAGE
     let tasks = []; // Use let instead of const to allow reassignment on load
@@ -744,6 +838,10 @@
     // Priority/Difficulty Chart Elements
     const ctxPriorityDifficulty = document.getElementById('priorityDifficultyChart').getContext('2d');
     const priorityDifficultyToggleButtons = document.querySelectorAll('.priority-difficulty-toggle button'); // Keep reference for updating active state
+    // NEW: Weekly Review Modal Elements
+    const weeklyReviewModal = document.getElementById('weeklyReviewModal');
+    const weeklyReviewText = document.getElementById('weeklyReviewText');
+    const saveWeeklyReviewBtn = document.getElementById('saveWeeklyReviewBtn');
 
 
     // --- LOCAL STORAGE FUNCTIONS ---
@@ -805,7 +903,7 @@
             type: 'bar',
             label: 'Med Assigned',
             data: [],
-            backgroundColor: '#63FFDA', // Cyan (like Product)
+            backgroundColor: '#FFF000', // Neon Yellow - CHANGED FROM #FFD700
             stack: 'assigned',
             borderRadius: 6,
             borderSkipped: 'bottom',
@@ -815,7 +913,7 @@
             type: 'bar',
             label: 'High Assigned',
             data: [],
-            backgroundColor: '#FFD700', // Yellow (like CRM)
+            backgroundColor: '#FF6B6B', // Red (like pie chart) - CHANGED FROM #FFD700
             stack: 'assigned',
             borderRadius: 6,
             borderSkipped: 'bottom',
@@ -923,7 +1021,7 @@
                     beginAtZero: true,
                     grid: { display: true, color: 'rgba(79, 75, 104, 0.3)', drawBorder: false }, // Darker Grid Lines
                     ticks: { color: '#A0A0A0' } // Secondary Text Ticks
-                }
+                },
             },
             plugins: {
                 legend: {
@@ -1071,7 +1169,7 @@
                     data: [0, 0, 0], // Start with 0, will be updated
                     backgroundColor: [
                         '#FF6B6B', // High (Red)
-                        '#FFD700', // Med (Yellow)
+                        '#FFF000', // Med (Neon Yellow) - CHANGED FROM #FFD700
                         '#63FFDA'  // Low (Cyan)
                     ],
                     borderWidth: 2,
@@ -1082,7 +1180,7 @@
                     data: [0, 0], // Start with 0, will be updated
                     backgroundColor: [
                         '#63FFDA', // Easy (Cyan)
-                        '#A076F9'  // Hard (Purple)
+                        '#FF6B6B'  // Hard (Red) - CHANGED FROM PURPLE
                     ],
                     borderWidth: 2,
                     borderColor: '#1A1625',
@@ -1645,6 +1743,17 @@
         sq.classList.add('activity-square', `heatmap-level-${level}`);
         sq.dataset.date = d.toISOString().split('T')[0]; // Store date for tooltip
 
+        // Highlight Fridays in month view AND add click listener
+        if (month !== undefined && month !== null && d.getDay() === 5) {
+            sq.classList.add('friday');
+            // Add click listener to show modal for Fridays in month view
+            sq.addEventListener('click', () => {
+                // Optionally, you could pre-fill the modal based on the clicked date
+                // For now, just show the standard modal
+                showWeeklyReviewModal();
+            });
+        }
+
         // --- Tooltip Event Listeners (Modified to use dataset.date) ---
         sq.addEventListener('mouseover', (event) => {
             const squareDate = new Date(event.target.dataset.date + 'T00:00:00'); // Ensure correct date object
@@ -1742,6 +1851,46 @@
     });
     // --- End Calendar Navigation Logic ---
 
+    // --- NEW: Weekly Review Modal Logic ---
+    function showWeeklyReviewModal() {
+        weeklyReviewText.value = ''; // Clear textarea
+        saveWeeklyReviewBtn.disabled = true; // Disable button initially
+        if (!weeklyReviewModal.open) {
+            weeklyReviewModal.showModal();
+        }
+    }
+
+    function closeWeeklyReviewModal() {
+        if (weeklyReviewModal.open) {
+            weeklyReviewModal.close();
+        }
+    }
+
+    // Enable save button only if there is text
+    weeklyReviewText.addEventListener('input', () => {
+        saveWeeklyReviewBtn.disabled = weeklyReviewText.value.trim() === '';
+    });
+
+    // Save and close the modal
+    saveWeeklyReviewBtn.addEventListener('click', () => {
+        const review = weeklyReviewText.value.trim();
+        if (review) {
+            // TODO: Save the review text (e.g., to localStorage with a date key)
+            console.log("Weekly Review Saved:", review); // Placeholder
+            closeWeeklyReviewModal();
+        }
+    });
+
+    // Close modal if clicked outside (on the backdrop)
+    weeklyReviewModal.addEventListener('click', (event) => {
+        if (event.target === weeklyReviewModal) {
+            // Don't close if clicked outside when save is disabled (force input)
+            // closeWeeklyReviewModal();
+        }
+    });
+    // --- End Weekly Review Modal Logic ---
+
+
     // initialize
     loadTasks(); // Load tasks from localStorage first
     // Set initial active buttons for ALL toggles based on mainChartRange
@@ -1752,6 +1901,19 @@
     updatePriorityDifficultyChart(mainChartRange); // Initial update for new chart using main range
     renderTasks();
     updateCalendarDisplay(); // Initial setup of calendar view, display, and squares
+
+    // --- MODIFIED: Show Weekly Review Modal Logic ---
+    const today = new Date();
+    const dayOfWeek = today.getDay(); // 0 = Sunday, 5 = Friday
+    const sessionKey = `weeklyReviewShown_${today.getFullYear()}_${today.getMonth()}_${today.getDate()}`;
+
+    // Show modal only on Fridays and only once per session
+    if (dayOfWeek === 5 && !sessionStorage.getItem(sessionKey)) {
+        showWeeklyReviewModal();
+        sessionStorage.setItem(sessionKey, 'true'); // Mark as shown for this session
+    }
+    // --- End MODIFIED Show Logic ---
+
   </script>
 </body>
 </html>
