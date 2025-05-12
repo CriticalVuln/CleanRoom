@@ -6,10 +6,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- SortableJS -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
   <!-- Poppins font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; }
+    /* Prevent clone or drag-induced overflow */
+    html, body, .app-container, .dashboard {
+        overflow-x: hidden;
+    }
+    /* Prevent horizontal overflow while dragging */
+    html, body, .app-container, .dashboard, .widget-row {
+      overflow-x: hidden;
+    }
+    /* Keep drag clones out of layout flow */
+    .sortable-fallback, .sortable-ghost {
+      position: fixed !important;
+      pointer-events: none;
+      z-index: 10000;
+    }
     body {
       background: #0D0B14; /* Darker background */
       color: #E0E0E0; /* Lighter default text */
@@ -18,6 +34,7 @@
       padding: 40px;
       display: flex;
       justify-content: center;
+      overflow-x: hidden; /* Prevent horizontal scrollbar during drag */
     }
     .app-container {
       width: 100%;
@@ -30,6 +47,29 @@
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
       margin-bottom: 24px; /* Add margin between cards in the same column */
+      position: relative;
+    }
+    /* Ensure cards maintain full width within their containers to prevent resizing during drag */
+    .dashboard > .card,
+    .widget-row > div > .card {
+        width: 100%;
+    }
+    /* Add drag handle to cards */
+    .card .drag-handle {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 24px;
+        height: 24px;
+        cursor: grab;
+        background: url('data:image/svg+xml;utf8,<svg width="24" height="24" fill="%23A0A0A0" xmlns="http://www.w3.org/2000/svg"><path d="M4 9h2V7H4v2zm4 0h2V7H8v2zm4 0h2V7h-2v2zm4 0h2V7h-2v2zM4 13h2v-2H4v2zm4 0h2v-2H8v2zm4 0h2v-2h-2v2zm4 0h2v-2h-2v2z"/></svg>') no-repeat center;
+    }
+    /* Preserve dimensions for ghost and fallback clones */
+    .sortable-ghost,
+    .sortable-fallback {
+        width: auto !important;
+        max-width: 100% !important;
+        height: auto !important;
     }
     /* To‑Do Card */
     .task-input {
@@ -560,8 +600,7 @@
         top: 15px; /* Changed from 50% */
         transform: none; /* Removed translateY */
         background: #63FFDA; /* Accent Cyan/Turquoise */
-        color: #000000; /* Ensure emoji color is black */
-        -webkit-text-fill-color: #000000; /* enforce black fill on monochrome emoji */
+        color: #000000; /* MODIFIED: Changed text/emoji color to black */
         padding: 10px 15px;
         border: none;
         border-radius: 8px;
@@ -630,25 +669,44 @@
         cursor: not-allowed;
     }
 
-    /* Pomodoro play/pause button next to tasks */
-    .pomodoro-btn {
-      background: none !important;
-      border: none !important;
-      padding: 0 !important;
-      margin: 0 8px !important;
-      font-size: 18px;
-      cursor: pointer;
-      color: #63FFDA; /* Accent Cyan */
-      line-height: 1;
+    /* Daily Notes Modal Styling */
+    dialog#dailyNotesModal {
+      background: #1A1625;
+      color: #E0E0E0;
+      border: none;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 400px;
     }
-    .pomodoro-btn.active { color: #FF6B6B; } /* Red when running */
+    dialog#dailyNotesModal::backdrop {
+      background: rgba(0,0,0,0.6);
+    }
+    dialog#dailyNotesModal button {
+      margin-top: 12px;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background: #63FFDA;
+      color: #0D0B14;
+      cursor: pointer;
+    }
 
+    /* Prevent horizontal overflow while dragging */
+    html, body, .app-container, .dashboard, .widget-row {
+      overflow-x: hidden;
+    }
+    /* Keep drag clones out of layout flow and preserve dimensions */
+    .sortable-fallback, .sortable-ghost {
+      position: fixed !important;
+      pointer-events: none;
+      z-index: 10000;
+    }
   </style>
 </head>
 <body>
 
   <!-- MODIFIED: Navigation Button -->
-  <a href="Personal Finance Tracker.html" class="nav-button">💲︎</a> <!-- Changed text to emoji -->
+  <a href="Personal Finance Tracker.html" class="nav-button">💲</a> <!-- Changed text to emoji -->
   <!-- End MODIFIED Navigation Button -->
 
   <div class="app-container">
@@ -656,6 +714,7 @@
 
       <!-- 1. EXISTING TODO LIST CARD -->
       <div class="card">
+        <div class="drag-handle"></div>
         <div class="task-input">
           <div class="priority-select">
             <button class="priority-btn low selected"  data-priority="low"  title="Low"></button>
@@ -686,6 +745,7 @@
 
       <!-- 2. OVERALL PERFORMANCE CARD (Moved Here) -->
       <div class="card">
+        <div class="drag-handle"></div>
         <div class="chart-header">
           <h3>Overall Performance</h3>
           <div class="timeframe-toggle">
@@ -706,6 +766,7 @@
         <div> <!-- Added wrapper div for vertical stacking -->
             <!-- 3. HOURS WORKED CARD (Now inside wrapper) -->
             <div class="card">
+              <div class="drag-handle"></div>
               <div class="chart-header">
                 <h3>Hours Worked</h3>
                 <div class="timeframe-toggle">
@@ -730,6 +791,7 @@
             <div style="display: flex; gap: 24px;"> <!-- Added flex wrapper -->
                 <!-- Difficulty Completion Chart -->
                 <div class="card"> <!-- Removed new-widget-placeholder class -->
+                    <div class="drag-handle"></div>
                     <div class="timeframe-toggle difficulty-toggle"> <!-- New toggle group -->
                         <button data-range="year" class="active">This Year</button>
                         <button data-range="month">This Month</button>
@@ -742,6 +804,7 @@
                 </div>
                 <!-- Priority vs Difficulty Chart -->
                 <div class="card"> <!-- Removed new-widget-placeholder class -->
+                    <div class="drag-handle"></div>
                     <div class="timeframe-toggle priority-difficulty-toggle"> <!-- New toggle group -->
                         <button data-range="year">This Year</button>
                         <button data-range="month">This Month</button>
@@ -759,6 +822,7 @@
         <div> <!-- Added wrapper div for consistency, though only one item -->
             <!-- 4. NEW ACTIVITY CALENDAR WIDGET -->
             <div class="card" id="activityCalendarCard"> <!-- Add ID to card -->
+              <div class="drag-handle"></div>
               <div class="activity-calendar-header">
                 <h3>Activity</h3>
 
@@ -824,6 +888,13 @@
   </dialog>
   <!-- End NEW Weekly Review Modal -->
 
+  <!-- Daily Notes Modal -->
+  <dialog id="dailyNotesModal">
+    <h3 id="dailyNotesTitle">Notes for </h3>
+    <div id="dailyNotesContent" style="white-space: pre-wrap; margin-bottom: 8px;"></div>
+    <button id="closeDailyNotesBtn">Close</button>
+  </dialog>
+
   <script>
     // TASK STORAGE
     let tasks = []; // Use let instead of const to allow reassignment on load
@@ -856,6 +927,11 @@
     const weeklyReviewModal = document.getElementById('weeklyReviewModal');
     const weeklyReviewText = document.getElementById('weeklyReviewText');
     const saveWeeklyReviewBtn = document.getElementById('saveWeeklyReviewBtn');
+    // NEW: Daily Notes Modal Elements
+    const dailyNotesModal = document.getElementById('dailyNotesModal');
+    const dailyNotesTitle = document.getElementById('dailyNotesTitle');
+    const dailyNotesContent = document.getElementById('dailyNotesContent');
+    const closeDailyNotesBtn = document.getElementById('closeDailyNotesBtn');
 
 
     // --- LOCAL STORAGE FUNCTIONS ---
@@ -870,9 +946,7 @@
                 ...task,
                 // Convert date strings back to Date objects
                 created: new Date(task.created),
-                completedAt: task.completedAt ? new Date(task.completedAt) : null,
-                timeAllotted: Number(task.timeAllotted) || 0,
-                timeSpent: Number(task.timeSpent) || 0
+                completedAt: task.completedAt ? new Date(task.completedAt) : null
             }));
         }
     }
@@ -882,17 +956,6 @@
         const monthNames = ["January", "February", "March", "April", "May", "June",
                           "July", "August", "September", "October", "November", "December"];
         return monthNames[monthIndex];
-    }
-
-    // Helper to format hours into hours+minutes
-    function formatTime(hours) {
-        const h = Math.floor(hours);
-        const m = Math.round((hours - h) * 60);
-        const parts = [];
-        if (h) parts.push(h + 'h');
-        if (m) parts.push(m + 'm');
-        if (!parts.length) parts.push('0m');
-        return parts.join(' ');
     }
 
     // PRIORITY BUTTON HANDLING
@@ -920,7 +983,7 @@
             type: 'bar',
             label: 'Low Assigned',
             data: [],
-            backgroundColor: 'rgba(115, 191, 255, 0.6)', // Light Blue (like SaaS) - Further reduced opacity
+            backgroundColor: '#73BFFF', // Ligh Blue (like SaaS)
             stack: 'assigned',
             borderRadius: 6,
             borderSkipped: 'bottom',
@@ -930,7 +993,7 @@
             type: 'bar',
             label: 'Med Assigned',
             data: [],
-            backgroundColor: 'rgba(255, 240, 0, 0.6)', // Neon Yellow - Further reduced opacity
+            backgroundColor: '#FFF000', // NeonYellow - CHANGED FROM #FFD700
             stack: 'assigned',
             borderRadius: 6,
             borderSkipped: 'bottom',
@@ -940,7 +1003,7 @@
             type: 'bar',
             label: 'High Assigned',
             data: [],
-            backgroundColor: 'rgba(255, 107, 107, 0.6)', // Red (like pie chart) - Further reduced opacity
+            backgroundColor: '#FF6B6B', // Red like pie chart) - CHANGED FROM #FFD700
             stack: 'assigned',
             borderRadius: 6,
             borderSkipped: 'bottom',
@@ -1047,10 +1110,7 @@
                 y: {
                     beginAtZero: true,
                     grid: { display: true, color: 'rgba(79, 75, 104, 0.3)', drawBorder: false }, // Darker Grid Lines
-                    ticks: { 
-                        color: '#A0A0A0', // Secondary Text Ticks
-                        stepSize: 0.5 // 30-minute intervals
-                    }
+                    ticks: { color: '#A0A0A0' } // Secondary Text Ticks
                 },
             },
             plugins: {
@@ -1611,25 +1671,7 @@
 
         const tooltip = document.createElement('span');
         tooltip.classList.add('tooltip');
-        tooltip.textContent = `Time Allotted: ${formatTime(t.timeAllotted || 0)}, Time Spent: ${formatTime(t.timeSpent || 0)}`; // Ensure 0 if undefined
-
-        const pomoBtn = document.createElement('button');
-        pomoBtn.classList.add('pomodoro-btn');
-        pomoBtn.textContent = t.timerStart ? '⏸️' : '▶️';
-        pomoBtn.addEventListener('click', () => {
-          if (!t.timerStart) {
-            t.timerStart = Date.now();
-            pomoBtn.classList.add('active'); pomoBtn.textContent = '⏸️';
-          } else {
-            const elapsed = Date.now() - t.timerStart;
-            const hrs = elapsed / (1000 * 60 * 60);
-            t.timeSpent = (t.timeSpent || 0) + hrs;
-            t.timerStart = null;
-            pomoBtn.classList.remove('active'); pomoBtn.textContent = '▶️';
-            tooltip.textContent = `Time Allotted: ${formatTime(t.timeAllotted || 0)}, Time Spent: ${formatTime(t.timeSpent)}`;
-            saveTasks(); updateMainCharts(mainChartRange); updateDifficultyChart(mainChartRange); updatePriorityDifficultyChart(mainChartRange);
-          }
-        });
+        tooltip.textContent = `Time Allotted: ${t.timeAllotted || 0}h, Time Spent: ${t.timeSpent || 0}h`; // Ensure 0 if undefined
 
         // --- Edit Functionality Elements ---
         const editBtn = document.createElement('button');
@@ -1659,7 +1701,7 @@
         editContainer.append(timeSpentInput, saveBtn);
         // --- End Edit Functionality Elements ---
 
-        li.append(chk, priorityIndicator, lbl, pomoBtn, tooltip, editBtn, editContainer); // Add pomodoro button and other elements
+        li.append(chk, priorityIndicator, lbl, tooltip, editBtn, editContainer); // Add edit button and container
 
         // --- Edit Button Logic ---
         editBtn.addEventListener('click', () => {
@@ -1672,7 +1714,7 @@
         saveBtn.addEventListener('click', () => {
             const newSpentTime = parseInt(timeSpentInput.value) || 0;
             t.timeSpent = newSpentTime; // Update task object
-            tooltip.textContent = `Time Allotted: ${formatTime(t.timeAllotted || 0)}, Time Spent: ${formatTime(t.timeSpent)}`; // Update tooltip
+            tooltip.textContent = `Time Allotted: ${t.timeAllotted || 0}h, Time Spent: ${t.timeSpent || 0}h`; // Update tooltip
             li.classList.remove('editing'); // Remove editing class
             saveTasks(); // Save to localStorage
             updateMainCharts(mainChartRange); // Update main charts
@@ -1718,10 +1760,14 @@
         taskListEl.appendChild(li);
       });
     }
-    function addTask(){
-      const txt=newTaskIn.value.trim(); if(!txt) return;
-      const allotted=parseInt(newTimeAllotted.value)||0;
-      // capture difficulty
+      function addTask() {
+        const txt = newTaskIn.value.trim();
+        if (!txt) {
+          return;
+        }
+      
+        const allotted = parseInt(newTimeAllotted.value) || 0;
+        // capture difficulty
       const difficulty = newDifficultyIn.checked ? 'hard' : 'easy';
       const spent = 0; // Default timeSpent to 0
       tasks.push({ id: Date.now(), text: txt, priority: currentPriority, created: new Date(), completed: false, completedAt: null, timeAllotted: allotted, timeSpent: spent, difficulty });
@@ -1794,11 +1840,9 @@
         // Highlight Fridays in month view AND add click listener
         if (month !== undefined && month !== null && d.getDay() === 5) {
             sq.classList.add('friday');
-            // Add click listener to show modal for Fridays in month view
+            // Add click listener to show daily notes modal for Fridays in month view
             sq.addEventListener('click', () => {
-                // Optionally, you could pre-fill the modal based on the clicked date
-                // For now, just show the standard modal
-                showWeeklyReviewModal();
+                showDailyNotesModal(d);
             });
         }
 
@@ -1914,6 +1958,24 @@
         }
     }
 
+    // --- NEW: Daily Notes Modal Logic ---
+    function showDailyNotesModal(date) {
+        const dateStr = date.toISOString().split('T')[0];
+        const key = `dailyNotes_${dateStr}`;
+        const notes = localStorage.getItem(key) || '';
+        dailyNotesTitle.textContent = `Notes for ${date.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' })}`;
+        dailyNotesContent.textContent = notes || 'No notes for this day.';
+        if (!dailyNotesModal.open) {
+            dailyNotesModal.showModal();
+        }
+    }
+    // Close daily notes modal
+    closeDailyNotesBtn.addEventListener('click', () => {
+        if (dailyNotesModal.open) {
+            dailyNotesModal.close();
+        }
+    });
+
     // Enable save button only if there is text
     weeklyReviewText.addEventListener('input', () => {
         saveWeeklyReviewBtn.disabled = weeklyReviewText.value.trim() === '';
@@ -1923,8 +1985,10 @@
     saveWeeklyReviewBtn.addEventListener('click', () => {
         const review = weeklyReviewText.value.trim();
         if (review) {
-            // TODO: Save the review text (e.g., to localStorage with a date key)
-            console.log("Weekly Review Saved:", review); // Placeholder
+            // Save the review text as daily notes for today
+            const dateStr = new Date().toISOString().split('T')[0];
+            localStorage.setItem(`dailyNotes_${dateStr}`, review);
+            console.log("Weekly Review Saved:", review);
             closeWeeklyReviewModal();
         }
     });
@@ -1962,6 +2026,53 @@
     }
     // --- End MODIFIED Show Logic ---
 
+    /* Disabled drag handles and Sortable to prevent widget movement */
+    document.querySelectorAll('.drag-handle').forEach(h => h.remove());
+    /*
+    // Add drag handles to cards dynamically
+    Array.from(document.querySelectorAll('.card')).forEach(card => {
+      const handle = document.createElement('div');
+      handle.className = 'drag-handle';
+      card.insertBefore(handle, card.firstChild);
+    });
+    // Initialize drag-and-drop functionality
+    new Sortable(document.querySelector('.dashboard'), {
+        group: 'dashboardWidgets',
+        handle: '.drag-handle',
+        draggable: '> div',
+        animation: 150,
+        fallbackOnBody: true,
+        forceFallback: true,
+        ghostClass: 'sortable-ghost',
+        fallbackClass: 'sortable-fallback'
+    });
+    new Sortable(document.querySelector('.widget-row'), {
+        group: 'dashboardWidgets',
+        handle: '.drag-handle',
+        draggable: '> div',
+        animation: 150,
+        fallbackOnBody: true,
+        forceFallback: true,
+        ghostClass: 'sortable-ghost',
+        fallbackClass: 'sortable-fallback'
+    });
+    (function(){
+      const widgetGroup = 'dashboardWidgets';
+      const cardParents = new Set(Array.from(document.querySelectorAll('.card')).map(c => c.parentElement));
+      cardParents.forEach(container => {
+        new Sortable(container, {
+          group: widgetGroup,
+          handle: '.drag-handle',
+          draggable: '.card',
+          animation: 150,
+          fallbackOnBody: true,
+          forceFallback: true,
+          ghostClass: 'sortable-ghost',
+          fallbackClass: 'sortable-fallback'
+        });
+      });
+    })();
+    */
   </script>
 </body>
 </html>
