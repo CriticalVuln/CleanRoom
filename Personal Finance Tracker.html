@@ -82,7 +82,7 @@
         left: 15px;
         top: 15px;
         background: #63FFDA; /* Accent Cyan/Turquoise */
-        color: #000000; /* Ensure emoji color is black */
+        color: #000000; /* Black emoji */
         padding: 10px 15px;
         border: none;
         border-radius: 8px;
@@ -121,13 +121,13 @@
 </head>
 <body>
   <!-- Nav button (unchanged) -->
-  <a href="Productivity Tracker.html" class="nav-button">📈︎</a>
+  <a href="Productivity Tracker.html" class="nav-button">📊</a>
 
   <div class="content">
     <h1>Personal Finance Tracker</h1>
 
     <!-- ―――---- added UI controls ----――― -->
-    <input id="csvPicker" type="file" accept=".csv"> <!-- REVERTED: Accept only CSV -->
+    <input id="csvPicker" type="file" accept=".csv,.pdf" multiple> <!-- Allow multiple files -->
     <!-- accept='.csv' restricts picker to statement files :contentReference[oaicite:2]{index=2} -->
 
     <!-- NEW: Card structure for chart -->
@@ -142,114 +142,160 @@
 
   <!-- ―――---- parsing + charting logic ----――― -->
   <script>
-    // --- Event Listener for File Picker ---
-    document.getElementById('csvPicker').addEventListener('change', e => {
-      const f = e.target.files[0];
-      if (!f) return;
-      Papa.parse(f, {
-        header: true,        // Use first row as headers
-        dynamicTyping: true, // Automatically convert types (careful with numbers)
-        skipEmptyLines: true,
-        complete: res => handleRows(res.data) // Call handleRows when done
-      });
-    });
-
     let chart; // Keep a reference to the chart outside the function
 
-    // --- Function to Process CSV Rows and Update Chart/Total ---
-    function handleRows(rows) {
-      const monthly = {};
-      let totalSpent = 0; // Initialize total spent
-
-      rows.forEach(r => {
-        // --- Get and Parse Data ---
-        const rawAmt = r.Amount; // Use correct header 'Amount'
-        const rawDt = r.Transaction_Date; // Use correct header 'Transaction_Date'
-
-        // Trim whitespace and convert amount
-        const trimmedAmt = String(rawAmt).trim();
-        const amt = Number(trimmedAmt);
-        const dt = new Date(rawDt);
-
-        // Skip rows with invalid amount or date
-        if (isNaN(amt) || isNaN(dt) || dt.toString() === 'Invalid Date') {
-          console.warn(`Skipping row: Invalid data. Date='${rawDt}', Amount='${rawAmt}'`);
-          return;
-        }
-
-        // --- Calculate Total Spent (Positive numbers are spending) ---
-        if (amt > 0) {
-          totalSpent += amt;
-        }
-
-        // --- Aggregate Monthly Net Amount for Chart ---
-        const key = `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}`;
-        monthly[key] = (monthly[key] ?? 0) + amt; // Sum net amount per month
+    // Helper to extract month and year from filename
+    function extractMonthYearFromName(name) {
+      const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+      const lower = name.toLowerCase();
+      let month = null;
+      months.forEach((m, i) => {
+        if (lower.includes(m) || lower.includes(m.substr(0,3))) month = i + 1;
       });
+      const yearMatch = name.match(/\b(20\d{2})\b/);
+      const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
+      return month ? { month, year } : null;
+    }
 
-      // --- Display Grand Total Spent ---
-      document.getElementById('total').textContent =
-        `Total spend in file: $${totalSpent.toFixed(2)}`;
+    // Global aggregates across all uploads
+    let monthlyNet = {};
+    let monthlyCharges = {};
+    let monthlyPayments = {};
+    let totalCharges = 0;
+    let totalPayments = 0;
 
-      // --- Draw / Redraw Chart ---
-      const labels = Object.keys(monthly).sort();
-      const values = labels.map(k => monthly[k]);
-
-      if (chart) chart.destroy(); // Destroy previous chart instance if exists
-
+    // Update totals display and chart
+    function updateDisplay() {
+      // Clear numeric summary
+      document.getElementById('total').innerHTML = '';
+      // Combine months from charges and payments
+      const labels = Array.from(new Set([
+        ...Object.keys(monthlyCharges),
+        ...Object.keys(monthlyPayments)
+      ])).sort();
+      const chargesData = labels.map(l => monthlyCharges[l] || 0);
+      const paymentsData = labels.map(l => monthlyPayments[l] || 0);
+      if (chart) chart.destroy();
       chart = new Chart(document.getElementById('spendChart'), {
         type: 'line',
-        data: {
-          labels: labels, // Use sorted month keys as labels
-          datasets: [{
-            label: 'Monthly Net ($)', // Changed label for clarity
-            data: values, // Use aggregated monthly values
+        data: { labels, datasets: [
+          {
+            label: 'Charges',
+            data: chargesData,
             tension: 0.3,
-            borderColor: '#00FFFF', // Neon Blue/Aqua line
-            backgroundColor: 'rgba(0, 255, 255, 0.1)', // Lighter neon blue fill
-            fill: true,
+            borderColor: '#FF4C4C',
+            backgroundColor: 'rgba(255,76,76,0.1)',
+            fill: false,
             pointRadius: 3,
-            pointBackgroundColor: '#00FFFF', // Neon Blue/Aqua point
-            pointBorderColor: '#1A1625', // Match card background
-            pointHoverRadius: 6,
-          }]
-        },
+            pointBackgroundColor: '#FF4C4C',
+            pointBorderColor: '#1A1625',
+            pointHoverRadius: 6
+          },
+          {
+            label: 'Payments',
+            data: paymentsData,
+            tension: 0.3,
+            borderColor: '#4CFF4C',
+            backgroundColor: 'rgba(76,255,76,0.1)',
+            fill: false,
+            pointRadius: 3,
+            pointBackgroundColor: '#4CFF4C',
+            pointBorderColor: '#1A1625',
+            pointHoverRadius: 6
+          }
+        ]},
         options: {
           responsive: true,
           maintainAspectRatio: false,
           scales: {
-            x: {
-              type: 'time',
-              time: { unit: 'month' },
-              grid: { display: false },
-              ticks: { color: '#A0A0A0' }
-            },
-            y: {
-              // beginAtZero: true, // Removed to better show negative values if present
-              grid: { display: true, color: 'rgba(79, 75, 104, 0.3)', drawBorder: false },
-              ticks: { color: '#A0A0A0' }
-            }
+            x: { grid: { color: '#333' }, ticks: { color: '#ccc' } },
+            y: { grid: { color: '#333' }, ticks: { color: '#ccc' } }
           },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              enabled: true,
-              mode: 'index', intersect: false,
-              displayColors: false,
-              backgroundColor: '#211D30',
-              titleColor: '#FFF',
-              bodyColor: '#FFF',
-              padding: 8,
-              borderColor: '#00FFFF', // Neon Blue/Aqua Border for tooltip
-              borderWidth: 1,
-              callbacks: {
-                title: items => items[0].label, // Show month/year
-                label: ctx => `${ctx.dataset.label}: $${ctx.parsed.y.toFixed(2)}` // Format currency
-              }
-            }
-          }
+          plugins: { legend: { labels: { color: '#E0E0E0' } } }
         }
       });
+    }
+
+    // --- Event Listener for File Picker (supports multiple) ---
+    document.getElementById('csvPicker').addEventListener('change', e => {
+      const files = Array.from(e.target.files);
+      if (!files.length) return;
+      files.forEach(f => {
+        const fileName = f.name;
+        const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+
+        if (fileExtension === 'csv') {
+          Papa.parse(f, {
+            header: true,
+            dynamicTyping: true,
+            skipEmptyLines: true,
+            complete: res => handleRows(res.data, fileName)
+          });
+        } else if (fileExtension === 'pdf') {
+          // Placeholder for PDF processing logic
+          console.log("PDF file selected. Backend processing would be needed here.");
+          alert("PDF processing is not yet implemented. Please upload a CSV file.");
+          // TODO: Implement PDF processing:
+          // 1. Send the PDF file (f) to a backend service.
+          // 2. The backend service would convert the PDF to CSV data.
+          // 3. Receive the CSV data from the backend.
+          // 4. Parse the CSV data using Papa.parse or similar:
+          //    Papa.parse(csvDataFromBackend, {
+          //      header: true,
+          //      dynamicTyping: true,
+          //      skipEmptyLines: true,
+          //      complete: res => handleRows(res.data)
+          //    });
+          // For now, clear the file input if a PDF is selected as no processing is implemented
+          e.target.value = null;
+        } else {
+          alert("Unsupported file type. Please upload a CSV or PDF file.");
+          e.target.value = null;
+        }
+      });
+    });
+
+    // --- Function to process CSV rows (with optional filename override) ---
+    function handleRows(rows, fileName) {
+      // Require at least one row
+      if (!rows || !rows.length) return;
+      // Detect header fields
+      const headers = Object.keys(rows[0]);
+      const dateField = headers.find(h => /date/i.test(h));
+      const amountField = headers.find(h => /(amount|amt|value)/i.test(h));
+      if (!dateField || !amountField) {
+        alert('CSV must include date and amount columns');
+        return;
+      }
+      // Determine month override from filename
+      const fileInfo = extractMonthYearFromName(fileName);
+      // Precompute grouping override key (always use filename month-year if found)
+      const overrideKey = fileInfo
+        ? `${fileInfo.year}-${String(fileInfo.month).padStart(2,'0')}`
+        : null;
+
+      rows.forEach(r => {
+        const rawDt = r[dateField];
+        const rawAmt = r[amountField];
+        const dt = new Date(rawDt);
+        const amt = Number(rawAmt);
+        if (isNaN(amt) || isNaN(dt) || dt.toString() === 'Invalid Date') {
+          console.warn(`Skipping row: Invalid data. Date='${rawDt}', Amount='${rawAmt}'`);
+          return;
+        }
+        // Determine grouping key (override if available)
+        const key = overrideKey || `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,'0')}`;
+        // Accumulate per-month totals
+        if (amt > 0) {
+          monthlyCharges[key] = (monthlyCharges[key] || 0) + amt;
+          totalCharges += amt;
+        } else if (amt < 0) {
+          monthlyPayments[key] = (monthlyPayments[key] || 0) + Math.abs(amt);
+          totalPayments += Math.abs(amt);
+        }
+      });
+      // Refresh display & chart
+      updateDisplay();
     }
   </script>
 </body>
