@@ -1625,10 +1625,7 @@
         const editBtn = document.createElement('button');
         editBtn.innerHTML = `
           <svg viewBox="0 0 24 24" class="pencil-icon">
-            <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71
-                     7.04a1.003 1.003 0 0 0 0-1.41l-2.34-2.34a1.003
-                     1.003 1.003 0 0 0-1.41 0l-1.83 1.83 3.75 3.75
-                     1.83-1.83z"/>
+            <path d="M3 17.25 V21 h3.75 L17.81 9.94 l-3.75 -3.75 L3 17.25 z M20.71 7.04 a1.003 1.003 0 0 0 0 -1.41 l -2.34 -2.34 a1.003 1.003 0 0 0 -1.41 0 l -1.83 1.83 l 3.75 3.75 l 1.83 -1.83 z"/>
           </svg>`;
         editBtn.title = 'Edit';
         editBtn.classList.add('edit-btn');
@@ -1968,7 +1965,11 @@
 
     function applyDashboardState(state) {
         if (!state) return;
-        tasks = state.tasks || [];
+        tasks = (state.tasks || []).map(t => ({
+          ...t,
+          created: t.created ? new Date(t.created) : new Date(),
+          completedAt: t.completedAt ? new Date(t.completedAt) : null
+        }));
         calendarCurrentYear = state.calendarCurrentYear || new Date().getFullYear();
         calendarCurrentMonth = state.calendarCurrentMonth || new Date().getMonth();
         calendarViewMode = state.calendarViewMode || 'year';
