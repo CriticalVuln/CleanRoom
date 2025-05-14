@@ -1,39 +1,92 @@
-# Productivity Tracker Dashboard
+# Dashboard Suite
 
-A self‑contained, browser‑only dashboard for planning work and visualising your output in real time.  
-Open the HTML file in any modern browser—no build step, server, or database required.
+A collection of self-contained, browser-only dashboards for managing tasks and tracking personal finances in real time.  
+Open the HTML files directly in any modern browser—no build step, server, or database required.
 
-## Key Features
+---
 
-### 1  Task Manager  
-* **Priority & difficulty** – low / medium / high flags and an easy ↔ hard toggle.  
-* **Time budgeting** – capture both _time allotted_ and _time spent_; edit in‑place at any time.  
-* **Inline controls** – quick add, one‑click completion, tooltip with time stats, and unobtrusive edit / delete buttons.  
-* **Local Storage persistence** – your list, completion state, and analytics survive reloads without a backend.
+## 1  Productivity Tracker
 
-### 2  Interactive Analytics (Chart.js)  
-* **Overall Performance** – stacked bars for tasks assigned by priority plus a trend line for tasks completed.  
-* **Hours Worked** – compare hours allotted vs. hours actually logged, with an automatic delta indicator versus the previous period.  
-* **Difficulty Completion** – easy‑vs‑hard completions plotted over time.  
-* **Priority × Difficulty Doughnut** – dual‑ring chart summarising completions; live centre count updates as data change.  
-* **Unified timeframe toggle** – switch all charts between _year_, _month_, _week_, and _day_ synchronously.
+A two-column task dashboard with interactive analytics and daily heat-map calendar.
 
-### 3  Activity Calendar  
-* GitHub‑style heat‑map squares for an at‑a‑glance view of daily task throughput.  
-* Toggle between **year view** and **month view**, with keyboard‑like arrow navigation and colour‑coded legend.  
-* Hover tooltips reveal exact counts.
+**Key Features:**
 
-### 4  Weekly Review Modal  
-* Prompt appears at week‑end to capture retrospectives; stores notes locally for future reference.
+• **Task Manager**
+  - Priority flags (Low / Med / High) and Easy ↔ Hard difficulty toggle
+  - Time budgeting: capture and edit _time allotted_ vs. _time spent_
+  - Inline controls: quick-add, one-click completion, edit-in-place, and delete
+  - Drag-and-drop reordering of cards and widgets via SortableJS
+  - Local Storage persistence of tasks, completion state, and settings
 
-### 5  Polished UI / UX  
-* Dark, minimal aesthetic (Poppins font, rounded cards, soft shadows).  
-* Fully responsive two‑column layout that collapses gracefully on small screens.  
-* Re‑usable “💲” nav button (top‑left) shows how the tracker can link into a broader personal‑finance suite.
+• **Interactive Analytics (Chart.js)**
+  - **Overall Performance**: stacked bars for assigned tasks by priority + trend line for completed
+  - **Hours Worked**: compare hours allotted vs. hours spent; delta indicator vs. previous period
+  - **Difficulty Completion**: easy vs. hard completions plotted over time
+  - **Priority × Difficulty**: dual-ring doughnut summarising completions; live center count
+  - **Unified timeframe toggle**: switch all charts between _Year_, _Month_, _Week_, and _Day_
+
+• **Activity Calendar**
+  - GitHub-style heat-map: daily squares coloured by tasks completed
+  - Toggle between **Year View** and **Month View**
+  - Keyboard-style arrows and hover tooltips for counts
+
+• **Weekly & Daily Reviews**
+  - Weekly Review modal at week’s end to capture retrospectives
+  - Daily Notes modal per calendar day; persists locally for future reference
+
+• **Polished UI/UX**
+  - Dark, minimal aesthetic with Poppins font, rounded cards, and soft shadows
+  - Responsive two-column layout that collapses seamlessly on small screens
+  - Persistent sidebar navigation linking between dashboards
+
+---
+
+## 2  Personal Finance Tracker
+
+A lightweight CSV-based spending and income tracker with interactive charting.
+
+**Key Features:**
+
+• **Easy Data Import**
+  - Drag-and-drop or file picker for CSV uploads (supports multiple files)
+  - Intelligent filename parsing to assign statements to specific month/year
+  - PDF upload placeholder for future backend conversion
+
+• **Automatic Aggregation**
+  - Separates positive amounts as _Charges_ and negative as _Payments_
+  - Aggregates totals per month across all uploaded files
+  - Keeps running grand totals for charges and payments
+
+• **Interactive Chart (Chart.js)**
+  - Line chart comparing monthly charges vs. payments
+  - Responsive and color-coded: red for charges, green for payments
+
+• **Local Storage Persistence**
+  - Saved data survives reloads and new uploads
+  - Chart and totals restore on page load
+
+• **Polished UI/UX**
+  - Dark theme consistent with Productivity Tracker
+  - Sidebar navigation for easy switching between dashboards
+  - Mobile-friendly layout and card-based structure
+
+---
+
+## Getting Started
+
+1. Clone or download the repository.
+2. Open `Landing Page.html` in your browser to navigate between dashboards.
+3. Click the links or open `Productivity Tracker.html` and `Personal Finance Tracker.html` directly.
+4. No additional setup or dependencies required.
+
+---
 
 ## Tech Stack
 
-* **HTML5 / CSS3 / Vanilla JS (ES6+)** – no frameworks.  
-* **Chart.js** – lightweight, dependency‑free graphs.  
-* **Google Fonts – Poppins** – clean typography.  
-* **Local Storage API** – persistence without external services.
+* **HTML5 / CSS3 / Vanilla JS (ES6+)** — no frameworks
+* **Chart.js** — lightweight, dependency-free charts
+* **SortableJS** — drag-and-drop support
+* **Papa Parse** — CSV parsing for finance statements
+* **date-fns & chartjs-adapter-date-fns** — time axis formatting
+* **Local Storage API** — client-side persistence
+* **Google Fonts (Poppins)** — clean typography
