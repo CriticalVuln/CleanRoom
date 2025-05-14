@@ -77,27 +77,6 @@
         color: #FFF; /* White text for total */
     }
     /* Copied from Productivity Tracker */
-    .nav-button {
-        position: fixed;
-        left: 15px;
-        top: 15px;
-        background: #63FFDA; /* Accent Cyan/Turquoise */
-        color: #000000; /* Black emoji */
-        padding: 10px 15px;
-        border: none;
-        border-radius: 8px;
-        font-family: "Poppins", sans-serif;
-        font-weight: 600;
-        font-size: 20px;
-        line-height: 1;
-        cursor: pointer;
-        text-decoration: none;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-        z-index: 1001;
-    }
-    .nav-button:hover {
-        opacity: 0.9;
-    }
     .content {
       width: 100%;
       max-width: 1400px; /* Match Productivity Tracker app-container width */
@@ -106,7 +85,32 @@
       margin-left: auto;
       margin-right: auto;
     }
-    /* Copied from Productivity Tracker */
+    /* Sidebar styles (copied from Landing Page) */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 60px;
+      background: #1A1625;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 20px;
+    }
+    .sidebar a {
+      color: #63FFDA;
+      font-size: 24px;
+      margin: 16px 0;
+      text-decoration: none;
+    }
+    .sidebar a svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: #63FFDA;
+      stroke-width: 2;
+    }
   </style>
 
   <!-- Poppins font -->
@@ -120,8 +124,24 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- date-fns adapter -->
 </head>
 <body>
-  <!-- Nav button (unchanged) -->
-  <a href="Productivity Tracker.html" class="nav-button">📊</a>
+  <nav class="sidebar">
+    <a href="Landing Page.html">
+      <svg viewBox="0 0 24 24">
+        <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
+      </svg>
+    </a>
+    <a href="Personal Finance Tracker.html">
+      <svg viewBox="0 0 24 24">
+        <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+    <a href="Productivity Tracker.html">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"/>
+        <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </nav>
 
   <div class="content">
     <h1>Personal Finance Tracker</h1>
@@ -214,7 +234,21 @@
           plugins: { legend: { labels: { color: '#E0E0E0' } } }
         }
       });
+      localStorage.setItem('financeData', JSON.stringify({ monthlyCharges, monthlyPayments, totalCharges, totalPayments }));
     }
+
+    // On load, restore saved data
+    document.addEventListener('DOMContentLoaded', () => {
+      const saved = localStorage.getItem('financeData');
+      if (saved) {
+        const data = JSON.parse(saved);
+        monthlyCharges = data.monthlyCharges || {};
+        monthlyPayments = data.monthlyPayments || {};
+        totalCharges = data.totalCharges || 0;
+        totalPayments = data.totalPayments || 0;
+        updateDisplay();
+      }
+    });
 
     // --- Event Listener for File Picker (supports multiple) ---
     document.getElementById('csvPicker').addEventListener('change', e => {
