@@ -111,6 +111,85 @@
       stroke: #63FFDA;
       stroke-width: 2;
     }
+    /* --- New: File History Tab Styles --- */
+    .file-history-tab {
+      position: absolute;
+      top: 18px;
+      left: 70px;
+      background: #211D30;
+      color: #63FFDA;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      padding: 8px 22px 8px 18px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 1100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      transition: background 0.15s, color 0.15s;
+    }
+    .file-history-tab.active {
+      background: #63FFDA;
+      color: #0D0B14;
+    }
+    .file-history-panel {
+      position: absolute;
+      top: 54px;
+      left: 70px;
+      background: #1A1625;
+      color: #E0E0E0;
+      border-radius: 0 0 12px 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      min-width: 320px;
+      max-width: 420px;
+      padding: 18px 18px 10px 18px;
+      z-index: 1100;
+      display: none;
+    }
+    .file-history-panel h3 {
+      margin: 0 0 10px 0;
+      font-size: 1.1em;
+      color: #63FFDA;
+      font-weight: 600;
+    }
+    .file-history-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .file-history-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 0;
+      border-bottom: 1px solid #29223a;
+      font-size: 14px;
+    }
+    .file-history-list li:last-child { border-bottom: none; }
+    .file-history-list .filename {
+      flex: 1;
+      color: #E0E0E0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .file-history-list .delete-btn {
+      background: none;
+      border: none;
+      color: #FF6B6B;
+      font-size: 15px;
+      cursor: pointer;
+      margin-left: 12px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      transition: background 0.15s;
+    }
+    .file-history-list .delete-btn:hover {
+      background: #2a263a;
+    }
   </style>
 
   <!-- Poppins font -->
@@ -124,6 +203,11 @@
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- date-fns adapter -->
 </head>
 <body>
+  <button id="fileHistoryTab" class="file-history-tab">File History</button>
+  <div id="fileHistoryPanel" class="file-history-panel">
+    <h3>Uploaded Files</h3>
+    <ul id="fileHistoryList" class="file-history-list"></ul>
+  </div>
   <nav class="sidebar">
     <a href="Landing Page.html">
       <svg viewBox="0 0 24 24">
@@ -145,192 +229,303 @@
 
   <div class="content">
     <h1>Personal Finance Tracker</h1>
-
-    <!-- ―――---- added UI controls ----――― -->
-    <input id="csvPicker" type="file" accept=".csv,.pdf" multiple> <!-- Allow multiple files -->
-    <!-- accept='.csv' restricts picker to statement files :contentReference[oaicite:2]{index=2} -->
-
-    <!-- NEW: Card structure for chart -->
-    <div class="card">
-      <p id="total"></p>
-      <div class="chart-container">
-        <canvas id="spendChart"></canvas> <!-- Removed width/height attributes -->
-      </div>
+    <input id="csvPicker" type="file" accept=".csv,.pdf" multiple>
+    <div id="total"></div>
+    <div class="chart-container">
+      <canvas id="spendChart"></canvas>
     </div>
-    <!-- END: Card structure -->
-  </div>
-
-  <!-- ―――---- parsing + charting logic ----――― -->
-  <script>
-    let chart; // Keep a reference to the chart outside the function
-
-    // Helper to extract month and year from filename
-    function extractMonthYearFromName(name) {
-      const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
-      const lower = name.toLowerCase();
-      let month = null;
-      months.forEach((m, i) => {
-        if (lower.includes(m) || lower.includes(m.substr(0,3))) month = i + 1;
-      });
-      const yearMatch = name.match(/\b(20\d{2})\b/);
-      const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear();
-      return month ? { month, year } : null;
-    }
-
-    // Global aggregates across all uploads
-    let monthlyNet = {};
-    let monthlyCharges = {};
-    let monthlyPayments = {};
-    let totalCharges = 0;
-    let totalPayments = 0;
-
-    // Update totals display and chart
-    function updateDisplay() {
-      // Clear numeric summary
-      document.getElementById('total').innerHTML = '';
-      // Combine months from charges and payments
-      const labels = Array.from(new Set([
-        ...Object.keys(monthlyCharges),
-        ...Object.keys(monthlyPayments)
-      ])).sort();
-      const chargesData = labels.map(l => monthlyCharges[l] || 0);
-      const paymentsData = labels.map(l => monthlyPayments[l] || 0);
-      if (chart) chart.destroy();
-      chart = new Chart(document.getElementById('spendChart'), {
-        type: 'line',
-        data: { labels, datasets: [
-          {
-            label: 'Charges',
-            data: chargesData,
-            tension: 0.3,
-            borderColor: '#FF4C4C',
-            backgroundColor: 'rgba(255,76,76,0.1)',
-            fill: false,
-            pointRadius: 3,
-            pointBackgroundColor: '#FF4C4C',
-            pointBorderColor: '#1A1625',
-            pointHoverRadius: 6
-          },
-          {
-            label: 'Payments',
-            data: paymentsData,
-            tension: 0.3,
-            borderColor: '#4CFF4C',
-            backgroundColor: 'rgba(76,255,76,0.1)',
-            fill: false,
-            pointRadius: 3,
-            pointBackgroundColor: '#4CFF4C',
-            pointBorderColor: '#1A1625',
-            pointHoverRadius: 6
-          }
-        ]},
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { grid: { color: '#333' }, ticks: { color: '#ccc' } },
-            y: { grid: { color: '#333' }, ticks: { color: '#ccc' } }
-          },
-          plugins: { legend: { labels: { color: '#E0E0E0' } } }
-        }
-      });
-      localStorage.setItem('financeData', JSON.stringify({ monthlyCharges, monthlyPayments, totalCharges, totalPayments }));
-    }
-
-    // On load, restore saved data
-    document.addEventListener('DOMContentLoaded', () => {
-      const saved = localStorage.getItem('financeData');
-      if (saved) {
-        const data = JSON.parse(saved);
-        monthlyCharges = data.monthlyCharges || {};
-        monthlyPayments = data.monthlyPayments || {};
-        totalCharges = data.totalCharges || 0;
-        totalPayments = data.totalPayments || 0;
-        updateDisplay();
+    <script>
+      // Helper to extract month/year from filename
+      function extractMonthYearFromName(name) {
+        const match = /([0-9]{4})[-_]?([0-9]{1,2})/.exec(name);
+        if (!match) return null;
+        return { year: parseInt(match[1], 10), month: parseInt(match[2], 10) };
       }
-    });
+      let chart = null;
+      // Global aggregates across all uploads
+      let monthlyNet = {};
+      let monthlyCharges = {};
+      let monthlyPayments = {};
+      let totalCharges = 0;
+      let totalPayments = 0;
 
-    // --- Event Listener for File Picker (supports multiple) ---
-    document.getElementById('csvPicker').addEventListener('change', e => {
-      const files = Array.from(e.target.files);
-      if (!files.length) return;
-      files.forEach(f => {
-        const fileName = f.name;
-        const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+      // --- File History State ---
+      let fileHistory = JSON.parse(localStorage.getItem('financeFileHistory') || '[]');
+      // --- File-to-Month Mapping for Robust Deletion ---
+      let fileMonthMap = JSON.parse(localStorage.getItem('financeFileMonthMap') || '{}');
 
-        if (fileExtension === 'csv') {
-          Papa.parse(f, {
-            header: true,
-            dynamicTyping: true,
-            skipEmptyLines: true,
-            complete: res => handleRows(res.data, fileName)
-          });
-        } else if (fileExtension === 'pdf') {
-          // Placeholder for PDF processing logic
-          console.log("PDF file selected. Backend processing would be needed here.");
-          alert("PDF processing is not yet implemented. Please upload a CSV file.");
-          // TODO: Implement PDF processing:
-          // 1. Send the PDF file (f) to a backend service.
-          // 2. The backend service would convert the PDF to CSV data.
-          // 3. Receive the CSV data from the backend.
-          // 4. Parse the CSV data using Papa.parse or similar:
-          //    Papa.parse(csvDataFromBackend, {
-          //      header: true,
-          //      dynamicTyping: true,
-          //      skipEmptyLines: true,
-          //      complete: res => handleRows(res.data)
-          //    });
-          // For now, clear the file input if a PDF is selected as no processing is implemented
-          e.target.value = null;
-        } else {
-          alert("Unsupported file type. Please upload a CSV or PDF file.");
-          e.target.value = null;
-        }
-      });
-    });
-
-    // --- Function to process CSV rows (with optional filename override) ---
-    function handleRows(rows, fileName) {
-      // Require at least one row
-      if (!rows || !rows.length) return;
-      // Detect header fields
-      const headers = Object.keys(rows[0]);
-      const dateField = headers.find(h => /date/i.test(h));
-      const amountField = headers.find(h => /(amount|amt|value)/i.test(h));
-      if (!dateField || !amountField) {
-        alert('CSV must include date and amount columns');
-        return;
+      function saveFileMonthMap() {
+        localStorage.setItem('financeFileMonthMap', JSON.stringify(fileMonthMap));
       }
-      // Determine month override from filename
-      const fileInfo = extractMonthYearFromName(fileName);
-      // Precompute grouping override key (always use filename month-year if found)
-      const overrideKey = fileInfo
-        ? `${fileInfo.year}-${String(fileInfo.month).padStart(2,'0')}`
-        : null;
 
-      rows.forEach(r => {
-        const rawDt = r[dateField];
-        const rawAmt = r[amountField];
-        const dt = new Date(rawDt);
-        const amt = Number(rawAmt);
-        if (isNaN(amt) || isNaN(dt) || dt.toString() === 'Invalid Date') {
-          console.warn(`Skipping row: Invalid data. Date='${rawDt}', Amount='${rawAmt}'`);
+      // --- File History UI Logic ---
+      const fileHistoryTab = document.getElementById('fileHistoryTab');
+      const fileHistoryPanel = document.getElementById('fileHistoryPanel');
+      const fileHistoryList = document.getElementById('fileHistoryList');
+
+      function renderFileHistory() {
+        fileHistoryList.innerHTML = '';
+        if (!fileHistory.length) {
+          fileHistoryList.innerHTML = '<li style="color:#A0A0A0;">No files uploaded yet.</li>';
           return;
         }
-        // Determine grouping key (override if available)
-        const key = overrideKey || `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,'0')}`;
-        // Accumulate per-month totals
-        if (amt > 0) {
-          monthlyCharges[key] = (monthlyCharges[key] || 0) + amt;
-          totalCharges += amt;
-        } else if (amt < 0) {
-          monthlyPayments[key] = (monthlyPayments[key] || 0) + Math.abs(amt);
-          totalPayments += Math.abs(amt);
+        fileHistory.forEach(f => {
+          const li = document.createElement('li');
+          const nameSpan = document.createElement('span');
+          nameSpan.className = 'filename';
+          nameSpan.textContent = f.name;
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-btn';
+          delBtn.textContent = 'Delete';
+          delBtn.onclick = () => deleteFileHistory(f.name);
+          li.appendChild(nameSpan);
+          li.appendChild(delBtn);
+          fileHistoryList.appendChild(li);
+        });
+      }
+
+      function showFileHistory(show) {
+        if (show) {
+          fileHistoryPanel.style.display = 'block';
+          fileHistoryTab.classList.add('active');
+          renderFileHistory();
+        } else {
+          fileHistoryPanel.style.display = 'none';
+          fileHistoryTab.classList.remove('active');
+        }
+      }
+      fileHistoryTab.addEventListener('click', () => {
+        showFileHistory(fileHistoryPanel.style.display !== 'block');
+      });
+      document.addEventListener('click', e => {
+        if (!fileHistoryPanel.contains(e.target) && e.target !== fileHistoryTab) {
+          showFileHistory(false);
         }
       });
-      // Refresh display & chart
-      updateDisplay();
-    }
-  </script>
+
+      function addFileToHistory(name, keys) {
+        if (!fileHistory.some(f => f.name === name)) {
+          fileHistory.push({ name });
+          localStorage.setItem('financeFileHistory', JSON.stringify(fileHistory));
+        }
+        if (Array.isArray(keys) && keys.length) {
+          fileMonthMap[name] = keys;
+          saveFileMonthMap();
+        }
+      }
+      function deleteFileHistory(name) {
+        // Remove from fileHistory
+        fileHistory = fileHistory.filter(f => f.name !== name);
+        localStorage.setItem('financeFileHistory', JSON.stringify(fileHistory));
+        // Remove all data from this file from the charts
+        removeFileData(name);
+        // Remove mapping
+        delete fileMonthMap[name];
+        saveFileMonthMap();
+        renderFileHistory();
+        updateDisplay();
+      }
+      function removeFileData(name) {
+        // Remove all data for this file from monthlyCharges/payments using fileMonthMap
+        const keys = fileMonthMap[name] || [];
+        keys.forEach(key => {
+          delete monthlyCharges[key];
+          delete monthlyPayments[key];
+        });
+        // Recalculate totals
+        totalCharges = Object.values(monthlyCharges).reduce((a,b)=>a+b,0);
+        totalPayments = Object.values(monthlyPayments).reduce((a,b)=>a+b,0);
+      }
+
+      // --- On load, render file history ---
+      renderFileHistory();
+      showFileHistory(false);
+
+      // Update totals display and chart
+      function updateDisplay() {
+        // Clear numeric summary
+        document.getElementById('total').innerHTML = '';
+        // Combine months from charges and payments
+        const labels = Array.from(new Set([
+          ...Object.keys(monthlyCharges),
+          ...Object.keys(monthlyPayments)
+        ])).sort();
+        const chargesData = labels.map(l => monthlyCharges[l] || 0);
+        const paymentsData = labels.map(l => monthlyPayments[l] || 0);
+        if (chart) chart.destroy();
+        chart = new Chart(document.getElementById('spendChart'), {
+          type: 'line',
+          data: { labels, datasets: [
+            {
+              label: 'Charges',
+              data: chargesData,
+              tension: 0.3,
+              borderColor: '#FF4C4C',
+              backgroundColor: 'rgba(255,76,76,0.1)',
+              fill: false,
+              pointRadius: 3,
+              pointBackgroundColor: '#FF4C4C',
+              pointBorderColor: '#1A1625',
+              pointHoverRadius: 6
+            },
+            {
+              label: 'Payments',
+              data: paymentsData,
+              tension: 0.3,
+              borderColor: '#4CFF4C',
+              backgroundColor: 'rgba(76,255,76,0.1)',
+              fill: false,
+              pointRadius: 3,
+              pointBackgroundColor: '#4CFF4C',
+              pointBorderColor: '#1A1625',
+              pointHoverRadius: 6
+            }
+          ]},
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: { grid: { color: '#333' }, ticks: { color: '#ccc' } },
+              y: { grid: { color: '#333' }, ticks: { color: '#ccc' } }
+            },
+            plugins: { legend: { labels: { color: '#E0E0E0' } } }
+          }
+        });
+        localStorage.setItem('financeData', JSON.stringify({ monthlyCharges, monthlyPayments, totalCharges, totalPayments }));
+      }
+
+      // On load, restore saved data
+      document.addEventListener('DOMContentLoaded', () => {
+        // Wipe old finance data and file history on first load after this update
+        if (!localStorage.getItem('financeDataReset_2025_05_15')) {
+          localStorage.removeItem('financeData');
+          localStorage.removeItem('financeFileHistory');
+          localStorage.setItem('financeDataReset_2025_05_15', 'true');
+        }
+        const saved = localStorage.getItem('financeData');
+        if (saved) {
+          const data = JSON.parse(saved);
+          monthlyCharges = data.monthlyCharges || {};
+          monthlyPayments = data.monthlyPayments || {};
+          totalCharges = data.totalCharges || 0;
+          totalPayments = data.totalPayments || 0;
+          updateDisplay();
+        }
+      });
+
+      // --- Event Listener for File Picker (supports multiple) ---
+      document.getElementById('csvPicker').addEventListener('change', e => {
+        const files = Array.from(e.target.files);
+        if (!files.length) return;
+        files.forEach(f => {
+          const fileName = f.name;
+          const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+
+          if (fileExtension === 'csv') {
+            Papa.parse(f, {
+              header: true,
+              dynamicTyping: true,
+              skipEmptyLines: true,
+              complete: res => {
+                handleRows(res.data, fileName);
+                renderFileHistory();
+              }
+            });
+          } else if (fileExtension === 'pdf') {
+            // Placeholder for PDF processing logic
+            console.log("PDF file selected. Backend processing would be needed here.");
+            alert("PDF processing is not yet implemented. Please upload a CSV file.");
+            e.target.value = null;
+          } else {
+            alert("Unsupported file type. Please upload a CSV or PDF file.");
+            e.target.value = null;
+          }
+        });
+      });
+
+      // --- Function to process CSV rows (with optional filename override) ---
+      function handleRows(rows, fileName) {
+        // Require at least one row
+        if (!rows || !rows.length) return;
+        // Detect header fields
+        const headers = Object.keys(rows[0]);
+        const dateField = headers.find(h => /date/i.test(h));
+        const amountField = headers.find(h => /(amount|amt|value)/i.test(h));
+        if (!dateField || !amountField) {
+          alert('CSV must include date and amount columns');
+          return;
+        }
+        // Determine month override from filename
+        const fileInfo = extractMonthYearFromName(fileName);
+        // Precompute grouping override key (always use filename month-year if found)
+        const overrideKey = fileInfo
+          ? `${fileInfo.year}-${String(fileInfo.month).padStart(2,'0')}`
+          : null;
+        // Track which keys this file contributes
+        let contributedKeys = [];
+        rows.forEach(r => {
+          const rawDt = r[dateField];
+          const rawAmt = r[amountField];
+          const dt = new Date(rawDt);
+          const amt = Number(rawAmt);
+          if (isNaN(amt) || isNaN(dt) || dt.toString() === 'Invalid Date') {
+            console.warn(`Skipping row: Invalid data. Date='${rawDt}', Amount='${rawAmt}'`);
+            return;
+          }
+          // Determine grouping key (override if available)
+          const key = overrideKey || `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,'0')}`;
+          if (!contributedKeys.includes(key)) contributedKeys.push(key);
+          // Accumulate per-month totals
+          if (amt > 0) {
+            monthlyCharges[key] = (monthlyCharges[key] || 0) + amt;
+            totalCharges += amt;
+          } else if (amt < 0) {
+            monthlyPayments[key] = (monthlyPayments[key] || 0) + Math.abs(amt);
+            totalPayments += Math.abs(amt);
+          }
+        });
+        // Save file-to-keys mapping
+        fileMonthMap[fileName] = contributedKeys;
+        saveFileMonthMap();
+        addFileToHistory(fileName, Array.from(contributedKeys));
+        // Refresh display & chart
+        updateDisplay();
+      }
+
+      // --- Manual Reset: Clear all finance data, file history, and file-to-month map ---
+      function resetFinanceData() {
+        localStorage.removeItem('financeData');
+        localStorage.removeItem('financeFileHistory');
+        localStorage.removeItem('financeFileMonthMap');
+        localStorage.removeItem('financeDataReset_2025_05_15');
+        // Clear in-memory state
+        fileHistory = [];
+        fileMonthMap = {};
+        monthlyCharges = {};
+        monthlyPayments = {};
+        totalCharges = 0;
+        totalPayments = 0;
+        updateDisplay();
+        renderFileHistory();
+        showFileHistory(false);
+      }
+      // Add a button for manual reset (for testing/cleanup)
+      const resetBtn = document.createElement('button');
+      resetBtn.textContent = 'Reset All Data';
+      resetBtn.style.position = 'absolute';
+      resetBtn.style.top = '18px';
+      resetBtn.style.right = '40px';
+      resetBtn.style.background = '#FF4C4C';
+      resetBtn.style.color = '#fff';
+      resetBtn.style.border = 'none';
+      resetBtn.style.borderRadius = '8px';
+      resetBtn.style.padding = '8px 18px';
+      resetBtn.style.fontWeight = '600';
+      resetBtn.style.cursor = 'pointer';
+      resetBtn.style.zIndex = 1200;
+      resetBtn.onclick = resetFinanceData;
+      document.body.appendChild(resetBtn);
+    </script>
+  </div>
 </body>
 </html>

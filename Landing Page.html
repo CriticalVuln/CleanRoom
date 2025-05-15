@@ -75,6 +75,116 @@
       background: #63FFDA;
       color: #0D0B14;
     }
+    .open-popup-btn {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 1000;
+      color: #63FFDA; /* Neon turquoise */
+      padding: 0;
+    }
+    .open-popup-btn svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+    /* Quick Add Modal Styles (from Productivity Tracker) */
+    .task-input {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0;
+      width: 100%;
+    }
+    .priority-select { gap: 6px; margin-right: 6px; }
+    .priority-btn { width: 16px; height: 16px; border: none; border-radius: 4px; cursor: pointer; opacity: 0.6; }
+    .priority-btn.selected { opacity: 1; }
+    .priority-btn.low { background: #4CAF50; }
+    .priority-btn.med { background: #FFC107; }
+    .priority-btn.high { background: #F44336; }
+    .task-input input[type="text"] {
+      min-width: 0;
+      width: 100%;
+      font-size: 15px;
+      height: 36px;
+      padding: 7px 10px;
+    }
+    .task-input input[type="number"] {
+      width: 54px;
+      min-width: 0;
+      font-size: 14px;
+      padding: 4px 6px;
+    }
+    .task-input button, .task-dropdown summary.options-btn {
+      height: 36px;
+      padding: 0 14px;
+      font-size: 15px;
+    }
+    .task-input button { margin-left: 8px; border: none; border-radius: 4px; background: #63FFDA; color: #0D0B14; font-weight: 600; cursor: pointer; font-size: 14px; }
+    .task-dropdown { position: relative; margin-left: 0; }
+    .task-dropdown summary.options-btn { list-style: none; cursor: pointer; border: none; border-radius: 4px; background: #63FFDA; color: #0D0B14; display: flex; align-items: center; font-family: inherit; font-size: 14px; font-weight: 600; }
+    .task-dropdown summary::-webkit-details-marker { display: none; }
+    .task-dropdown-content {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: unset;
+      right: 0;
+      background: #211D30;
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      display: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      min-width: 170px;
+    }
+    .task-dropdown[open] .task-dropdown-content { display: block; }
+    .task-dropdown-content label { display: flex; align-items: center; gap: 4px; color: #E0E0E0; font-size: 14px; margin-bottom: 2px; }
+    .switch { position: relative; display: inline-block; width: 32px; height: 18px; margin-left: 6px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #4F4B68; border-radius: 34px; transition: .4s; }
+    .slider:before { position: absolute; content: ''; height: 14px; width: 14px; left: 2px; bottom: 2px; background: #FFF; border-radius: 50%; transition: .4s; }
+    .switch input:checked + .slider { background: #A076F9; }
+    .switch input:checked + .slider:before { transform: translateX(14px); }
+    /* Quick Add Modal container styling */
+    dialog#quickAddModal {
+      background: #1A1625 !important;
+      color: #E0E0E0;
+      border: none;
+      border-radius: 12px;
+      padding: 18px 18px 14px 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.7);
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      left: auto;
+      bottom: auto;
+      margin: 0;
+      width: 370px;
+      max-width: 95vw;
+      z-index: 2000;
+      transform: none !important;
+      overflow: visible !important;
+      min-height: unset;
+      max-height: unset;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+    }
+    dialog#quickAddModal::-webkit-scrollbar { display: none; }
+    dialog#quickAddModal, dialog#quickAddModal * {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -97,6 +207,33 @@
       </svg>
     </a>
   </nav>
+  <!-- Quick Add Task Button & Modal -->
+  <button id="openQuickAddBtn" title="Quick Add Task" class="open-popup-btn">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+  </button>
+  <dialog id="quickAddModal" style="display:none;">
+    <div class="task-input">
+      <div class="priority-select" id="quickPrioritySelect">
+        <button class="priority-btn low selected" data-priority="low" title="Low"></button>
+        <button class="priority-btn med" data-priority="med" title="Medium"></button>
+        <button class="priority-btn high" data-priority="high" title="High"></button>
+      </div>
+      <input id="quickTaskText" type="text" placeholder="add task">
+      <details class="task-dropdown">
+        <summary class="options-btn">Options</summary>
+        <div class="task-dropdown-content">
+          <label>Time Allotted<input id="quickTimeAllotted" type="number" min="0" placeholder="hrs"></label>
+          <label>Difficulty</label>
+          <label class="switch">
+            <input id="quickDifficulty" type="checkbox">
+            <span class="slider"></span>
+          </label>
+          <span id="quickDiffLabel">Easy</span>
+        </div>
+      </details>
+      <button id="quickAddConfirm">Add</button>
+    </div>
+  </dialog>
   <div class="main-content">
     <h1>Dashboard Home</h1>
     <div class="card-container">
@@ -110,5 +247,48 @@
       </div>
     </div>
   </div>
+  <script>
+    const openQuick = document.getElementById('openQuickAddBtn');
+    const quickModal = document.getElementById('quickAddModal');
+    const quickText = document.getElementById('quickTaskText');
+    const quickTime = document.getElementById('quickTimeAllotted');
+    const quickDiff = document.getElementById('quickDifficulty');
+    const quickLabel = document.getElementById('quickDiffLabel');
+    let quickPri = 'low';
+    // Show modal
+    openQuick.addEventListener('click', () => {
+      quickModal.style.display = '';
+      quickModal.showModal();
+    });
+    // Hide modal by default (on DOMContentLoaded)
+    document.addEventListener('DOMContentLoaded', () => {
+      quickModal.style.display = 'none';
+    });
+    // Priority
+    document.querySelectorAll('#quickPrioritySelect .priority-btn').forEach(b => b.addEventListener('click', () => {
+      document.querySelectorAll('#quickPrioritySelect .priority-btn').forEach(n=>n.classList.remove('selected'));
+      b.classList.add('selected'); quickPri = b.dataset.priority;
+    }));
+    // Difficulty toggle
+    quickDiff.addEventListener('change', e => quickLabel.textContent = e.target.checked ? 'Hard' : 'Easy');
+    // Confirm
+    document.getElementById('quickAddConfirm').addEventListener('click', () => {
+      const text = quickText.value.trim(); if (!text) return;
+      const payload = { type:'addTask', text, timeAllotted: parseInt(quickTime.value)||0,
+                        difficulty: quickDiff.checked?'hard':'easy', priority: quickPri };
+      // Only use localStorage for cross-tab sync (no window.open)
+      localStorage.setItem('productivityQuickAdd', JSON.stringify(payload));
+      // reset & close
+      quickText.value=''; quickTime.value=''; quickDiff.checked=false; quickLabel.textContent='Easy';
+      document.querySelector('#quickPrioritySelect .priority-btn.low').classList.add('selected'); quickPri='low';
+      quickModal.close();
+      quickModal.style.display = 'none';
+    });
+    // Close on backdrop
+    quickModal.addEventListener('click', e=>{ if(e.target===quickModal) {
+      quickModal.close();
+      quickModal.style.display = 'none';
+    }});
+  </script>
 </body>
 </html>

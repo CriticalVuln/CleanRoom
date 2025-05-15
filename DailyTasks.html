@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quick Add Task</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin:0; padding:0; overflow:hidden; }
+    body { background: #0D0B14; color: #E0E0E0; font-family:Poppins, sans-serif; margin:0; padding:0; display:flex; align-items:center; justify-content:center; height:100vh; }
+    .card { background:#1A1625; border-radius:12px; padding:16px; box-shadow:0 4px 12px rgba(0,0,0,0.5); max-width:300px; margin:auto; }
+    .task-input { display:flex; align-items:center; gap:8px; }
+    .priority-select { display:flex; gap:6px; }
+    .priority-btn { width:16px; height:16px; border:none; border-radius:4px; cursor:pointer; opacity:0.6; }
+    .priority-btn.selected { opacity:1; }
+    .priority-btn.low  { background:#4CAF50; }
+    .priority-btn.med  { background:#FFC107; }
+    .priority-btn.high { background:#F44336; }
+    input[type="text"], input[type="number"] { flex:1; height:32px; padding:4px 8px; border:none; border-radius:4px; background:#211D30; color:#FFF; font-size:14px; }
+    button { height:32px; padding:0 12px; border:none; border-radius:4px; background:#63FFDA; color:#0D0B14; font-weight:600; cursor:pointer; font-size:14px; }
+    .task-dropdown { position:relative; }
+    .task-dropdown summary { list-style:none; cursor:pointer; height:32px; padding:0 12px; border:none; border-radius:4px; background:#63FFDA; color:#0D0B14; display:flex; align-items:center; font-family:inherit; font-size:14px; font-weight:600; }
+    .task-dropdown summary::-webkit-details-marker { display:none; }
+    .task-dropdown-content { font-family:inherit; font-size:14px; font-weight:600; position:absolute; top:calc(100% + 4px); left:0; background:#211D30; padding:8px; border-radius:4px; box-shadow:0 4px 12px rgba(0,0,0,0.5); display:none; }
+    .task-dropdown[open] .task-dropdown-content { display:block; }
+    .task-dropdown-content label { display:flex; align-items:center; gap:4px; color:#E0E0E0; font-size:14px; }
+    .switch { position:relative; display:inline-block; width:32px; height:18px; }
+    .switch input { opacity:0; width:0; height:0; }
+    .slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:#4F4B68; border-radius:34px; transition:.4s; }
+    .slider:before { position:absolute; content:""; height:14px; width:14px; left:2px; bottom:2px; background:#FFF; border-radius:50%; transition:.4s; }
+    input:checked + .slider { background:#A076F9; }
+    input:checked + .slider:before { transform:translateX(14px); }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="task-input">
+      <div class="priority-select">
+        <button class="priority-btn low selected" data-priority="low" title="Low"></button>
+        <button class="priority-btn med" data-priority="med" title="Medium"></button>
+        <button class="priority-btn high" data-priority="high" title="High"></button>
+      </div>
+      <input id="popupTaskText" type="text" placeholder="Enter a new task…">
+      <details class="task-dropdown">
+        <summary>Options</summary>
+        <div class="task-dropdown-content">
+          <label>Time Allotted<input id="popupTimeAllotted" type="number" min="0" placeholder="hrs"></label>
+          <label class="switch">
+            <input id="popupDifficulty" type="checkbox">
+            <span class="slider"></span>
+          </label>
+          <span id="popupDifficultyLabel">Easy</span>
+        </div>
+      </details>
+      <button id="popupAddBtn">Add</button>
+    </div>
+  </div>
+  <script>
+    let popupPriority = 'low';
+    document.querySelectorAll('.priority-btn').forEach(btn => btn.addEventListener('click', () => {
+      document.querySelectorAll('.priority-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected'); popupPriority = btn.dataset.priority;
+    }));
+    document.getElementById('popupDifficulty').addEventListener('change', e => {
+      document.getElementById('popupDifficultyLabel').textContent = e.target.checked ? 'Hard' : 'Easy';
+    });
+    document.getElementById('popupAddBtn').addEventListener('click', () => {
+      const text = document.getElementById('popupTaskText').value.trim();
+      if (!text) return;
+      const timeAllotted = parseInt(document.getElementById('popupTimeAllotted').value) || 0;
+      const difficulty = document.getElementById('popupDifficulty').checked ? 'hard' : 'easy';
+      // send task data to opener via postMessage to avoid direct property access
+      const payload = { type: 'addTask', text, timeAllotted, difficulty, priority: popupPriority };
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage(payload, '*');
+      }
+      localStorage.setItem('productivityQuickAdd', JSON.stringify(payload));
+      // clear inputs
+      document.getElementById('popupTaskText').value = '';
+      document.getElementById('popupTimeAllotted').value = '';
+    });
+    // Resize the popup to fit content on load
+    window.onload = () => {
+      const card = document.querySelector('.card');
+      const w = card.offsetWidth + 16;
+      const h = card.offsetHeight + 16;
+      window.resizeTo(w, h);
+    };
+  </script>
+</body>
+</html>

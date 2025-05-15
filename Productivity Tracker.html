@@ -845,6 +845,39 @@
     // TASK STORAGE
     let tasks = []; // Use let instead of const to allow reassignment on load
     let currentPriority = 'low';
+    
+    // Quick Add Task integration from popup/landing page
+    function addTaskFromPopup(data) {
+      tasks.push({
+        id: Date.now(),
+        text: data.text,
+        priority: data.priority,
+        created: new Date(),
+        completed: false,
+        completedAt: null,
+        timeAllotted: data.timeAllotted,
+        timeSpent: 0,
+        difficulty: data.difficulty
+      });
+      saveTasks();
+      renderTasks();
+      updateMainCharts(mainChartRange);
+      updateDifficultyChart(mainChartRange);
+      updatePriorityDifficultyChart(mainChartRange);
+      renderActivitySquares(calendarCurrentYear, calendarCurrentMonth);
+      saveState();
+    }
+    // Listen for postMessage events
+    window.addEventListener('message', e => {
+      if (e.data && e.data.type === 'addTask') addTaskFromPopup(e.data);
+    });
+    // Listen for storage events (popup writes)
+    window.addEventListener('storage', e => {
+      if (e.key === 'productivityQuickAdd' && e.newValue) {
+        addTaskFromPopup(JSON.parse(e.newValue));
+      }
+    });
+
     let calendarCurrentYear = new Date().getFullYear(); // Initialize calendar year
     let calendarCurrentMonth = new Date().getMonth(); // Initialize calendar month (0-11)
     let calendarViewMode = 'year'; // NEW: 'year' or 'month'
@@ -879,7 +912,6 @@
     const dailyNotesContent = document.getElementById('dailyNotesContent');
     const closeDailyNotesBtn = document.getElementById('closeDailyNotesBtn');
 
-
     // --- LOCAL STORAGE FUNCTIONS ---
     function saveTasks() {
         localStorage.setItem('productivityTasks', JSON.stringify(tasks));
@@ -894,6 +926,17 @@
                 created: new Date(task.created),
                 completedAt: task.completedAt ? new Date(task.completedAt) : null
             }));
+        }
+        // --- NEW: Check for pending quick add ---
+        const quickAdd = localStorage.getItem('productivityQuickAdd');
+        if (quickAdd) {
+            const data = JSON.parse(quickAdd);
+            // Only add if not already present (by text and created today)
+            const today = new Date();
+            const exists = tasks.some(t => t.text === data.text && t.priority === data.priority && t.timeAllotted === data.timeAllotted && t.difficulty === data.difficulty && isSameDay(t.created, today));
+            if (!exists && data.text) {
+                addTaskFromPopup(data);
+            }
         }
     }
 
@@ -1554,8 +1597,6 @@
         // --- Update center text ---
         priorityDifficultyChart.config.options.plugins.centerText.text = totalCompleted.toString(); // Update text in options
 
-        console.log(`Updating Priority/Difficulty chart for range: ${range}. Priority: [H:${totalCompletedHigh}, M:${totalCompletedMed}, L:${totalCompletedLow}], Difficulty: [E:${totalCompletedEasy}, H:${totalCompletedHard}], Total: ${totalCompleted}`);
-
         priorityDifficultyChart.update(); // Update the chart
     }
 
@@ -1937,7 +1978,6 @@
             // Save the review text as daily notes for today
             const dateStr = new Date().toISOString().split('T')[0];
             localStorage.setItem(`dailyNotes_${dateStr}`, review);
-            console.log("Weekly Review Saved:", review);
             closeWeeklyReviewModal();
             saveState(); // Save state after weekly review
         }
