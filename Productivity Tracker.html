@@ -937,6 +937,8 @@
             if (!exists && data.text) {
                 addTaskFromPopup(data);
             }
+            // --- FIX: Remove quick add from localStorage after importing ---
+            localStorage.removeItem('productivityQuickAdd');
         }
     }
 
