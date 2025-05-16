@@ -46,33 +46,31 @@
       margin-bottom: 30px;
       font-size: 2em;
     }
-    .card-container {
+    .tab-bar {
       display: flex;
-      gap: 24px;
-      flex-wrap: wrap;
-      justify-content: center;
+      gap: 0;
+      border-bottom: 2px solid #29223a;
+      margin-bottom: 24px;
+      margin-top: 18px;
     }
-    .card {
-      background: #1A1625;
-      border-radius: 12px;
-      padding: 20px;
-      width: 260px;
-      text-align: center;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-    .card a {
-      display: inline-block;
-      margin-top: 10px;
-      padding: 12px 20px;
-      border: 2px solid #63FFDA;
-      border-radius: 8px;
+    .tab-btn {
+      background: none;
+      border: none;
+      outline: none;
       color: #63FFDA;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.1em;
       font-weight: 600;
+      padding: 12px 32px 10px 32px;
+      cursor: pointer;
+      border-radius: 12px 12px 0 0;
+      margin-right: 2px;
+      transition: background 0.15s, color 0.15s;
       text-decoration: none;
-      transition: background 0.2s, color 0.2s;
+      display: inline-block;
     }
-    .card a:hover {
-      background: #63FFDA;
+    .tab-btn:hover {
+      background: #211D30;
       color: #0D0B14;
     }
     .open-popup-btn {
@@ -185,6 +183,73 @@
       scrollbar-width: none !important;
       -ms-overflow-style: none !important;
     }
+    .weekly-review-modal {
+      background: #1A1625 !important;
+      color: #E0E0E0;
+      border: none;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+      padding: 32px 32px 24px 32px;
+      max-width: 480px;
+      width: 95vw;
+      min-height: 320px;
+      z-index: 3000;
+      text-align: left;
+    }
+    .weekly-review-modal h2 {
+      color: #63FFDA;
+      font-size: 1.25em;
+      font-weight: 600;
+      margin: 0 0 18px 0;
+    }
+    #weeklyReviewText {
+      width: 100%;
+      min-height: 140px;
+      background: #211D30;
+      color: #E0E0E0;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 1em;
+      margin-bottom: 0;
+      resize: vertical;
+      box-sizing: border-box;
+    }
+    #weeklyReviewText::placeholder {
+      color: #A0A0A0;
+      opacity: 1;
+    }
+    #saveWeeklyReviewBtn {
+      background: #63FFDA;
+      color: #0D0B14;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 22px;
+      font-weight: 600;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    #saveWeeklyReviewBtn:disabled {
+      background: #29223a;
+      color: #A0A0A0;
+      cursor: not-allowed;
+    }
+    #closeWeeklyReviewBtn {
+      background: none;
+      color: #A0A0A0;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 22px;
+      font-weight: 600;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+    @media (max-width: 600px) {
+      .weekly-review-modal { padding: 18px 6vw 18px 6vw; }
+    }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -234,19 +299,46 @@
       <button id="quickAddConfirm">Add</button>
     </div>
   </dialog>
-  <div class="main-content">
-    <h1>Dashboard Home</h1>
-    <div class="card-container">
-      <div class="card">
-        <h2>Productivity Tracker</h2>
-        <a href="Productivity Tracker.html">Open</a>
+  <!-- Weekly Review Modal -->
+  <dialog id="weeklyReviewModal" class="weekly-review-modal">
+    <form method="dialog" style="margin:0;">
+      <h2>What did you get done this week?</h2>
+      <textarea id="weeklyReviewText" placeholder="add notes"></textarea>
+      <div style="display:flex; justify-content:flex-end; gap:12px; margin-top:10px;">
+        <button id="saveWeeklyReviewBtn" disabled style="margin-right:0;">Save</button>
+        <button id="closeWeeklyReviewBtn" type="button">Close</button>
       </div>
-      <div class="card">
-        <h2>Personal Finance Tracker</h2>
-        <a href="Personal Finance Tracker.html">Open</a>
+    </form>
+  </dialog>
+  <div class="main-content">
+    <div class="dashboard-widgets-row" style="display: flex; gap: 32px; margin-top: 32px;">
+      <!-- Overall Performance Widget (from Productivity Tracker) -->
+      <div class="widget-card" style="flex:1; background:#18142A; border-radius:18px; box-shadow:0 8px 32px 0 rgba(33,29,48,0.45); padding:28px 24px 18px 24px; min-width:0; min-height:340px; display:flex; flex-direction:column;">
+        <div style="font-weight:600; font-size:1.18rem; color:#63FFDA; margin-bottom:18px; text-align:center;">Overall Performance</div>
+        <div style="display:flex; gap:12px; margin-bottom:12px; justify-content:center;">
+          <button class="timeframe-btn selected" data-timeframe="day" style="background:none; border:none; color:#63FFDA; font-weight:600; padding:4px 14px; border-radius:6px; cursor:pointer;">Day</button>
+          <button class="timeframe-btn" data-timeframe="week" style="background:none; border:none; color:#63FFDA; font-weight:600; padding:4px 14px; border-radius:6px; cursor:pointer;">Week</button>
+          <button class="timeframe-btn" data-timeframe="month" style="background:none; border:none; color:#63FFDA; font-weight:600; padding:4px 14px; border-radius:6px; cursor:pointer;">Month</button>
+          <button class="timeframe-btn" data-timeframe="year" style="background:none; border:none; color:#63FFDA; font-weight:600; padding:4px 14px; border-radius:6px; cursor:pointer;">Year</button>
+        </div>
+        <div style="flex:1; min-height:220px;">
+          <canvas id="landingOverallPerformanceChart" style="width:100%;height:220px;"></canvas>
+        </div>
+      </div>
+      <!-- Net Worth Placeholder Widget -->
+      <div class="widget-card" style="flex:1; background:#18142A; border-radius:18px; box-shadow:0 8px 32px 0 rgba(33,29,48,0.45); padding:28px 24px 18px 24px; min-width:0; min-height:340px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+        <div style="font-weight:600; font-size:1.18rem; color:#63FFDA; margin-bottom:18px;">Net Worth</div>
+        <div style="display:flex; gap:12px; margin-bottom:12px;">
+          <button class="networth-timeframe-btn selected" data-timeframe="day" style="background:none; border:none; color:#63FFDA; font-weight:600; padding:4px 14px; border-radius:6px; cursor:pointer;">Day</button>
+          <button class="networth-timeframe-btn" data-timeframe="week" style="background:none; border:none; color:#63FFDA; font-weight:600; padding:4px 14px; border-radius:6px; cursor:pointer;">Week</button>
+          <button class="networth-timeframe-btn" data-timeframe="month" style="background:none; border:none; color:#63FFDA; font-weight:600; padding:4px 14px; border-radius:6px; cursor:pointer;">Month</button>
+          <button class="networth-timeframe-btn" data-timeframe="year" style="background:none; border:none; color:#63FFDA; font-weight:600; padding:4px 14px; border-radius:6px; cursor:pointer;">Year</button>
+        </div>
+        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:#A0A0A0; font-size:1.2rem;">(Coming soon)</div>
       </div>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const openQuick = document.getElementById('openQuickAddBtn');
     const quickModal = document.getElementById('quickAddModal');
@@ -289,6 +381,275 @@
       quickModal.close();
       quickModal.style.display = 'none';
     }});
+    // Weekly Review logic
+    const oldCard = document.querySelector('.weekly-review-card');
+    if (oldCard) oldCard.remove();
+
+    const weeklyReviewModal = document.getElementById('weeklyReviewModal');
+    const weeklyReviewText = document.getElementById('weeklyReviewText');
+    const saveWeeklyReviewBtn = document.getElementById('saveWeeklyReviewBtn');
+    const closeWeeklyReviewBtn = document.getElementById('closeWeeklyReviewBtn');
+
+    // Enable save button only if there is text
+    weeklyReviewText.addEventListener('input', () => {
+      saveWeeklyReviewBtn.disabled = weeklyReviewText.value.trim() === '';
+    });
+    // Save review to localStorage
+    saveWeeklyReviewBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const review = weeklyReviewText.value.trim();
+      if (review) {
+        const weekKey = `weeklyReview_${new Date().getFullYear()}_${getWeekNumber(new Date())}`;
+        localStorage.setItem(weekKey, review);
+        weeklyReviewText.value = '';
+        saveWeeklyReviewBtn.disabled = true;
+        weeklyReviewModal.close();
+      }
+    });
+    closeWeeklyReviewBtn.addEventListener('click', () => {
+      weeklyReviewModal.close();
+    });
+    // Helper to get ISO week number
+    function getWeekNumber(d) {
+      d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+      const dayNum = d.getUTCDay() || 7;
+      d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+      const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+      return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+    }
+    // Show modal only on Fridays and pre-fill with saved review
+    window.addEventListener('DOMContentLoaded', () => {
+      const today = new Date();
+      if (today.getDay() === 5) { // 5 = Friday
+        const weekKey = `weeklyReview_${today.getFullYear()}_${getWeekNumber(today)}`;
+        const savedReview = localStorage.getItem(weekKey) || '';
+        weeklyReviewText.value = savedReview;
+        saveWeeklyReviewBtn.disabled = savedReview.trim() === '';
+        // Only show the modal if there are no saved notes for this week
+        if (!savedReview.trim()) {
+          weeklyReviewModal.showModal();
+        }
+      }
+    });
+    // --- LANDING PAGE OVERALL PERFORMANCE CHART ---
+    const ctxLandingOverall = document.getElementById('landingOverallPerformanceChart').getContext('2d');
+    const gradientLandingCyan = ctxLandingOverall.createLinearGradient(0, 0, 0, 300);
+    gradientLandingCyan.addColorStop(0, 'rgba(99, 255, 218, 0.4)');
+    gradientLandingCyan.addColorStop(1, 'rgba(99, 255, 218, 0)');
+    const landingOverallChart = new Chart(ctxLandingOverall, {
+      type: 'bar',
+      data: {
+        labels: [],
+        datasets: [
+          {
+            type: 'bar',
+            label: 'Low Assigned',
+            data: [],
+            backgroundColor: '#73BFFF',
+            stack: 'assigned',
+            borderRadius: 6,
+            borderSkipped: 'bottom',
+            barPercentage: 0.5
+          },
+          {
+            type: 'bar',
+            label: 'Med Assigned',
+            data: [],
+            backgroundColor: '#FFF000',
+            stack: 'assigned',
+            borderRadius: 6,
+            borderSkipped: 'bottom',
+            barPercentage: 0.5
+          },
+          {
+            type: 'bar',
+            label: 'High Assigned',
+            data: [],
+            backgroundColor: '#FF6B6B',
+            stack: 'assigned',
+            borderRadius: 6,
+            borderSkipped: 'bottom',
+            barPercentage: 0.5
+          },
+          {
+            type: 'line',
+            label: 'Tasks Assigned',
+            data: [],
+            borderColor: '#A0A0A0',
+            borderDash: [6,6],
+            fill: false,
+            tension: 0.4,
+            pointRadius: 0,
+            yAxisID: 'y'
+          },
+          {
+            type: 'line',
+            label: 'Tasks Completed',
+            data: [],
+            borderColor: '#63FFDA',
+            backgroundColor: gradientLandingCyan,
+            fill: true,
+            tension: 0.4,
+            pointRadius: 0,
+            pointBackgroundColor: '#63FFDA',
+            pointBorderColor: '#1A1625',
+            pointHoverRadius: 6,
+            yAxisID: 'y'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        elements: { bar: { borderRadius: 8, borderSkipped: false } },
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          x: { stacked: true, grid: { display: false }, ticks: { color: '#A0A0A0' } },
+          y: {
+            beginAtZero: true,
+            stacked: false,
+            grid: { display: true, color: 'rgba(79, 75, 104, 0.3)', drawBorder: false },
+            ticks: { color: '#A0A0A0', stepSize: 1 }
+          }
+        },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            enabled: true,
+            mode: 'index', intersect: false,
+            displayColors: false,
+            backgroundColor: '#211D30', titleColor: '#FFF', bodyColor: '#FFF', padding: 8,
+            borderColor: '#63FFDA', borderWidth: 1,
+            callbacks: {
+              title: items => {
+                const label = items[0].label;
+                const now = new Date();
+                if (landingChartRange === 'year') return label + ' ' + now.getFullYear();
+                if (landingChartRange === 'month') return now.toLocaleString('default', { month: 'long' }) + ' ' + label + ', ' + now.getFullYear();
+                return label;
+              },
+              label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}`
+            }
+          }
+        }
+      }
+    });
+
+    // --- AGGREGATION LOGIC FOR LANDING PAGE OVERALL PERFORMANCE ---
+    function aggregateLanding(range) {
+      const tasks = JSON.parse(localStorage.getItem('productivityTasks')||'[]');
+      const now = new Date();
+      const currentYear = now.getFullYear();
+      const currentMonth = now.getMonth();
+      let labels, low, med, high, completed, assignedSum;
+      if (range === 'year') {
+        labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        low = Array(12).fill(0); med = Array(12).fill(0); high = Array(12).fill(0); completed = Array(12).fill(0);
+        tasks.forEach(t => {
+          const created = t.created ? new Date(t.created) : null;
+          const completedAt = t.completedAt ? new Date(t.completedAt) : null;
+          if (created && created.getFullYear() === currentYear) {
+            const m = created.getMonth();
+            if (t.priority==='low') low[m]++; if (t.priority==='med') med[m]++; if (t.priority==='high') high[m]++;
+          }
+          if (completedAt && completedAt.getFullYear() === currentYear) {
+            const m = completedAt.getMonth();
+            completed[m]++;
+          }
+        });
+        assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);
+      } else if (range === 'month') {
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        labels = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
+        low = Array(daysInMonth).fill(0); med = Array(daysInMonth).fill(0); high = Array(daysInMonth).fill(0); completed = Array(daysInMonth).fill(0);
+        tasks.forEach(t => {
+          const created = t.created ? new Date(t.created) : null;
+          const completedAt = t.completedAt ? new Date(t.completedAt) : null;
+          if (created && created.getFullYear() === currentYear && created.getMonth() === currentMonth) {
+            const d = created.getDate() - 1;
+            if (t.priority==='low') low[d]++; if (t.priority==='med') med[d]++; if (t.priority==='high') high[d]++;
+          }
+          if (completedAt && completedAt.getFullYear() === currentYear && completedAt.getMonth() === currentMonth) {
+            const d = completedAt.getDate() - 1;
+            completed[d]++;
+          }
+        });
+        assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);
+      } else if (range === 'week') {
+        // ISO week: Monday-Sunday
+        const day = now.getDay(), iso = (day+6)%7;
+        const start = new Date(now); start.setDate(now.getDate()-iso); start.setHours(0,0,0,0);
+        const end   = new Date(start); end.setDate(start.getDate()+6); end.setHours(23,59,59,999);
+        labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+        low = Array(7).fill(0); med = Array(7).fill(0); high = Array(7).fill(0); completed = Array(7).fill(0);
+        tasks.forEach(t => {
+          const created = t.created ? new Date(t.created) : null;
+          const completedAt = t.completedAt ? new Date(t.completedAt) : null;
+          if (created && created >= start && created <= end) {
+            const i = (created.getDay()+6)%7;
+            if (t.priority==='low') low[i]++; if (t.priority==='med') med[i]++; if (t.priority==='high') high[i]++;
+          }
+          if (completedAt && completedAt >= start && completedAt <= end) {
+            const i = (completedAt.getDay()+6)%7;
+            completed[i]++;
+          }
+        });
+        assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);
+      } else { // day
+        labels = Array.from({length:24},(_,i)=>`${i}:00`);
+        low = Array(24).fill(0); med = Array(24).fill(0); high = Array(24).fill(0); completed = Array(24).fill(0);
+        tasks.forEach(t => {
+          const created = t.created ? new Date(t.created) : null;
+          const completedAt = t.completedAt ? new Date(t.completedAt) : null;
+          if (created && isSameDay(created, now)) {
+            const h = created.getHours();
+            if (t.priority==='low') low[h]++; if (t.priority==='med') med[h]++; if (t.priority==='high') high[h]++;
+          }
+          if (completedAt && isSameDay(completedAt, now)) {
+            const h = completedAt.getHours();
+            completed[h]++;
+          }
+        });
+        assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);
+      }
+      return { labels, low, med, high, assignedSum, completed };
+    }
+    function isSameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
+
+    // --- Populate landing chart with productivity data from localStorage (default: year) ---
+    let landingChartRange = 'year';
+    function updateLandingOverallChart(range) {
+      landingChartRange = range;
+      const { labels, low, med, high, assignedSum, completed } = aggregateLanding(range);
+      landingOverallChart.data.labels = labels;
+      landingOverallChart.data.datasets[0].data = low;
+      landingOverallChart.data.datasets[1].data = med;
+      landingOverallChart.data.datasets[2].data = high;
+      landingOverallChart.data.datasets[3].data = assignedSum;
+      landingOverallChart.data.datasets[4].data = completed;
+      landingOverallChart.update();
+    }
+    updateLandingOverallChart(landingChartRange);
+
+    // --- Timeframe toggle logic for UI (Net Worth only UI, no data logic) ---
+    // Overall Performance toggles
+    const overallBtns = document.querySelectorAll('.timeframe-btn');
+    overallBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        overallBtns.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        updateLandingOverallChart(btn.dataset.timeframe);
+      });
+    });
+    // Net Worth toggles (UI only)
+    const networthBtns = document.querySelectorAll('.networth-timeframe-btn');
+    networthBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        networthBtns.forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        // No data logic yet
+      });
+    });
   </script>
 </body>
 </html>

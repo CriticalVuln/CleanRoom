@@ -825,21 +825,21 @@
   <div id="calendarTooltip" style="position: absolute; display: none; background-color: #2a263a; color: #e0e0e0; border: 1px solid #4f4b68; padding: 8px; border-radius: 4px; z-index: 1000; pointer-events: none; font-size: 12px; max-width: 250px; line-height: 1.4;"></div>
   <!-- End NEW Tooltip -->
 
-  <!-- NEW: Weekly Review Modal -->
-  <dialog id="weeklyReviewModal">
-    <h3>Weekly Review</h3>
-    <p>What did you get done this week?</p>
-    <textarea id="weeklyReviewText" placeholder="Enter your accomplishments..."></textarea>
-    <button id="saveWeeklyReviewBtn" disabled>Save & Close</button>
-  </dialog>
-  <!-- End NEW Weekly Review Modal -->
-
   <!-- Daily Notes Modal -->
   <dialog id="dailyNotesModal">
     <h3 id="dailyNotesTitle">Notes for </h3>
     <div id="dailyNotesContent" style="white-space: pre-wrap; margin-bottom: 8px;"></div>
     <button id="closeDailyNotesBtn">Close</button>
   </dialog>
+
+  <!-- Weekly Review Box -->
+  <div id="weeklyReviewBox" style="display: none; position: fixed; top: 60px; right: 60px; background: #18142A; border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(33,29,48,0.45); padding: 32px 28px 24px 28px; border: none; max-width: 420px; width: 90%; color: #E0E0E0; font-family: Poppins, Arial, sans-serif; z-index: 2000; transition: opacity 0.2s;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <div style="font-weight: 600; font-size: 1.18rem; letter-spacing: 0.01em;">Weekly Review</div>
+      <button id="closeWeeklyReviewBoxBtn" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; line-height: 1; color: #63FFDA; font-weight: bold; padding: 0 4px;">&times;</button>
+    </div>
+    <div id="weeklyReviewBoxContent" style="background: #211D30; color: #E0E0E0; border: none; border-radius: 12px; padding: 18px 16px; font-family: Poppins, Arial, sans-serif; font-size: 1rem; min-height: 120px; resize: none; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.12); margin: 0 0 12px 0; width: 100%; height: 180px; box-sizing: border-box; display: block; white-space: pre-wrap; overflow-y: auto;"></div>
+  </div>
 
   <script>
     // TASK STORAGE
@@ -902,15 +902,15 @@
     // Priority/Difficulty Chart Elements
     const ctxPriorityDifficulty = document.getElementById('priorityDifficultyChart').getContext('2d');
     const priorityDifficultyToggleButtons = document.querySelectorAll('.priority-difficulty-toggle button'); // Keep reference for updating active state
-    // NEW: Weekly Review Modal Elements
-    const weeklyReviewModal = document.getElementById('weeklyReviewModal');
-    const weeklyReviewText = document.getElementById('weeklyReviewText');
-    const saveWeeklyReviewBtn = document.getElementById('saveWeeklyReviewBtn');
     // NEW: Daily Notes Modal Elements
     const dailyNotesModal = document.getElementById('dailyNotesModal');
     const dailyNotesTitle = document.getElementById('dailyNotesTitle');
     const dailyNotesContent = document.getElementById('dailyNotesContent');
     const closeDailyNotesBtn = document.getElementById('closeDailyNotesBtn');
+    // Weekly Review Box Elements
+    const weeklyReviewBox = document.getElementById('weeklyReviewBox');
+    const weeklyReviewBoxContent = document.getElementById('weeklyReviewBoxContent');
+    const closeWeeklyReviewBoxBtn = document.getElementById('closeWeeklyReviewBoxBtn');
 
     // --- LOCAL STORAGE FUNCTIONS ---
     function saveTasks() {
@@ -1651,7 +1651,7 @@
             updateMainCharts(mainChartRange); // Update main charts
             updateDifficultyChart(mainChartRange); // Use mainChartRange
             updatePriorityDifficultyChart(mainChartRange); // Use mainChartRange
-            renderActivitySquares(calendarCurrentYear); // Update calendar too
+            renderActivitySquares(calendarCurrentYear, calendarCurrentMonth); // Update calendar too
             saveState(); // Save state after task completion change
         });
 
@@ -1830,11 +1830,12 @@
 
         // Highlight Fridays in month view AND add click listener
         if (month !== undefined && month !== null && d.getDay() === 5) {
-            sq.classList.add('friday');
-            // Add click listener to show daily notes modal for Fridays in month view
-            sq.addEventListener('click', () => {
-                showDailyNotesModal(d);
-            });
+          sq.style.outline = '2px solid #FF6B6B'; // Red outline for Friday
+          sq.style.outlineOffset = '-2px';
+          sq.addEventListener('click', (e) => {
+            e.stopPropagation();
+            showWeeklyReviewBox();
+          });
         }
 
         // --- Tooltip Event Listeners (Modified to use dataset.date) ---
@@ -1935,21 +1936,6 @@
     });
     // --- End Calendar Navigation Logic ---
 
-    // --- NEW: Weekly Review Modal Logic ---
-    function showWeeklyReviewModal() {
-        weeklyReviewText.value = ''; // Clear textarea
-        saveWeeklyReviewBtn.disabled = true; // Disable button initially
-        if (!weeklyReviewModal.open) {
-            weeklyReviewModal.showModal();
-        }
-    }
-
-    function closeWeeklyReviewModal() {
-        if (weeklyReviewModal.open) {
-            weeklyReviewModal.close();
-        }
-    }
-
     // --- NEW: Daily Notes Modal Logic ---
     function showDailyNotesModal(date) {
         const dateStr = date.toISOString().split('T')[0];
@@ -1968,31 +1954,31 @@
         }
     });
 
-    // Enable save button only if there is text
-    weeklyReviewText.addEventListener('input', () => {
-        saveWeeklyReviewBtn.disabled = weeklyReviewText.value.trim() === '';
+    // --- NEW: Weekly Review Box Logic ---
+    function showWeeklyReviewBox() {
+        const now = new Date();
+        const weekNum = getWeekNumber(now);
+        const year = now.getFullYear();
+        const weekKey = `weeklyReview_${year}_${weekNum}`;
+        const review = localStorage.getItem(weekKey) || 'No review saved for this week.';
+        weeklyReviewBoxContent.textContent = review;
+        weeklyReviewBox.style.display = 'block';
+        weeklyReviewBox.style.opacity = '1';
+    }
+
+    closeWeeklyReviewBoxBtn.addEventListener('click', () => {
+        weeklyReviewBox.style.opacity = '0';
+        setTimeout(() => { weeklyReviewBox.style.display = 'none'; }, 200);
     });
 
-    // Save and close the modal
-    saveWeeklyReviewBtn.addEventListener('click', () => {
-        const review = weeklyReviewText.value.trim();
-        if (review) {
-            // Save the review text as daily notes for today
-            const dateStr = new Date().toISOString().split('T')[0];
-            localStorage.setItem(`dailyNotes_${dateStr}`, review);
-            closeWeeklyReviewModal();
-            saveState(); // Save state after weekly review
-        }
-    });
-
-    // Close modal if clicked outside (on the backdrop)
-    weeklyReviewModal.addEventListener('click', (event) => {
-        if (event.target === weeklyReviewModal) {
-            // Don't close if clicked outside when save is disabled (force input)
-            // closeWeeklyReviewModal();
-        }
-    });
-    // --- End Weekly Review Modal Logic ---
+    function getWeekNumber(d) {
+        d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+        const dayNum = d.getUTCDay() || 7;
+        d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+        const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+        return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+    }
+    // --- End Weekly Review Box Logic ---
 
     // --- NEW: Dashboard State Persistence ---
     function collectDashboardState() {
@@ -2051,18 +2037,6 @@
     updatePriorityDifficultyChart(mainChartRange); // Initial update for new chart using main range
     renderTasks();
     updateCalendarDisplay(); // Initial setup of calendar view, display, and squares
-
-    // --- MODIFIED: Show Weekly Review Modal Logic ---
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 = Sunday, 5 = Friday
-    const sessionKey = `weeklyReviewShown_${today.getFullYear()}_${today.getMonth()}_${today.getDate()}`;
-
-    // Show modal only on Fridays and only once per session
-    if (dayOfWeek === 5 && !sessionStorage.getItem(sessionKey)) {
-        showWeeklyReviewModal();
-        sessionStorage.setItem(sessionKey, 'true'); // Mark as shown for this session
-    }
-    // --- End MODIFIED Show Logic ---
 
     /* Disabled drag handles and Sortable to prevent widget movement */
     document.querySelectorAll('.drag-handle').forEach(h => h.remove());
