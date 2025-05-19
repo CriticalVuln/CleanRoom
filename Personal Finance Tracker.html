@@ -196,13 +196,13 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
   <!-- ―――---- added helper libraries ----――― -->
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script> <!-- Papa Parse CDN :contentReference[oaicite:0]{index=0} -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script> <!-- Chart.js UMD bundle :contentReference[oaicite:1]{index=1} -->
   <!-- ADDED: Date Adapter for Chart.js Time Scale -->
   <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script> <!-- date-fns library -->
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- date-fns adapter -->
 </head>
 <body>
+  <script src="config.js"></script> <!-- Load config first -->
   <button id="fileHistoryTab" class="file-history-tab">File History</button>
   <div id="fileHistoryPanel" class="file-history-panel">
     <h3>Uploaded Files</h3>
@@ -229,7 +229,7 @@
 
   <div class="content">
     <h1>Personal Finance Tracker</h1>
-    <input id="csvPicker" type="file" accept=".csv,.pdf" multiple>
+    <input id="pdfPicker" type="file" accept=".pdf" multiple>
     <div id="total"></div>
     <div class="chart-container">
       <canvas id="spendChart"></canvas>
@@ -237,9 +237,51 @@
     <script>
       // Helper to extract month/year from filename
       function extractMonthYearFromName(name) {
-        const match = /([0-9]{4})[-_]?([0-9]{1,2})/.exec(name);
-        if (!match) return null;
-        return { year: parseInt(match[1], 10), month: parseInt(match[2], 10) };
+        if (typeof name !== 'string') return null;
+        const trimmedName = name.trim();
+
+        const monthMap = {
+          jan: 1, january: 1, feb: 2, february: 2, mar: 3, march: 3, apr: 4, april: 4,
+          may: 5, jun: 6, june: 6, jul: 7, july: 7, aug: 8, august: 8, sep: 9, september: 9,
+          oct: 10, october: 10, nov: 11, november: 11, dec: 12, december: 12
+        };
+        const monthPattern = '(January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sep|Oct|October|November|Nov|December|Dec)';
+        
+        // Try to match "Month YYYY" (e.g., "March 2025")
+        // User stated format: "Month Year Bank Statement"
+        const textualMatchMonthYear = trimmedName.match(new RegExp(monthPattern + '\\s+(\\d{4})', 'i'));
+
+        if (textualMatchMonthYear && textualMatchMonthYear[1] && textualMatchMonthYear[2]) {
+          const monthName = textualMatchMonthYear[1].toLowerCase();
+          const year = parseInt(textualMatchMonthYear[2], 10);
+          const month = monthMap[monthName];
+          if (month && year >= 1900 && year <= 2100) { // Added year range check
+            return { year, month };
+          }
+        }
+
+        // Fallback: Try to match "YYYY Month" (less common for user's stated format)
+        const textualMatchYearMonth = trimmedName.match(new RegExp('(\\d{4})\\s+' + monthPattern, 'i'));
+         if (textualMatchYearMonth && textualMatchYearMonth[1] && textualMatchYearMonth[2]) {
+          const year = parseInt(textualMatchYearMonth[1], 10);
+          const monthName = textualMatchYearMonth[2].toLowerCase();
+          const month = monthMap[monthName];
+          if (month && year >= 1900 && year <= 2100) {
+            return { year, month };
+          }
+        }
+
+        // Fallback to numeric month and year (e.g., "2025-03", "2025_3")
+        const numericDateMatch = trimmedName.match(/(\\d{4})[-_]?([0-1]?[0-9])/);
+        if (numericDateMatch && numericDateMatch[1] && numericDateMatch[2]) {
+          const year = parseInt(numericDateMatch[1], 10);
+          const month = parseInt(numericDateMatch[2], 10);
+          if (year >= 1900 && year <= 2100 && month >= 1 && month <= 12) {
+            return { year, month };
+          }
+        }
+        console.warn('Could not extract month/year from filename:', name); // Added warning
+        return null;
       }
       let chart = null;
       // Global aggregates across all uploads
@@ -248,6 +290,9 @@
       let monthlyPayments = {};
       let totalCharges = 0;
       let totalPayments = 0;
+
+      // API Key will now be loaded from config.js
+      const GEMINI_API_KEY = window.APP_CONFIG && window.APP_CONFIG.GEMINI_API_KEY;
 
       // --- File History State ---
       let fileHistory = JSON.parse(localStorage.getItem('financeFileHistory') || '[]');
@@ -269,6 +314,27 @@
           fileHistoryList.innerHTML = '<li style="color:#A0A0A0;">No files uploaded yet.</li>';
           return;
         }
+
+        // Sort fileHistory by date (year, then month), then by name for undated files
+        fileHistory.sort((a, b) => {
+          const dateA = extractMonthYearFromName(a.name);
+          const dateB = extractMonthYearFromName(b.name);
+
+          if (dateA && dateB) {
+            if (dateA.year !== dateB.year) {
+              return dateA.year - dateB.year; // Sort by year ascending
+            }
+            return dateA.month - dateB.month; // Then by month ascending
+          } else if (dateA) {
+            return -1; // dateA (has date) comes before dateB (no date)
+          } else if (dateB) {
+            return 1;  // dateB (has date) comes before dateA (no date)
+          } else {
+            // Neither has a parseable date, sort by name alphabetically
+            return a.name.localeCompare(b.name);
+          }
+        });
+
         fileHistory.forEach(f => {
           const li = document.createElement('li');
           const nameSpan = document.createElement('span');
@@ -397,10 +463,11 @@
       // On load, restore saved data
       document.addEventListener('DOMContentLoaded', () => {
         // Wipe old finance data and file history on first load after this update
-        if (!localStorage.getItem('financeDataReset_2025_05_15')) {
+        if (!localStorage.getItem('financeDataReset_2025_05_15_pdf')) { // Changed reset key
           localStorage.removeItem('financeData');
           localStorage.removeItem('financeFileHistory');
-          localStorage.setItem('financeDataReset_2025_05_15', 'true');
+          localStorage.removeItem('financeFileMonthMap'); // Clear map as well
+          localStorage.setItem('financeDataReset_2025_05_15_pdf', 'true'); // Changed reset key
         }
         const saved = localStorage.getItem('financeData');
         if (saved) {
@@ -414,82 +481,207 @@
       });
 
       // --- Event Listener for File Picker (supports multiple) ---
-      document.getElementById('csvPicker').addEventListener('change', e => {
+      document.getElementById('pdfPicker').addEventListener('change', async e => { // Made async
         const files = Array.from(e.target.files);
         if (!files.length) return;
-        files.forEach(f => {
+
+        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') { // Check if key is missing or is the placeholder
+          alert("Gemini API key is not set or is invalid. Please create config.js with your key (see config.js.example for GEMINI_API_KEY) and ensure it is loaded.");
+          e.target.value = null; // Clear the file input
+          return;
+        }
+
+        for (const f of files) { // Process files one by one, allowing for async operations
           const fileName = f.name;
           const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
 
-          if (fileExtension === 'csv') {
-            Papa.parse(f, {
-              header: true,
-              dynamicTyping: true,
-              skipEmptyLines: true,
-              complete: res => {
-                handleRows(res.data, fileName);
-                renderFileHistory();
-              }
-            });
-          } else if (fileExtension === 'pdf') {
-            // Placeholder for PDF processing logic
-            console.log("PDF file selected. Backend processing would be needed here.");
-            alert("PDF processing is not yet implemented. Please upload a CSV file.");
-            e.target.value = null;
+          if (fileExtension === 'pdf') {
+            // Show some loading indicator to the user if possible
+            console.log(`Processing ${fileName}...`);
+            try {
+              await handlePdfFile(f); // Call the new PDF handler
+            } catch (error) {
+              console.error(`Error processing ${fileName}:`, error);
+              alert(`An error occurred while processing ${fileName}. Check the console for details.`);
+            }
           } else {
-            alert("Unsupported file type. Please upload a CSV or PDF file.");
-            e.target.value = null;
+            alert("Unsupported file type. Please upload a PDF file.");
+            // Clear the file input if any file is unsupported to prevent re-processing attempts
+            e.target.value = null; 
+            break; // Stop processing further files if one is invalid
           }
-        });
+        }
+        // Potentially clear file input after all files are processed, or let user manage it
+        // e.target.value = null; 
       });
 
-      // --- Function to process CSV rows (with optional filename override) ---
-      function handleRows(rows, fileName) {
-        // Require at least one row
-        if (!rows || !rows.length) return;
-        // Detect header fields
-        const headers = Object.keys(rows[0]);
-        const dateField = headers.find(h => /date/i.test(h));
-        const amountField = headers.find(h => /(amount|amt|value)/i.test(h));
-        if (!dateField || !amountField) {
-          alert('CSV must include date and amount columns');
-          return;
+      // --- Function to process PDF files (placeholder for OpenAI API call) ---
+      async function handlePdfFile(file) {
+        const fileName = file.name;
+        console.log(`Attempting to process PDF: ${fileName}`);
+        const h1Title = document.querySelector('.content h1'); // More specific selector for the main title
+        const originalTitle = h1Title ? h1Title.textContent : 'Personal Finance Tracker';
+        if (h1Title) {
+            h1Title.textContent = `Processing ${fileName}...`;
         }
-        // Determine month override from filename
-        const fileInfo = extractMonthYearFromName(fileName);
-        // Precompute grouping override key (always use filename month-year if found)
-        const overrideKey = fileInfo
-          ? `${fileInfo.year}-${String(fileInfo.month).padStart(2,'0')}`
-          : null;
-        // Track which keys this file contributes
-        let contributedKeys = [];
-        rows.forEach(r => {
-          const rawDt = r[dateField];
-          const rawAmt = r[amountField];
-          const dt = new Date(rawDt);
-          const amt = Number(rawAmt);
-          if (isNaN(amt) || isNaN(dt) || dt.toString() === 'Invalid Date') {
-            console.warn(`Skipping row: Invalid data. Date='${rawDt}', Amount='${rawAmt}'`);
+
+        try {
+          const base64File = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+          });
+
+          const pureBase64 = base64File.substring(base64File.indexOf(',') + 1);
+          const extractedData = await callGeminiPdfParser(pureBase64, fileName);
+
+          if (!extractedData || !extractedData.transactions || !Array.isArray(extractedData.transactions)) {
+            console.error("Failed to extract valid transaction data from PDF:", fileName, "Response:", extractedData);
+            alert(`Could not extract transactions from ${fileName}. The API might have returned an unexpected format or no data. Check console.`);
+            addFileToHistory(fileName, []);
+            updateDisplay();
             return;
           }
-          // Determine grouping key (override if available)
-          const key = overrideKey || `${dt.getUTCFullYear()}-${String(dt.getUTCMonth()+1).padStart(2,'0')}`;
-          if (!contributedKeys.includes(key)) contributedKeys.push(key);
-          // Accumulate per-month totals
-          if (amt > 0) {
-            monthlyCharges[key] = (monthlyCharges[key] || 0) + amt;
-            totalCharges += amt;
-          } else if (amt < 0) {
-            monthlyPayments[key] = (monthlyPayments[key] || 0) + Math.abs(amt);
-            totalPayments += Math.abs(amt);
+
+          const fileInfo = extractMonthYearFromName(fileName);
+          const overrideKey = fileInfo ? `${fileInfo.year}-${String(fileInfo.month).padStart(2, '0')}` : null;
+          let contributedKeys = new Set();
+
+          if (extractedData.transactions.length === 0) {
+              console.warn(`No transactions found or extracted by AI for ${fileName}.`);
+              addFileToHistory(fileName, []);
+              updateDisplay();
+              return;
           }
-        });
-        // Save file-to-keys mapping
-        fileMonthMap[fileName] = contributedKeys;
-        saveFileMonthMap();
-        addFileToHistory(fileName, Array.from(contributedKeys));
-        // Refresh display & chart
-        updateDisplay();
+
+          extractedData.transactions.forEach(transaction => {
+            const { date, amount, description } = transaction;
+            const dt = new Date(date);
+            const amt = Number(amount);
+
+            if (isNaN(amt) || !date || isNaN(dt.getTime()) || dt.toString() === 'Invalid Date') {
+              console.warn(`Skipping transaction from API: Invalid data. Date='${date}', Amount='${amt}', Description='${description}'`);
+              return;
+            }
+
+            const keyToUse = overrideKey || `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}`;
+            contributedKeys.add(keyToUse);
+
+            if (!monthlyCharges[keyToUse]) monthlyCharges[keyToUse] = 0;
+            if (!monthlyPayments[keyToUse]) monthlyPayments[keyToUse] = 0;
+
+            if (amt > 0) {
+              monthlyCharges[keyToUse] += amt;
+              totalCharges += amt;
+            } else if (amt < 0) {
+              monthlyPayments[keyToUse] += Math.abs(amt);
+              totalPayments += Math.abs(amt);
+            }
+          });
+
+          fileMonthMap[fileName] = Array.from(contributedKeys);
+          saveFileMonthMap();
+          addFileToHistory(fileName, Array.from(contributedKeys));
+          updateDisplay();
+
+        } catch (error) {
+          console.error(`Error in handlePdfFile for ${fileName}:`, error);
+          alert(`An error occurred while processing ${fileName}. Check the console for details. Error: ${error.message}`);
+          addFileToHistory(fileName, []);
+          updateDisplay();
+        } finally {
+           if (h1Title) {
+             h1Title.textContent = originalTitle;
+           }
+        }
+      }
+
+      async function callGeminiPdfParser(base64Pdf, fileNameForContext) {
+        console.log(`Sending ${fileNameForContext} to Google Gemini API for parsing...`);
+        if (!GEMINI_API_KEY) {
+            throw new Error("Gemini API key is not loaded. Please check config.js.");
+        }
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+
+        const systemInstructionText = `You are a data extraction AI. You will receive a PDF bank statement. Your task is to:
+1. Identify all individual financial transaction lines. Focus on itemized entries, not summary totals unless they are the only source for a specific transaction type.
+2. For each transaction found, extract the date, description, and amount.
+Return a single JSON object: \`{ "transactions": [ { "date": "YYYY-MM-DD", "description": "...", "amount": number }, ... ] }\`.
+CRITICAL RULES for 'amount':
+  - Charges/Debits/Purchases/Expenses/Withdrawals are POSITIVE numbers (e.g., 100.00).
+  - Payments/Credits/Deposits/Income are NEGATIVE numbers (e.g., -50.00).
+  - Examine transaction descriptions for keywords like 'Purchase', 'Fee', 'Withdrawal' (positive) or 'Payment', 'Deposit', 'Credit', 'Income' (negative).
+  - If the PDF text clearly shows 'Debit' and 'Credit' columns, amounts in a 'Debit' column are positive, and amounts in a 'Credit' column are negative.
+For 'date': Use 'YYYY-MM-DD'. If the full date isn't on the transaction line, infer the year and month from the overall statement period (often found in the filename or at the top/bottom of the PDF text). If day is missing, use '01'.
+For 'description': Capture the full transaction detail as presented on the statement.
+The response MUST be only the valid JSON object, with no extra text, explanations, or markdown formatting.`;
+
+        const userPromptText = `Please analyze the attached PDF bank statement named '${fileNameForContext}' and extract all financial transactions according to the detailed system instructions. Pay utmost attention to correctly identifying and signing the 'amount' for each transaction (positive for charges, negative for payments/credits).`;
+
+        const payload = {
+          contents: [
+            {
+              parts: [
+                { text: userPromptText },
+                {
+                  inline_data: {
+                    mime_type: "application/pdf",
+                    data: base64Pdf
+                  }
+                }
+              ]
+            }
+          ],
+          system_instruction: {
+            parts: [
+              { text: systemInstructionText }
+            ]
+          },
+          generationConfig: {
+            response_mime_type: "application/json",
+            temperature: 0.2 
+          }
+        };
+
+        try {
+          const response = await fetch(API_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const errorBody = await response.json().catch(() => response.text()); // Try to parse as JSON, fallback to text
+            console.error("Gemini API Error Response:", errorBody);
+            const errorMessage = errorBody.error && errorBody.error.message ? errorBody.error.message : JSON.stringify(errorBody);
+            throw new Error(`Gemini API request failed with status ${response.status}: ${response.statusText}. Details: ${errorMessage}`);
+          }
+
+          const data = await response.json();
+          console.log("Gemini API Raw Response:", data);
+
+          if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) {
+            const jsonString = data.candidates[0].content.parts[0].text;
+            console.log("Gemini API JSON String Content:", jsonString);
+            try {
+                return JSON.parse(jsonString);
+            } catch (parseError) {
+                console.error("Failed to parse JSON from Gemini response:", parseError, "Raw content:", jsonString);
+                // Check if it might already be an object (though API docs say it's a string with response_mime_type: "application/json")
+                if (typeof jsonString === 'object') return jsonString;
+                throw new Error("Failed to parse JSON from Gemini API response. Check console for raw output.");
+            }
+          } else {
+            console.error("Unexpected Gemini API response structure:", data);
+            throw new Error("Unexpected response structure from Gemini API. No valid content found.");
+          }
+        } catch (error) {
+          console.error("Error calling Gemini API:", error);
+          throw error; // Re-throw to be caught by handlePdfFile
+        }
       }
 
       // --- Manual Reset: Clear all finance data, file history, and file-to-month map ---
@@ -497,7 +689,7 @@
         localStorage.removeItem('financeData');
         localStorage.removeItem('financeFileHistory');
         localStorage.removeItem('financeFileMonthMap');
-        localStorage.removeItem('financeDataReset_2025_05_15');
+        localStorage.removeItem('financeDataReset_2025_05_15_pdf'); // Ensured key is correct
         // Clear in-memory state
         fileHistory = [];
         fileMonthMap = {};
