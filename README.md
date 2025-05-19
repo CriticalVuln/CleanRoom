@@ -1,171 +1,97 @@
-<<<<<<< HEAD
 # Dashboard Suite
 
-A collection of self-contained, browser-only dashboards for managing tasks and tracking personal finances in real time.  
-Open the HTML files directly in any modern browser—no build step, server, or database required.
+A collection of self-contained, browser-only dashboards designed for real-time task management and personal finance tracking. Open the HTML files directly in any modern web browser—no build steps, servers, or databases are required.
 
 ---
 
-## 1  Productivity Tracker
+## 1. Productivity Tracker
 
-A two-column task dashboard with interactive analytics and daily heat-map calendar.
+A comprehensive two-column task dashboard featuring interactive analytics and a daily activity heat-map calendar to help you visualize and manage your productivity.
 
 **Key Features:**
 
-• **Task Manager**
-  - Priority flags (Low / Med / High) and Easy ↔ Hard difficulty toggle
-  - Time budgeting: capture and edit _time allotted_ vs. _time spent_
-  - Inline controls: quick-add, one-click completion, edit-in-place, and delete
-  - Drag-and-drop reordering of cards and widgets via SortableJS
-  - Local Storage persistence of tasks, completion state, and settings
+*   **Advanced Task Management:**
+    *   Set task priorities (Low, Medium, High) and difficulty levels (Easy ↔ Hard).
+    *   Budget time effectively by capturing and comparing _time allotted_ versus _time spent_.
+    *   Utilize inline controls for quick task additions, one-click completions, in-place editing, and deletions.
+    *   Reorder tasks and widgets seamlessly with drag-and-drop functionality (powered by SortableJS).
+    *   Persistently store tasks, their completion states, and user settings using Local Storage.
 
-• **Interactive Analytics (Chart.js)**
-  - **Overall Performance**: stacked bars for assigned tasks by priority + trend line for completed
-  - **Hours Worked**: compare hours allotted vs. hours spent; delta indicator vs. previous period
-  - **Difficulty Completion**: easy vs. hard completions plotted over time
-  - **Priority × Difficulty**: dual-ring doughnut summarising completions; live center count
-  - **Unified timeframe toggle**: switch all charts between _Year_, _Month_, _Week_, and _Day_
+*   **Insightful Interactive Analytics (via Chart.js):**
+    *   **Overall Performance:** View stacked bar charts of assigned tasks by priority, alongside a trend line for completed tasks.
+    *   **Hours Worked Analysis:** Compare total hours allotted against hours spent, with an indicator showing the delta from the previous period.
+    *   **Difficulty Completion Trends:** Track completions of easy versus hard tasks over time.
+    *   **Priority × Difficulty Matrix:** A dual-ring doughnut chart summarizing completions by both priority and difficulty, with a live count in the center.
+    *   **Unified Timeframe Control:** Dynamically switch all analytical charts between _Year_, _Month_, _Week_, and _Day_ views.
 
-• **Activity Calendar**
-  - GitHub-style heat-map: daily squares coloured by tasks completed
-  - Toggle between **Year View** and **Month View**
-  - Keyboard-style arrows and hover tooltips for counts
+*   **Dynamic Activity Calendar:**
+    *   Visualize daily productivity with a GitHub-style heat-map, where squares are colored based on the number of tasks completed.
+    *   Toggle between **Year View** and **Month View** for broader or more detailed insights.
+    *   Navigate easily using keyboard-style arrows and view task counts with hover tooltips.
 
-• **Weekly & Daily Reviews**
-  - Weekly Review modal at week’s end to capture retrospectives
-  - Daily Notes modal per calendar day; persists locally for future reference
+*   **Review & Reflection Tools:**
+    *   Engage in weekly retrospectives with a dedicated **Weekly Review** modal that appears at the end of each week.
+    *   Capture daily thoughts and summaries using the **Daily Notes** modal, accessible for each calendar day, with notes persisted locally.
 
-• **Polished UI/UX**
-  - Dark, minimal aesthetic with Poppins font, rounded cards, and soft shadows
-  - Responsive two-column layout that collapses seamlessly on small screens
-  - Persistent sidebar navigation linking between dashboards
+*   **Polished User Interface & Experience:**
+    *   Enjoy a dark, minimalist aesthetic featuring the Poppins font, rounded interface elements, and soft shadows.
+    *   Experience a responsive two-column layout that adapts gracefully to smaller screens.
+    *   Navigate effortlessly between dashboards using the persistent sidebar.
 
 ---
 
-## 2  Personal Finance Tracker
+## 2. Personal Finance Tracker
 
-A lightweight CSV-based spending and income tracker with interactive charting.
+A smart spending and income tracker that leverages AI to extract transaction data from PDF bank statements, presented with interactive charts.
 
 **Key Features:**
 
-• **Easy Data Import**
-  - Drag-and-drop or file picker for CSV uploads (supports multiple files)
-  - Intelligent filename parsing to assign statements to specific month/year
-  - PDF upload placeholder for future backend conversion
+*   **AI-Powered PDF Data Import:**
+    *   Securely upload single or multiple PDF bank statements using the file picker.
+    *   Utilizes the Google Gemini API to intelligently parse PDF documents and extract transaction details (dates, descriptions, amounts).
+    *   API key for the Gemini service is managed securely via an untracked `config.js` file.
+    *   Automatically attempts to determine the month and year from the PDF filename for better organization.
 
-• **Automatic Aggregation**
-  - Separates positive amounts as _Charges_ and negative as _Payments_
-  - Aggregates totals per month across all uploaded files
-  - Keeps running grand totals for charges and payments
+*   **Automated Financial Aggregation:**
+    *   Categorizes transactions: positive amounts as _Charges_ (expenses) and negative amounts as _Payments/Credits_ (income/refunds).
+    *   Aggregates financial totals per month, consolidating data from all uploaded statements for that period.
+    *   Maintains running grand totals for overall charges and payments.
 
-• **Interactive Chart (Chart.js)**
-  - Line chart comparing monthly charges vs. payments
-  - Responsive and color-coded: red for charges, green for payments
+*   **Interactive Financial Chart (via Chart.js):**
+    *   Visualize financial trends with a line chart comparing monthly charges versus payments.
+    *   The chart is responsive and color-coded for clarity: red for charges and green for payments.
 
-• **Local Storage Persistence**
-  - Saved data survives reloads and new uploads
-  - Chart and totals restore on page load
+*   **Reliable Local Storage Persistence:**
+    *   All imported financial data, aggregated totals, and file history are saved in Local Storage, surviving browser reloads and new uploads.
+    *   The chart and summary totals are automatically restored when the page is loaded.
 
-• **Polished UI/UX**
-  - Dark theme consistent with Productivity Tracker
-  - Sidebar navigation for easy switching between dashboards
-  - Mobile-friendly layout and card-based structure
+*   **Sleek User Interface & Experience:**
+    *   Features a dark theme consistent with the Productivity Tracker for a unified look and feel.
+    *   Includes sidebar navigation for easy switching between different dashboards.
+    *   Offers a mobile-friendly layout with a clean, card-based structure.
 
 ---
 
 ## Getting Started
 
-1. Clone or download the repository.
-2. Open `Landing Page.html` in your browser to navigate between dashboards.
-3. Click the links or open `Productivity Tracker.html` and `Personal Finance Tracker.html` directly.
-4. No additional setup or dependencies required.
-
----
-=======
-
-## 1  Productivity Tracker
-
-A two-column task dashboard with interactive analytics and daily heat-map calendar.
-
-**Key Features:**
-
-• **Task Manager**
-  - Priority flags (Low / Med / High) and Easy ↔ Hard difficulty toggle
-  - Time budgeting: capture and edit _time allotted_ vs. _time spent_
-  - Inline controls: quick-add, one-click completion, edit-in-place, and delete
-  - Drag-and-drop reordering of cards and widgets via SortableJS
-  - Local Storage persistence of tasks, completion state, and settings
-
-• **Interactive Analytics (Chart.js)**
-  - **Overall Performance**: stacked bars for assigned tasks by priority + trend line for completed
-  - **Hours Worked**: compare hours allotted vs. hours spent; delta indicator vs. previous period
-  - **Difficulty Completion**: easy vs. hard completions plotted over time
-  - **Priority × Difficulty**: dual-ring doughnut summarising completions; live center count
-  - **Unified timeframe toggle**: switch all charts between _Year_, _Month_, _Week_, and _Day_
-
-• **Activity Calendar**
-  - GitHub-style heat-map: daily squares coloured by tasks completed
-  - Toggle between **Year View** and **Month View**
-  - Keyboard-style arrows and hover tooltips for counts
-
-• **Weekly & Daily Reviews**
-  - Weekly Review modal at week’s end to capture retrospectives
-  - Daily Notes modal per calendar day; persists locally for future reference
->>>>>>> f27bec5b09c0d7ccb689d7f611b1a3f679d50fec
-
-• **Polished UI/UX**
-  - Dark, minimal aesthetic with Poppins font, rounded cards, and soft shadows
-  - Responsive two-column layout that collapses seamlessly on small screens
-  - Persistent sidebar navigation linking between dashboards
-
-<<<<<<< HEAD
-* **HTML5 / CSS3 / Vanilla JS (ES6+)** — no frameworks
-* **Chart.js** — lightweight, dependency-free charts
-* **SortableJS** — drag-and-drop support
-* **Papa Parse** — CSV parsing for finance statements
-* **date-fns & chartjs-adapter-date-fns** — time axis formatting
-* **Local Storage API** — client-side persistence
-* **Google Fonts (Poppins)** — clean typography
-=======
----
-
-## 2  Personal Finance Tracker
-
-A lightweight CSV-based spending and income tracker with interactive charting.
-
-**Key Features:**
-
-• **Easy Data Import**
-  - Drag-and-drop or file picker for CSV uploads (supports multiple files)
-  - Intelligent filename parsing to assign statements to specific month/year
-  - PDF upload placeholder for future backend conversion
-
-• **Automatic Aggregation**
-  - Separates positive amounts as _Charges_ and negative as _Payments_
-  - Aggregates totals per month across all uploaded files
-  - Keeps running grand totals for charges and payments
-
-• **Interactive Chart (Chart.js)**
-  - Line chart comparing monthly charges vs. payments
-  - Responsive and color-coded: red for charges, green for payments
-
-• **Local Storage Persistence**
-  - Saved data survives reloads and new uploads
-  - Chart and totals restore on page load
-
-• **Polished UI/UX**
-  - Dark theme consistent with Productivity Tracker
-  - Sidebar navigation for easy switching between dashboards
-  - Mobile-friendly layout and card-based structure
+1.  **Clone or Download:** Obtain the repository files.
+2.  **Set Up API Key (for Personal Finance Tracker):**
+    *   Locate the `config.js.example` file.
+    *   Rename it to `config.js`.
+    *   Open `config.js` and replace `'YOUR_GEMINI_API_KEY_HERE'` with your actual Google Gemini API key.
+3.  **Open in Browser:** Launch `Landing Page.html` in your web browser to access all dashboards. Alternatively, you can open `Productivity Tracker.html` or `Personal Finance Tracker.html` directly.
+4.  **No Extra Steps:** No build process, server setup, or additional dependencies are required for the core functionality (beyond the API key for PDF parsing).
 
 ---
 
-## Getting Started
+## Technologies Used
 
-1. Clone or download the repository.
-2. Open `Landing Page.html` in your browser to navigate between dashboards.
-3. Click the links or open `Productivity Tracker.html` and `Personal Finance Tracker.html` directly.
-4. No additional setup or dependencies required.
+*   **Core:** HTML5, CSS3, Vanilla JavaScript (ES6+) — no frameworks for core logic.
+*   **Charting:** Chart.js — for lightweight, dependency-free interactive charts.
+*   **Drag & Drop:** SortableJS — enabling drag-and-drop functionality in the Productivity Tracker.
+*   **AI PDF Parsing:** Google Gemini API — for extracting transaction data from PDF bank statements.
+*   **Date Handling:** date-fns & chartjs-adapter-date-fns — for advanced time axis formatting in charts.
+*   **Persistence:** Local Storage API — for client-side data storage.
+*   **Typography:** Google Fonts (Poppins) — for a clean and modern visual style.
 
 ---
->>>>>>> f27bec5b09c0d7ccb689d7f611b1a3f679d50fec
