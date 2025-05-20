@@ -602,7 +602,7 @@
         if (!GEMINI_API_KEY) {
             throw new Error("Gemini API key is not loaded. Please check config.js.");
         }
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${GEMINI_API_KEY}`;
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
         const systemInstructionText = `You are a data extraction AI. You will receive a PDF bank statement. Your task is to:
 1. Identify all individual financial transaction lines. Focus on itemized entries, not summary totals unless they are the only source for a specific transaction type.
