@@ -416,7 +416,52 @@
     .timeframe-toggle button.active {
       color: #FFF; /* Keep white for active */
       font-weight: 600;
+      /* BEGIN MODIFICATION: Add styles from landing page for consistency */
+      background-color: #63FFDA;
+      color: #0D0B14;
+      /* END MODIFICATION */
     }
+    /* BEGIN ADDITION: Styles for widget titles and timeframe controls from landing page */
+    .widget-title {
+      font-size: 1.3em; /* Consistent with Personal Finance Tracker */
+      font-weight: 600;
+      color: #63FFDA; /* MODIFIED: Primary Text to Turquoise */
+      margin-bottom: 12px; /* Space below title */
+    }
+    .landing-timeframe-controls {
+      display: flex;
+      gap: 6px; /* Slightly reduced gap */
+    }
+    .landing-timeframe-controls button,
+    .timeframe-toggle button { /* Apply to existing buttons as well for now */
+      background: transparent; /* MODIFIED: Transparent background */
+      border: 1px solid transparent; /* MODIFIED: Transparent border to maintain layout */
+      color: #63FFDA; /* MODIFIED: Turquoise text */
+      font-size: 12px; /* Smaller font */
+      font-family: 'Poppins', sans-serif;
+      font-weight: 400; /* Regular weight */
+      cursor: pointer;
+      padding: 5px 10px; /* Adjusted padding */
+      border-radius: 6px; /* Rounded corners */
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .landing-timeframe-controls button.active,
+    .landing-timeframe-controls button.selected, /* Keep .selected for existing JS */
+    .timeframe-toggle button.active, /* Ensure existing active buttons get the new style */
+    .timeframe-toggle button.selected /* Ensure existing selected buttons get the new style */
+    {
+      background-color: #63FFDA; /* Accent Cyan */
+      color: #0D0B14; /* Dark text for contrast */
+      border: 1px solid #63FFDA; /* MODIFIED: Turquoise border */
+      font-weight: 600; /* Bold active button */
+    }
+    .landing-timeframe-controls button:hover:not(.active):not(.selected),
+    .timeframe-toggle button:hover:not(.active):not(.selected) {
+      background-color: rgba(99, 255, 218, 0.1); /* MODIFIED: Subtle turquoise glow */
+      border: 1px solid transparent; /* MODIFIED: Transparent border */
+      color: #63FFDA; /* MODIFIED: Keep text turquoise */
+    }
+    /* END ADDITION */
     .chart-container {
       position: relative;
       height: 300px;
@@ -533,11 +578,21 @@
     .delete-btn .trash-icon { fill: #FF6B6B; }   /* Accent Red trashcan */
 
     /* color the delta arrow/percent green on increase, red on decrease */
+    .delta-indicator {
+      padding: 5px 10px; /* Increased padding for a larger bubble */
+      border-radius: 16px; /* Adjusted border-radius for a larger bubble */
+      font-size: 1em;    /* Increased font size */
+      font-weight: 600;  /* Made font bolder */
+      display: inline-flex; /* To align icon and text */
+      align-items: center;
+    }
     .delta-indicator.increase {
-      color: #63FFDA; /* Accent Cyan */
+      background-color: rgba(99, 255, 218, 0.12) !important; /* Lighter turquoise/green bubble */
+      color: #39FF14 !important; /* Neon Green text */
     }
     .delta-indicator.decrease {
-      color: #FF6B6B; /* Accent Red */
+      background-color: rgba(255, 107, 107, 0.12) !important; /* Lighter red bubble */
+      color: #FF073A !important; /* Neon Red text */
     }
 
     /* Style for the new placeholder widget */
@@ -693,12 +748,12 @@
       <div class="card">
         <div class="drag-handle"></div>
         <div class="chart-header">
-          <h3>Overall Performance</h3>
-          <div class="timeframe-toggle">
-            <button data-range="year" class="active">This Year</button>
-            <button data-range="month">This Month</button>
-            <button data-range="week">This Week</button>
-            <button data-range="day">Today</button>
+          <h3 class="widget-title">Overall Performance</h3> <!-- MODIFICATION: Added widget-title class -->
+          <div class="timeframe-toggle landing-timeframe-controls"> <!-- MODIFICATION: Added landing-timeframe-controls class -->
+            <button data-range="year" class="active timeframe-btn">This Year</button> <!-- MODIFICATION: Added timeframe-btn class -->
+            <button data-range="month" class="timeframe-btn">This Month</button> <!-- MODIFICATION: Added timeframe-btn class -->
+            <button data-range="week" class="timeframe-btn">This Week</button> <!-- MODIFICATION: Added timeframe-btn class -->
+            <button data-range="day" class="timeframe-btn">Today</button> <!-- MODIFICATION: Added timeframe-btn class -->
           </div>
         </div>
         <div class="chart-container">
@@ -714,7 +769,7 @@
             <div class="card">
               <div class="drag-handle"></div>
               <div class="chart-header">
-                <h3>Hours Worked</h3>
+                <h3 class="widget-title">Hours Worked</h3> <!-- MODIFICATION: Added widget-title class -->
                 <div class="timeframe-toggle">
                   <button data-range="year" class="active">This Year</button>
                   <button data-range="month">This Month</button>
@@ -1303,7 +1358,7 @@
                         }
                     }
                 }
-            }
+            },
         },
         plugins: [centerTextPlugin]
     });
@@ -1552,6 +1607,7 @@
             deltaIndicatorEl.classList.add('decrease');
         } else { // percentageChange === 0
              deltaIndicatorEl.innerHTML = '→ 0.0%'; // Right arrow for no change, no parens
+
         }
     }
 
@@ -1725,8 +1781,7 @@
             const deleteBtn = document.createElement('button');
             deleteBtn.innerHTML = `
               <svg viewBox="0 0 24 24" class="trash-icon">
-                <path d="M16 9v10H8V9h8m-1.5-6h-5l-1
-                         1H5v2h14V4h-4.5l-1-1z"/>
+                <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-4.5l-1-1z"/>
               </svg>`;
             deleteBtn.title = 'Delete';
             deleteBtn.classList.add('delete-btn');

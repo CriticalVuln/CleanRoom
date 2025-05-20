@@ -39,8 +39,8 @@
     /* Container for the chart to control its height */
     .chart-container {
       position: relative;
-      height: 300px; /* Match Productivity Tracker Overall Performance chart height */
-      margin-top: 12px; /* Add some space above the chart */
+      /* height: 300px; */ /* Removed - height will be managed by inner container or content */
+      /* margin-top: 12px; */ /* Removed - spacing managed by card padding and flex gap */
     }
     /* --- End Copied/Adapted Styles --- */
 
@@ -190,6 +190,101 @@
     .file-history-list .delete-btn:hover {
       background: #2a263a;
     }
+    /* --- New: Category Chart Styles --- */
+    /* .category-chart-container is now primarily styled by .card and .charts-row-container */
+    /* Specific styles for h2, selector, and inner container remain if needed */
+    .category-chart-container h2 {
+      color: #FFF;
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    .category-chart-inner-container {
+      position: relative;
+      height: 300px; /* Adjust as needed */
+    }
+    #categoryMonthSelector {
+      display: block;
+      margin: 15px auto 10px auto; /* Added bottom margin */
+      padding: 8px;
+      border: 1px solid #4F4B68;
+      border-radius: 4px;
+      background: #211D30;
+      color: #E0E0E0;
+      cursor: pointer;
+    }
+
+    /* --- New: Net Worth Chart Styles --- */
+    .net-worth-container {
+      /* Styles inherited from .card */
+      margin-bottom: 24px; /* Space below this top widget */
+    }
+    .net-worth-container h2 {
+      color: #63FFDA; /* Turquoise */
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    .net-worth-chart-inner-container {
+      position: relative;
+      height: 250px; /* Adjust as needed, slightly smaller for a top widget */
+    }
+
+    /* --- Timeframe Controls --- */
+    .timeframe-controls {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .timeframe-controls button {
+      background: none;
+      border: none;
+      color: #63FFDA; /* Turquoise */
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 0 5px;
+      font-size: 0.9em;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .timeframe-controls button.active {
+      background-color: #63FFDA;
+      color: #0D0B14; /* Dark background for active button text */
+    }
+    .timeframe-controls button:hover:not(.active) {
+      background-color: rgba(99, 255, 218, 0.1); /* Slight hover effect */
+    }
+
+    /* --- Rule for Expenses title --- */
+    .chart-container > h2 {
+      text-align: center;
+      color: #63FFDA; /* Turquoise */
+      font-weight: 600;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+
+    /* --- New: Row container for side-by-side charts --- */
+    .charts-row-container {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap; /* Allow wrapping on smaller screens */
+      gap: 24px; /* Space between cards in the row */
+      margin-bottom: 24px; /* Add margin below the row */
+    }
+    .charts-row-container > .card {
+      flex: 1 1 calc(50% - 12px); /* Grow, shrink, basis with gap adjustment */
+      min-width: 300px; /* Minimum width before wrapping or shrinking too much */
+      margin-bottom: 0; /* Remove bottom margin as gap handles spacing */
+    }
+    /* --- New: Inner container for Charges vs Payments chart --- */
+    .charges-payments-chart-inner-container {
+      position: relative;
+      height: 350px; /* Adjusted from 325px */
+    }
   </style>
 
   <!-- Poppins font -->
@@ -231,9 +326,44 @@
     <h1>Personal Finance Tracker</h1>
     <input id="pdfPicker" type="file" accept=".pdf" multiple>
     <div id="total"></div>
-    <div class="chart-container">
-      <canvas id="spendChart"></canvas>
+
+    <!-- New Net Worth (Monthly Income) Widget -->
+    <div class="net-worth-container card">
+      <h2>Net Worth</h2>
+      <div class="timeframe-controls">
+        <button data-chart="netWorth" data-range="day">Day</button>
+        <button data-chart="netWorth" data-range="week">Week</button>
+        <button data-chart="netWorth" data-range="month" class="active">Month</button>
+        <button data-chart="netWorth" data-range="year">Year</button>
+      </div>
+      <div class="net-worth-chart-inner-container">
+        <canvas id="netWorthChartCanvas"></canvas>
+      </div>
     </div>
+
+    <!-- Row container for side-by-side charts -->
+    <div class="charts-row-container">
+      <div class="chart-container card">
+        <h2>Expenses</h2> <!-- Changed from Charges vs Payments, removed inline style -->
+        <div class="timeframe-controls">
+          <button data-chart="expenses" data-range="day">Day</button>
+          <button data-chart="expenses" data-range="week">Week</button>
+          <button data-chart="expenses" data-range="month" class="active">Month</button>
+          <button data-chart="expenses" data-range="year">Year</button>
+        </div>
+        <div class="charges-payments-chart-inner-container"> <!-- NEW WRAPPER -->
+          <canvas id="spendChart"></canvas>
+        </div>
+      </div>
+
+      <div class="category-chart-container card"> <!-- Ensured .card class is present -->
+        <select id="categoryMonthSelector"></select>
+        <div class="category-chart-inner-container">
+          <canvas id="categorySpendChart"></canvas>
+        </div>
+      </div>
+    </div>
+
     <script>
       // Helper to extract month/year from filename
       function extractMonthYearFromName(name) {
@@ -284,12 +414,25 @@
         return null;
       }
       let chart = null;
-      // Global aggregates across all uploads
-      let monthlyNet = {};
-      let monthlyCharges = {};
-      let monthlyPayments = {};
-      let totalCharges = 0;
-      let totalPayments = 0;
+      // Global aggregates - moving to daily structure
+      // let monthlyNet = {}; // Old
+      // let monthlyCharges = {}; // Old
+      // let monthlyPayments = {}; // Old
+      // let monthlyDCIncome = {}; // Old
+      // let totalCharges = 0; // Old - will be derived if needed
+      // let totalPayments = 0; // Old - will be derived if needed
+
+      let dailyActivity = {}; // New: {"YYYY-MM-DD": {charges: 0, payments: 0, dcIncome: 0, categories: {"Groceries": 0,...}}}
+
+      // --- New: Category Spending Globals ---
+      // let monthlyCategorizedSpending = {}; // Old - merged into dailyActivity
+      let categoryChart = null;
+      const CATEGORIES = ["Groceries", "Food Delivery/Restaurant", "Gas", "Misc", "Other"];
+
+      // --- New: Net Worth (Income) Chart Global ---
+      let netWorthChartInstance = null;
+      let expensesChartTimeframe = 'month'; // Default timeframe for expenses chart
+      let netWorthChartTimeframe = 'month'; // Default timeframe for net worth chart
 
       // API Key will now be loaded from config.js
       const GEMINI_API_KEY = window.APP_CONFIG && window.APP_CONFIG.GEMINI_API_KEY;
@@ -297,10 +440,12 @@
       // --- File History State ---
       let fileHistory = JSON.parse(localStorage.getItem('financeFileHistory') || '[]');
       // --- File-to-Month Mapping for Robust Deletion ---
-      let fileMonthMap = JSON.parse(localStorage.getItem('financeFileMonthMap') || '{}');
+      // let fileMonthMap = JSON.parse(localStorage.getItem('financeFileMonthMap') || '{}'); // Old
+      let fileDataKeysMap = JSON.parse(localStorage.getItem('financeFileDataKeysMap') || '{}'); // New: {"filename": ["YYYY-MM-DD", ...]}
 
-      function saveFileMonthMap() {
-        localStorage.setItem('financeFileMonthMap', JSON.stringify(fileMonthMap));
+
+      function saveFileDataKeysMap() { // New name
+        localStorage.setItem('financeFileDataKeysMap', JSON.stringify(fileDataKeysMap));
       }
 
       // --- File History UI Logic ---
@@ -369,14 +514,14 @@
         }
       });
 
-      function addFileToHistory(name, keys) {
+      function addFileToHistory(name, keys) { // keys are now YYYY-MM-DD
         if (!fileHistory.some(f => f.name === name)) {
           fileHistory.push({ name });
           localStorage.setItem('financeFileHistory', JSON.stringify(fileHistory));
         }
         if (Array.isArray(keys) && keys.length) {
-          fileMonthMap[name] = keys;
-          saveFileMonthMap();
+          fileDataKeysMap[name] = keys; // Store daily keys
+          saveFileDataKeysMap();
         }
       }
       function deleteFileHistory(name) {
@@ -384,23 +529,28 @@
         fileHistory = fileHistory.filter(f => f.name !== name);
         localStorage.setItem('financeFileHistory', JSON.stringify(fileHistory));
         // Remove all data from this file from the charts
-        removeFileData(name);
+        removeFileData(name); // Uses daily keys now
         // Remove mapping
-        delete fileMonthMap[name];
-        saveFileMonthMap();
+        delete fileDataKeysMap[name];
+        saveFileDataKeysMap();
         renderFileHistory();
-        updateDisplay();
+        // updateDisplay(); // Will be called by updateAndSaveData
+        updateAndSaveData();
       }
       function removeFileData(name) {
-        // Remove all data for this file from monthlyCharges/payments using fileMonthMap
-        const keys = fileMonthMap[name] || [];
-        keys.forEach(key => {
-          delete monthlyCharges[key];
-          delete monthlyPayments[key];
+        const dailyKeysToRemove = fileDataKeysMap[name] || [];
+        // const isDCFile = name.toUpperCase().startsWith("DC"); // Not directly needed here if we clear all parts of dailyActivity
+
+        dailyKeysToRemove.forEach(dateKey => {
+          // This deletes all data for that day. If multiple files contribute to the same day,
+          // this is a simplification. A more complex system would track per-file contributions.
+          // For now, this matches the previous behavior of deleting the entire month's data.
+          if (dailyActivity[dateKey]) {
+            delete dailyActivity[dateKey];
+          }
         });
-        // Recalculate totals
-        totalCharges = Object.values(monthlyCharges).reduce((a,b)=>a+b,0);
-        totalPayments = Object.values(monthlyPayments).reduce((a,b)=>a+b,0);
+        
+        // Totals are recalculated in updateDisplay based on remaining dailyActivity
       }
 
       // --- On load, render file history ---
@@ -411,73 +561,440 @@
       function updateDisplay() {
         // Clear numeric summary
         document.getElementById('total').innerHTML = '';
-        // Combine months from charges and payments
-        const labels = Array.from(new Set([
-          ...Object.keys(monthlyCharges),
-          ...Object.keys(monthlyPayments)
-        ])).sort();
-        const chargesData = labels.map(l => monthlyCharges[l] || 0);
-        const paymentsData = labels.map(l => monthlyPayments[l] || 0);
-        if (chart) chart.destroy();
-        chart = new Chart(document.getElementById('spendChart'), {
-          type: 'line',
-          data: { labels, datasets: [
-            {
-              label: 'Charges',
-              data: chargesData,
-              tension: 0.3,
-              borderColor: '#FF4C4C',
-              backgroundColor: 'rgba(255,76,76,0.1)',
-              fill: false,
-              pointRadius: 3,
-              pointBackgroundColor: '#FF4C4C',
-              pointBorderColor: '#1A1625',
-              pointHoverRadius: 6
-            },
-            {
-              label: 'Payments',
-              data: paymentsData,
-              tension: 0.3,
-              borderColor: '#4CFF4C',
-              backgroundColor: 'rgba(76,255,76,0.1)',
-              fill: false,
-              pointRadius: 3,
-              pointBackgroundColor: '#4CFF4C',
-              pointBorderColor: '#1A1625',
-              pointHoverRadius: 6
+
+        renderSpendChart(expensesChartTimeframe); // Pass current timeframe
+
+        // localStorage.setItem('financeData', JSON.stringify({ monthlyCharges, monthlyPayments, monthlyDCIncome, totalCharges, totalPayments })); // Old
+        // localStorage.setItem('financeCategorizedData', JSON.stringify(monthlyCategorizedSpending)); // Old
+
+        localStorage.setItem('financeDailyActivity', JSON.stringify(dailyActivity)); // New: Save all daily activity
+
+        // Update and render category chart
+        populateCategoryMonthSelector();
+        const selectedMonthForCategory = document.getElementById('categoryMonthSelector').value;
+        renderCategoriesChart(selectedMonthForCategory);
+
+        // Update and render Net Worth (Income) chart
+        renderNetWorthChart(netWorthChartTimeframe); // Pass current timeframe
+      }
+
+      // --- New: Update and Save all data ---
+      function updateAndSaveData() {
+        updateDisplay(); // This now handles saving all primary data to localStorage
+        // fileMonthMap is saved by its own function saveFileMonthMap()
+      }
+
+
+      // --- New: Category Chart Functions ---
+      function populateCategoryMonthSelector() {
+        const selector = document.getElementById('categoryMonthSelector');
+        const currentSelection = selector.value; // Expects YYYY-MM
+        selector.innerHTML = ''; // Clear existing options
+
+        const availableMonths = new Set();
+        Object.keys(dailyActivity).forEach(dateKey_YYYY_MM_DD => {
+            availableMonths.add(dateKey_YYYY_MM_DD.substring(0, 7)); // Extract YYYY-MM
+        });
+        
+        const sortedMonths = Array.from(availableMonths).sort().reverse(); // Latest first
+
+        if (sortedMonths.length === 0) {
+            const option = document.createElement('option');
+            option.value = "";
+            option.textContent = "No category data";
+            selector.appendChild(option);
+            selector.disabled = true;
+            return;
+        }
+
+        selector.disabled = false;
+        sortedMonths.forEach(monthKey_YYYY_MM => { // monthKey is YYYY-MM
+            const option = document.createElement('option');
+            option.value = monthKey_YYYY_MM;
+            const [year, monthNum] = monthKey_YYYY_MM.split('-');
+            const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleString('default', { month: 'long' });
+            option.textContent = `${monthName} ${year}`;
+            selector.appendChild(option);
+        });
+
+        if (sortedMonths.includes(currentSelection)) {
+            selector.value = currentSelection;
+        } else if (sortedMonths.length > 0) {
+            selector.value = sortedMonths[0]; // Default to the latest month
+        }
+      }
+
+      document.getElementById('categoryMonthSelector').addEventListener('change', (event) => {
+        renderCategoriesChart(event.target.value); // Value is YYYY-MM
+      });
+
+      function renderCategoriesChart(monthKey_YYYY_MM) { // Expects YYYY-MM
+        const container = document.querySelector('.category-chart-inner-container');
+        container.innerHTML = '<canvas id="categorySpendChart"></canvas>'; // Ensure fresh canvas
+        const ctx = document.getElementById('categorySpendChart').getContext('2d');
+
+        if (categoryChart) {
+            categoryChart.destroy();
+        }
+
+        if (!monthKey_YYYY_MM || !/^\d{4}-\d{2}$/.test(monthKey_YYYY_MM)) { // Validate monthKey format
+            ctx.font = "16px Poppins";
+            ctx.fillStyle = "#A0A0A0";
+            ctx.textAlign = "center";
+            ctx.fillText(monthKey_YYYY_MM ? "Invalid period format" : "Select a period", container.offsetWidth / 2, container.offsetHeight / 2);
+            return;
+        }
+        
+        const aggregatedCategoriesForMonth = {};
+        CATEGORIES.forEach(cat => aggregatedCategoriesForMonth[cat] = 0); // Initialize all categories to 0
+
+        let foundDataForMonth = false;
+        Object.keys(dailyActivity).forEach(dateKey_YYYY_MM_DD => {
+            if (dateKey_YYYY_MM_DD.startsWith(monthKey_YYYY_MM)) { // Check if the date belongs to the selected month
+                const dayData = dailyActivity[dateKey_YYYY_MM_DD];
+                if (dayData && dayData.categories) {
+                    foundDataForMonth = true;
+                    CATEGORIES.forEach(cat => {
+                        if (dayData.categories[cat]) {
+                            aggregatedCategoriesForMonth[cat] += dayData.categories[cat];
+                        }
+                    });
+                }
             }
-          ]},
+        });
+
+        if (!foundDataForMonth) {
+            ctx.font = "16px Poppins";
+            ctx.fillStyle = "#A0A0A0";
+            ctx.textAlign = "center";
+            ctx.fillText("No category data for selected period", container.offsetWidth / 2, container.offsetHeight / 2);
+            return;
+        }
+
+        const labels = CATEGORIES;
+        const rawData = labels.map(cat => aggregatedCategoriesForMonth[cat] || 0);
+
+        const filteredLabels = [];
+        const filteredData = [];
+        labels.forEach((label, index) => {
+            if (rawData[index] > 0) {
+                filteredLabels.push(label);
+                filteredData.push(rawData[index]);
+            }
+        });
+
+        if (filteredData.length === 0) {
+            ctx.font = "16px Poppins";
+            ctx.fillStyle = "#A0A0A0";
+            ctx.textAlign = "center";
+            ctx.fillText("No spending in categories for " + monthKey_YYYY_MM, container.offsetWidth / 2, container.offsetHeight / 2);
+            return;
+        }
+        
+        const [year, monthNum] = monthKey_YYYY_MM.split('-');
+        const monthName = new Date(year, monthNum - 1, 1).toLocaleString('default', { month: 'long' });
+        const chartTitle = `Spending Categories for ${monthName} ${year}`;
+
+
+        categoryChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: filteredLabels,
+                datasets: [{
+                    label: 'Spending by Category',
+                    data: filteredData,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.7)', // Groceries
+                        'rgba(54, 162, 235, 0.7)', // Food Delivery/Restaurant
+                        'rgba(255, 206, 86, 0.7)', // Gas
+                        'rgba(75, 192, 192, 0.7)', // Bills
+                        'rgba(153, 102, 255, 0.7)', // Other
+                        'rgba(255, 159, 64, 0.7)'  // Extra color
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: { color: '#E0E0E0' }
+                    },
+                    title: {
+                        display: true,
+                        text: chartTitle,
+                        color: '#E0E0E0',
+                        font: { size: 16 }
+                    }
+                }
+            }
+        });
+      }
+
+
+      // --- New: Net Worth (Monthly Income) Chart Function ---
+      function renderNetWorthChart(timeframe = 'month') {
+        const canvas = document.getElementById('netWorthChartCanvas');
+        if (!canvas) return; // Ensure canvas exists
+        const ctx = canvas.getContext('2d');
+        
+        if (netWorthChartInstance) {
+            netWorthChartInstance.destroy();
+        }
+
+        const { labels: incomeDays, data: incomeData } = aggregateDataForChart(dailyActivity, timeframe, 'dcIncome');
+
+        const container = document.querySelector('.net-worth-chart-inner-container');
+        if (incomeDays.length === 0) {
+            // Clear previous chart content and display a message
+            container.innerHTML = '<canvas id="netWorthChartCanvas"></canvas>'; // Re-add canvas
+            const newCtx = document.getElementById('netWorthChartCanvas').getContext('2d');
+            newCtx.font = "16px Poppins";
+            newCtx.fillStyle = "#A0A0A0";
+            newCtx.textAlign = "center";
+            newCtx.fillText("Net Worth data from 'DC' files will appear here.", container.offsetWidth / 2, container.offsetHeight / 2);
+            return;
+        }
+        
+        // Create gradient for the line chart fill
+        const gradientGreen = ctx.createLinearGradient(0, 0, 0, container.offsetHeight); // Adjust gradient height if needed
+        gradientGreen.addColorStop(0, 'rgba(76, 255, 76, 0.4)'); // Green with 40% opacity
+        gradientGreen.addColorStop(1, 'rgba(76, 255, 76, 0)');   // Green with 0% opacity
+
+        netWorthChartInstance = new Chart(ctx, {
+          type: 'line', 
+          data: {
+            labels: incomeDays.map(dateKey => { // Format YYYY-MM-DD to Month Day
+                const [year, monthNum, dayNum] = dateKey.split('-');
+                // return new Date(year, parseInt(monthNum) - 1, parseInt(dayNum)).toLocaleDateString('default', { month: 'short', day: 'numeric' });
+                return `${monthNum.padStart(2, '0')}/${dayNum.padStart(2, '0')}`; // MM/DD format
+            }),
+            datasets: [
+              {
+                label: 'Net Worth (Income from DC files)', // Updated label
+                data: incomeData,
+                backgroundColor: gradientGreen, // Apply gradient fill
+                borderColor: '#4CFF4C', // Green line
+                borderWidth: 2, // Line thickness
+                fill: true, // Enable fill
+                tension: 0.4, // Smooth curve
+                pointRadius: 4, // Size of the points
+                pointBackgroundColor: '#4CFF4C', // Green points
+                pointBorderColor: '#1A1625', // Match card background for point border
+                pointHoverRadius: 7, // Size of points on hover
+                pointHoverBackgroundColor: '#4CFF4C',
+                pointHoverBorderColor: '#FFF' 
+              }
+            ]
+          },
           options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-              x: { grid: { color: '#333' }, ticks: { color: '#ccc' } },
-              y: { grid: { color: '#333' }, ticks: { color: '#ccc' } }
+              x: { 
+                grid: { color: '#333' }, 
+                ticks: { 
+                    color: '#ccc',
+                    // autoSkip: true, // May be useful for many data points
+                    // maxTicksLimit: 20 // Adjust as needed
+                } 
+              },
+              y: { grid: { color: '#333' }, ticks: { color: '#ccc' }, beginAtZero: true }
             },
-            plugins: { legend: { labels: { color: '#E0E0E0' } } }
+            plugins: {
+              legend: { display: true, labels: { color: '#E0E0E0' } },
+              title: {
+                display: false, // Main title is in H2
+                // text: 'Monthly Income Over Time', // Already have H2
+                color: '#E0E0E0'
+              }
+            }
           }
         });
-        localStorage.setItem('financeData', JSON.stringify({ monthlyCharges, monthlyPayments, totalCharges, totalPayments }));
       }
+
+      // --- New: Aggregate data for charts based on timeframe ---
+      function aggregateDataForChart(sourceData, timeframe, dataType) {
+        const now = new Date();
+        let labels = [];
+        let data = [];
+        const aggregated = {}; // Temp object to sum data for periods
+
+        const allSortedDates = Object.keys(sourceData).sort();
+
+        allSortedDates.forEach(dateKey => {
+          const entry = sourceData[dateKey];
+          const value = entry ? (entry[dataType] || 0) : 0;
+          if (value === 0 && dataType === 'dcIncome') return; // For net worth, skip if no income
+
+          const date = new Date(dateKey + 'T00:00:00'); // Ensure local timezone interpretation
+
+          let periodKey = '';
+
+          if (timeframe === 'day') {
+            periodKey = dateKey; // YYYY-MM-DD
+          } else if (timeframe === 'week') {
+            const weekStart = new Date(date);
+            weekStart.setDate(date.getDate() - date.getDay()); // Sunday
+            periodKey = `${weekStart.getFullYear()}-${(weekStart.getMonth() + 1).toString().padStart(2, '0')}-${weekStart.getDate().toString().padStart(2, '0')}`;
+          } else if (timeframe === 'month') {
+            periodKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+          } else if (timeframe === 'year') {
+            periodKey = date.getFullYear().toString();
+          }
+
+          if (periodKey) {
+            aggregated[periodKey] = (aggregated[periodKey] || 0) + value;
+          }
+        });
+
+        labels = Object.keys(aggregated).sort();
+        data = labels.map(key => aggregated[key]);
+        
+        // Format labels for display
+        const formattedLabels = labels.map(label => {
+            if (timeframe === 'day') {
+                const [y, m, d] = label.split('-');
+                return `${m}/${d}`;
+            }
+            if (timeframe === 'week') {
+                 const [y, m, d] = label.split('-');
+                return `Wk ${m}/${d}`;
+            }
+            if (timeframe === 'month') {
+                const [y,m] = label.split('-');
+                return new Date(y, parseInt(m)-1, 1).toLocaleString('default', { month: 'short' });
+            }
+            if (timeframe === 'year') {
+                return label;
+            }
+            return label;
+        });
+
+        return { labels: formattedLabels, data };
+      }
+
+      // --- Modified: renderSpendChart to accept timeframe ---
+      function renderSpendChart(timeframe = 'month') {
+        const { labels: chartLabels, data: chargesData } = aggregateDataForChart(dailyActivity, timeframe, 'charges');
+        const { data: paymentsData } = aggregateDataForChart(dailyActivity, timeframe, 'payments'); // Labels will be the same
+
+        if (chart) chart.destroy();
+        chart = new Chart(document.getElementById('spendChart'), {
+          type: 'bar',
+          data: {
+            labels: chartLabels,
+            datasets: [
+              {
+                label: 'Charges',
+                data: chargesData,
+                backgroundColor: '#FF4C4C',
+                borderColor: '#1A1625',
+                borderWidth: 1
+              },
+              {
+                label: 'Payments',
+                data: paymentsData,
+                backgroundColor: '#4CFF4C',
+                borderColor: '#1A1625',
+                borderWidth: 1
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              x: {
+                grid: { color: '#333' },
+                ticks: { color: '#ccc' }
+              },
+              y: { grid: { color: '#333' }, ticks: { color: '#ccc' }, beginAtZero: true }
+            },
+            plugins: {
+              legend: { labels: { color: '#E0E0E0' } },
+              title: { display: false, text: 'Expenses Over Time', color: '#E0E0E0' }
+            }
+          }
+        });
+      }
+
+      // --- Event Listeners for Timeframe Controls ---
+      document.querySelectorAll('.timeframe-controls button').forEach(button => {
+        button.addEventListener('click', () => {
+          const chartName = button.dataset.chart;
+          const range = button.dataset.range;
+
+          // Remove active class from all buttons in this group
+          button.parentElement.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+          // Add active class to the clicked button
+          button.classList.add('active');
+
+          if (chartName === 'expenses') {
+            expensesChartTimeframe = range;
+            renderSpendChart(expensesChartTimeframe);
+          } else if (chartName === 'netWorth') {
+            netWorthChartTimeframe = range;
+            renderNetWorthChart(netWorthChartTimeframe);
+          }
+        });
+      });
 
       // On load, restore saved data
       document.addEventListener('DOMContentLoaded', () => {
         // Wipe old finance data and file history on first load after this update
-        if (!localStorage.getItem('financeDataReset_2025_05_15_pdf')) { // Changed reset key
-          localStorage.removeItem('financeData');
-          localStorage.removeItem('financeFileHistory');
-          localStorage.removeItem('financeFileMonthMap'); // Clear map as well
-          localStorage.setItem('financeDataReset_2025_05_15_pdf', 'true'); // Changed reset key
+        // const V5_RESET_KEY = 'financeDataReset_2025_05_20_dc_income_logic'; // Old reset key
+        const V6_DAILY_RESET_KEY = 'financeDataReset_V6_daily_activity_2025_05_20'; // New reset key
+        if (!localStorage.getItem(V6_DAILY_RESET_KEY)) { 
+          localStorage.removeItem('financeData'); // Old main data key
+          localStorage.removeItem('financeFileHistory'); // Keep history, but map will be new
+          localStorage.removeItem('financeFileMonthMap'); // Old map key
+          localStorage.removeItem('financeCategorizedData'); // Old categorized data key
+          
+          localStorage.removeItem('financeDailyActivity'); // Clear new main data key (just in case)
+          localStorage.removeItem('financeFileDataKeysMap'); // Clear new map key (just in case)
+          localStorage.setItem(V6_DAILY_RESET_KEY, 'true'); 
         }
-        const saved = localStorage.getItem('financeData');
-        if (saved) {
-          const data = JSON.parse(saved);
-          monthlyCharges = data.monthlyCharges || {};
-          monthlyPayments = data.monthlyPayments || {};
-          totalCharges = data.totalCharges || 0;
-          totalPayments = data.totalPayments || 0;
-          updateDisplay();
+        // const saved = localStorage.getItem('financeData'); // Old
+        // if (saved) {
+        //   const data = JSON.parse(saved);
+        //   monthlyCharges = data.monthlyCharges || {}; // Old
+        //   monthlyPayments = data.monthlyPayments || {}; // Old
+        //   monthlyDCIncome = data.monthlyDCIncome || {}; // Old
+        //   totalCharges = data.totalCharges || 0; // Old
+        //   totalPayments = data.totalPayments || 0; // Old
+        // }
+        // const savedCategorized = localStorage.getItem('financeCategorizedData'); // Old
+        // if (savedCategorized) {
+        //   monthlyCategorizedSpending = JSON.parse(savedCategorized); // Old
+        // }
+
+        const savedDailyActivity = localStorage.getItem('financeDailyActivity');
+        if (savedDailyActivity) {
+          dailyActivity = JSON.parse(savedDailyActivity);
+        } else {
+          dailyActivity = {}; // Initialize if nothing is saved
         }
+
+        // fileHistory is already loaded at the top
+        const savedFileDataKeysMap = localStorage.getItem('financeFileDataKeysMap');
+        if (savedFileDataKeysMap) {
+          fileDataKeysMap = JSON.parse(savedFileDataKeysMap);
+        } else {
+          fileDataKeysMap = {}; // Initialize if nothing is saved
+        }
+
+        updateDisplay(); // Call once after all data is loaded
       });
 
       // --- Event Listener for File Picker (supports multiple) ---
@@ -485,115 +1002,126 @@
         const files = Array.from(e.target.files);
         if (!files.length) return;
 
+        const h1Title = document.querySelector('.content h1');
+        const originalPageTitle = h1Title ? h1Title.textContent : 'Personal Finance Tracker';
+
         if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') { // Check if key is missing or is the placeholder
           alert("Gemini API key is not set or is invalid. Please create config.js with your key (see config.js.example for GEMINI_API_KEY) and ensure it is loaded.");
           e.target.value = null; // Clear the file input
           return;
         }
 
-        for (const f of files) { // Process files one by one, allowing for async operations
+        if (h1Title) h1Title.textContent = `Processing ${files.length} file(s)...`;
+
+        for (let i = 0; i < files.length; i++) {
+          const f = files[i];
           const fileName = f.name;
           const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
 
+          if (h1Title) h1Title.textContent = `Processing ${fileName} (${i + 1} of ${files.length})...`;
+
           if (fileExtension === 'pdf') {
-            // Show some loading indicator to the user if possible
-            console.log(`Processing ${fileName}...`);
             try {
-              await handlePdfFile(f); // Call the new PDF handler
+              await handlePdfFile(f); 
             } catch (error) {
               console.error(`Error processing ${fileName}:`, error);
               alert(`An error occurred while processing ${fileName}. Check the console for details.`);
+              // Optionally, break or decide how to handle errors for multiple files
             }
           } else {
             alert("Unsupported file type. Please upload a PDF file.");
-            // Clear the file input if any file is unsupported to prevent re-processing attempts
             e.target.value = null; 
-            break; // Stop processing further files if one is invalid
+            if (h1Title) h1Title.textContent = originalPageTitle; // Reset title if error before processing all
+            break; 
           }
         }
-        // Potentially clear file input after all files are processed, or let user manage it
-        // e.target.value = null; 
+        
+        updateAndSaveData(); // <<< KEY FIX: Update display and save data after all files are processed
+
+        if (h1Title) h1Title.textContent = originalPageTitle; // Reset title after all processing
+        e.target.value = null; // Clear the file input to allow re-uploading the same file(s)
       });
 
       // --- Function to process PDF files (placeholder for OpenAI API call) ---
       async function handlePdfFile(file) {
         const fileName = file.name;
         console.log(`Attempting to process PDF: ${fileName}`);
-        const h1Title = document.querySelector('.content h1'); // More specific selector for the main title
-        const originalTitle = h1Title ? h1Title.textContent : 'Personal Finance Tracker';
-        if (h1Title) {
-            h1Title.textContent = `Processing ${fileName}...`;
-        }
+        // Title management is now handled by the caller (pdfPicker event listener)
 
         try {
           const base64File = await new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
+            reader.onload = () => resolve(reader.result); // Ensure reader.result is passed
             reader.onerror = error => reject(error);
+            reader.readAsDataURL(file); // Read the file
           });
 
           const pureBase64 = base64File.substring(base64File.indexOf(',') + 1);
+          
+          // Assume callGeminiPdfParser is updated to return transactions like:
+          // extractedData.transactions = [
+          //   { date: "YYYY-MM-DD", description: "...", amount: 123.45, type: "charge" | "payment", category: "Groceries" | ... },
+          //   ...
+          // ];
           const extractedData = await callGeminiPdfParser(pureBase64, fileName);
 
           if (!extractedData || !extractedData.transactions || !Array.isArray(extractedData.transactions)) {
-            console.error("Failed to extract valid transaction data from PDF:", fileName, "Response:", extractedData);
-            alert(`Could not extract transactions from ${fileName}. The API might have returned an unexpected format or no data. Check console.`);
-            addFileToHistory(fileName, []);
-            updateDisplay();
-            return;
+            console.error('No transactions found or invalid format from parser for file:', fileName);
+            // Alerting is handled by the caller
+            return; // Stop processing this specific file if data is bad
           }
 
-          const fileInfo = extractMonthYearFromName(fileName);
-          const overrideKey = fileInfo ? `${fileInfo.year}-${String(fileInfo.month).padStart(2, '0')}` : null;
-          let contributedKeys = new Set();
+          let contributedDailyKeys = new Set(); // Stores "YYYY-MM-DD"
+          const isDCFile = fileName.toUpperCase().startsWith("DC");
 
           if (extractedData.transactions.length === 0) {
-              console.warn(`No transactions found or extracted by AI for ${fileName}.`);
-              addFileToHistory(fileName, []);
-              updateDisplay();
-              return;
+            console.log(`No transactions extracted from ${fileName}.`);
+            addFileToHistory(fileName, []); 
+          } else {
+            extractedData.transactions.forEach(transaction => {
+              const transactionDate = transaction.date; // Expect "YYYY-MM-DD"
+              
+              if (!transactionDate || !/^\d{4}-\d{2}-\d{2}$/.test(transactionDate)) {
+                console.warn(`Skipping transaction in ${fileName} due to missing or invalid date:`, transaction);
+                return; // Skip this transaction
+              }
+              contributedDailyKeys.add(transactionDate);
+
+              if (!dailyActivity[transactionDate]) {
+                dailyActivity[transactionDate] = { charges: 0, payments: 0, dcIncome: 0, categories: {} };
+              }
+              
+              const amount = parseFloat(transaction.amount);
+              if (isNaN(amount)) {
+                console.warn(`Skipping transaction in ${fileName} due to invalid amount:`, transaction);
+                return; // Skip this transaction
+              }
+
+              if (isDCFile) {
+                dailyActivity[transactionDate].dcIncome = (dailyActivity[transactionDate].dcIncome || 0) + amount;
+              } else { 
+                if (transaction.type === 'payment' || (transaction.type !== 'income' && amount < 0) ) { 
+                  dailyActivity[transactionDate].payments = (dailyActivity[transactionDate].payments || 0) + Math.abs(amount);
+                } else if (transaction.type === 'charge' || (transaction.type !== 'income' && amount > 0)) { 
+                  dailyActivity[transactionDate].charges = (dailyActivity[transactionDate].charges || 0) + amount;
+                  
+                  let categoryToApply = "Other"; 
+                  if (transaction.category && CATEGORIES.includes(transaction.category)) {
+                    categoryToApply = transaction.category;
+                  }
+                  
+                  if (!dailyActivity[transactionDate].categories[categoryToApply]) {
+                    dailyActivity[transactionDate].categories[categoryToApply] = 0;
+                  }
+                  dailyActivity[transactionDate].categories[categoryToApply] += amount; 
+                }
+              }
+            });
+            addFileToHistory(fileName, Array.from(contributedDailyKeys));
           }
-
-          extractedData.transactions.forEach(transaction => {
-            const { date, amount, description } = transaction;
-            const dt = new Date(date);
-            const amt = Number(amount);
-
-            if (isNaN(amt) || !date || isNaN(dt.getTime()) || dt.toString() === 'Invalid Date') {
-              console.warn(`Skipping transaction from API: Invalid data. Date='${date}', Amount='${amt}', Description='${description}'`);
-              return;
-            }
-
-            const keyToUse = overrideKey || `${dt.getUTCFullYear()}-${String(dt.getUTCMonth() + 1).padStart(2, '0')}`;
-            contributedKeys.add(keyToUse);
-
-            if (!monthlyCharges[keyToUse]) monthlyCharges[keyToUse] = 0;
-            if (!monthlyPayments[keyToUse]) monthlyPayments[keyToUse] = 0;
-
-            if (amt > 0) {
-              monthlyCharges[keyToUse] += amt;
-              totalCharges += amt;
-            } else if (amt < 0) {
-              monthlyPayments[keyToUse] += Math.abs(amt);
-              totalPayments += Math.abs(amt);
-            }
-          });
-
-          fileMonthMap[fileName] = Array.from(contributedKeys);
-          saveFileMonthMap();
-          addFileToHistory(fileName, Array.from(contributedKeys));
-          updateDisplay();
-
         } catch (error) {
           console.error(`Error in handlePdfFile for ${fileName}:`, error);
-          alert(`An error occurred while processing ${fileName}. Check the console for details. Error: ${error.message}`);
-          addFileToHistory(fileName, []);
-          updateDisplay();
-        } finally {
-           if (h1Title) {
-             h1Title.textContent = originalTitle;
-           }
+          throw error; // Re-throw for the caller to handle and alert the user
         }
       }
 
@@ -604,20 +1132,56 @@
         }
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-        const systemInstructionText = `You are a data extraction AI. You will receive a PDF bank statement. Your task is to:
+        let systemInstructionText = `You are a data extraction AI. You will receive a PDF bank statement. Your task is to:
 1. Identify all individual financial transaction lines. Focus on itemized entries, not summary totals unless they are the only source for a specific transaction type.
 2. For each transaction found, extract the date, description, and amount.
-Return a single JSON object: \`{ "transactions": [ { "date": "YYYY-MM-DD", "description": "...", "amount": number }, ... ] }\`.
+3. For each transaction identified as an expense (typically a positive amount based on the rules below), categorize it into one of the following: 'Groceries', 'Food Delivery/Restaurant', 'Gas', 'Misc', 'Other'. If a transaction is a credit/payment (negative amount), the category field can be null or an empty string.
+
+Return a single JSON object: \`{ "transactions": [ { "date": "YYYY-MM-DD", "description": "...", "amount": number, "category": "string_or_null" }, ... ] }\`.
+
 CRITICAL RULES for 'amount':
   - Charges/Debits/Purchases/Expenses/Withdrawals are POSITIVE numbers (e.g., 100.00).
   - Payments/Credits/Deposits/Income are NEGATIVE numbers (e.g., -50.00).
   - Examine transaction descriptions for keywords like 'Purchase', 'Fee', 'Withdrawal' (positive) or 'Payment', 'Deposit', 'Credit', 'Income' (negative).
   - If the PDF text clearly shows 'Debit' and 'Credit' columns, amounts in a 'Debit' column are positive, and amounts in a 'Credit' column are negative.
+
 For 'date': Use 'YYYY-MM-DD'. If the full date isn't on the transaction line, infer the year and month from the overall statement period (often found in the filename or at the top/bottom of the PDF text). If day is missing, use '01'.
 For 'description': Capture the full transaction detail as presented on the statement.
+
+Category definitions for expenses:
+- 'Groceries': Purchases from supermarkets, grocery stores (e.g., Walmart, Kroger, Trader Joe's, ALDI, Whole Foods).
+- 'Food Delivery/Restaurant': Expenses at restaurants, cafes, fast food establishments, and food delivery services (e.g., Doordash, Uber Eats, Grubhub, Starbucks, McDonald's, local restaurants).
+- 'Gas': Fuel purchases from gas stations (e.g., Shell, Exxon, BP, Chevron, local gas stations).
+- 'Misc': This category is for all other expenses that do not clearly fall into 'Groceries', 'Food Delivery/Restaurant', or 'Gas'. This includes but is not limited to: utility payments (electricity, water, internet, phone), subscriptions (Netflix, Spotify, gym), shopping (clothing, electronics, household goods), entertainment (movies, concerts), travel costs (flights, hotels, not gas), medical co-pays, insurance premiums, rent/mortgage payments, loan repayments, childcare fees, property taxes. If an expense doesn't fit the specific categories above, it should be classified as 'Misc'.
+- 'Other': Use this category sparingly for expenses that are highly unusual or cannot be classified even under the broad 'Misc' category. For most unclassified expenses, 'Misc' is preferred. This could also be used if an item is clearly an expense but its nature is completely indeterminable.
+
 The response MUST be only the valid JSON object, with no extra text, explanations, or markdown formatting.`;
 
-        const userPromptText = `Please analyze the attached PDF bank statement named '${fileNameForContext}' and extract all financial transactions according to the detailed system instructions. Pay utmost attention to correctly identifying and signing the 'amount' for each transaction (positive for charges, negative for payments/credits).`;
+        // Check if the filename starts with "DC"
+        if (fileNameForContext && fileNameForContext.toUpperCase().startsWith("DC")) {
+          // Modify system instruction for "DC" files to only extract income (payments/credits)
+          // and not categorize expenses.
+          systemInstructionText = `You are a data extraction AI. You will receive a PDF bank statement from a file named '${fileNameForContext}'.
+This file is specifically for income. Your task is to:
+1. Identify all individual financial transaction lines that represent INCOME or CREDITS to the account.
+2. For each such transaction found, extract the date, description, and amount.
+3. IGNORE ALL EXPENSES/CHARGES/DEBITS. Only process income/credits.
+
+Return a single JSON object: \`{ "transactions": [ { "date": "YYYY-MM-DD", "description": "...", "amount": number, "category": null }, ... ] }\`.
+
+CRITICAL RULES for 'amount':
+  - Payments/Credits/Deposits/Income are NEGATIVE numbers (e.g., -50.00).
+  - ALL OTHER TRANSACTION TYPES (CHARGES/DEBITS/EXPENSES) SHOULD BE IGNORED.
+
+For 'date': Use 'YYYY-MM-DD'. If the full date isn't on the transaction line, infer the year and month from the overall statement period. If day is missing, use '01'.
+For 'description': Capture the full transaction detail.
+The 'category' field should always be null for these income transactions.
+
+The response MUST be only the valid JSON object, with no extra text, explanations, or markdown formatting.`;
+        }
+
+
+        const userPromptText = `Please analyze the attached PDF bank statement named '${fileNameForContext}' and extract all financial transactions according to the detailed system instructions. Pay utmost attention to correctly identifying and signing the 'amount' for each transaction (positive for charges, negative for payments/credits) and categorizing expenses.`;
 
         const payload = {
           contents: [
@@ -689,14 +1253,19 @@ The response MUST be only the valid JSON object, with no extra text, explanation
         localStorage.removeItem('financeData');
         localStorage.removeItem('financeFileHistory');
         localStorage.removeItem('financeFileMonthMap');
-        localStorage.removeItem('financeDataReset_2025_05_15_pdf'); // Ensured key is correct
-        // Clear in-memory state
+        localStorage.removeItem('financeCategorizedData'); 
+        localStorage.removeItem('financeDataReset_2025_05_20_dc_income_logic'); // Use the latest key
+
         fileHistory = [];
-        fileMonthMap = {};
-        monthlyCharges = {};
-        monthlyPayments = {};
-        totalCharges = 0;
-        totalPayments = 0;
+        fileDataKeysMap = {};
+        dailyActivity = {}; // Reset daily activity
+        // monthlyCharges = {}; // No longer needed
+        // monthlyPayments = {}; // No longer needed
+        // monthlyDCIncome = {}; // Reset DC income
+        // monthlyCategorizedSpending = {}; // Also reset categorized spending
+        // totalCharges = 0; // No longer needed
+        // totalPayments = 0; // No longer needed
+
         updateDisplay();
         renderFileHistory();
         showFileHistory(false);
