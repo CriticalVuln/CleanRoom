@@ -285,6 +285,256 @@
       position: relative;
       height: 350px; /* Adjusted from 325px */
     }
+
+    /* --- New: Recent Transactions Widget --- */
+    .recent-transactions-container {
+      /* Styles inherited from .card */
+      margin-top: 24px; /* Space above this widget */
+    }
+    .recent-transactions-container h2 {
+      color: #63FFDA; /* Turquoise */
+      font-weight: 600;
+      margin-bottom: 15px;
+      text-align: center;
+      font-size: 1.2em;
+    }
+    .recent-transactions-table-container {
+      max-height: 300px; /* Consistent height with other chart containers */
+      overflow-y: auto;
+      border: 1px solid #29223a; /* Subtle border */
+      border-radius: 8px;
+    }
+    .recent-transactions-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .recent-transactions-table th,
+    .recent-transactions-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #29223a;
+    }
+    .recent-transactions-table th {
+      background-color: #211D30; /* Darker header background */
+      color: #E0E0E0;
+      font-weight: 600;
+      position: sticky; /* Keep headers visible on scroll */
+      top: 0;
+      z-index: 1;
+    }
+    .recent-transactions-table td {
+      color: #C0C0C0; /* Slightly lighter than default for data */
+    }
+    .recent-transactions-table tr:last-child td {
+      border-bottom: none;
+    }
+    .recent-transactions-table .amount-income {
+      color: #63FFDA; /* Green for income/payments */
+      font-weight: 500;
+    }
+    .recent-transactions-table .amount-expense {
+      color: #FF6B6B; /* Red for charges/expenses */
+      font-weight: 500;
+    }
+    /* Light mode styles for recent transactions */
+    body.light-mode .recent-transactions-container h2 {
+        color: #00796b; /* Darker teal for light mode */
+    }
+    body.light-mode .recent-transactions-table-container {
+        border: 1px solid #D0D0D0;
+    }
+    body.light-mode .recent-transactions-table th {
+        background-color: #E8E8E8;
+        color: #333;
+        border-bottom: 1px solid #C0C0C0;
+    }
+    body.light-mode .recent-transactions-table td {
+        color: #555;
+        border-bottom: 1px solid #D0D0D0;
+    }
+    body.light-mode .recent-transactions-table .amount-income {
+        color: #00796b; /* Consistent green */
+    }
+    body.light-mode .recent-transactions-table .amount-expense {
+        color: #d32f2f; /* Consistent red */
+    }
+
+    /* --- New: PDF Upload Modal Styles --- */
+    .upload-modal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1500; /* Higher than file history panel */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.6); /* Dim background */
+      align-items: center; /* Vertical center */
+      justify-content: center; /* Horizontal center */
+    }
+
+    .upload-modal-content {
+      background-color: #1A1625; /* Dark card background */
+      margin: auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+      width: 90%;
+      max-width: 550px; /* Max width for the modal */
+      display: flex;
+      flex-direction: column;
+      gap: 20px; /* Space between elements */
+    }
+
+    .upload-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #4F4B68; /* Separator line */
+    }
+
+    .upload-modal-header h2 {
+      color: #E0E0E0;
+      font-size: 1.4em;
+      margin: 0;
+    }
+
+    .upload-modal-close-btn {
+      color: #A0A0A0;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    .upload-modal-close-btn:hover,
+    .upload-modal-close-btn:focus {
+      color: #FFF;
+    }
+
+    .upload-area {
+      border: 2px dashed #4F4B68; /* Dashed border */
+      border-radius: 8px;
+      padding: 40px 20px; /* More padding */
+      text-align: center;
+      cursor: pointer;
+      background-color: #0D0B14; /* Slightly darker than modal content */
+      transition: background-color 0.2s, border-color 0.2s;
+    }
+    .upload-area:hover {
+      background-color: #211D30;
+      border-color: #63FFDA;
+    }
+    .upload-area-icon {
+      font-size: 40px; /* Larger icon */
+      color: #63FFDA; /* Turquoise icon */
+      margin-bottom: 15px;
+    }
+    .upload-area-text {
+      color: #E0E0E0;
+      font-size: 1.1em;
+      margin-bottom: 8px;
+    }
+    .upload-area-subtext {
+      color: #A0A0A0;
+      font-size: 0.9em;
+    }
+    #modalPdfInput {
+      display: none; /* Hide the actual input */
+    }
+    #selectedFilesList {
+      margin-top: 15px;
+      max-height: 100px;
+      overflow-y: auto;
+      font-size: 0.9em;
+      color: #C0C0C0;
+    }
+    #selectedFilesList div {
+      padding: 3px 0;
+    }
+
+    .upload-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 15px;
+      border-top: 1px solid #4F4B68; /* Separator line */
+    }
+
+    .upload-modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.95em;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .upload-modal-btn.primary {
+      background-color: #63FFDA; /* Turquoise */
+      color: #0D0B14; /* Dark text */
+    }
+    .upload-modal-btn.primary:hover {
+      background-color: #82ffe5;
+    }
+    .upload-modal-btn.secondary {
+      background-color: #4F4B68; /* Darker grey */
+      color: #E0E0E0;
+    }
+    .upload-modal-btn.secondary:hover {
+      background-color: #5f5a7a;
+    }
+
+    /* --- New: Progress Bar Styles --- */
+    #progressBarContainer {
+      position: fixed; /* Make it fixed to the viewport */
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #0D0B14; /* Match body background for a seamless top bar */
+      padding: 8px 0; /* Add some vertical padding */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.7); /* Add a shadow for depth */
+      display: none; /* Hidden by default */
+      z-index: 9999; /* Ensure it's on top of all other content */
+      /* margin-top and margin-bottom are removed as they are not effective with fixed positioning */
+    }
+
+    #progressBar {
+      width: 80%; /* Bar itself doesn't span full width */
+      margin: 0 auto; /* Center the bar within the container */
+      height: 20px; /* Adjusted height */
+      background-color: #63FFDA; /* Accent Cyan/Turquoise */
+      background-image: linear-gradient(
+        45deg,
+        rgba(13, 11, 20, 0.25) 25%, /* Darker stripes for contrast */
+        transparent 25%,
+        transparent 50%,
+        rgba(13, 11, 20, 0.25) 50%,
+        rgba(13, 11, 20, 0.25) 75%,
+        transparent 75%,
+        transparent
+      );
+      background-size: 40px 40px; /* Size of the stripes */
+      border-radius: 5px;
+      text-align: center;
+      line-height: 20px; /* Match adjusted height */
+      color: #0D0B14; /* Dark text for contrast on turquoise */
+      font-weight: bold;
+      animation: progressBarAnimation 2s linear infinite;
+      transition: width 0.3s ease-in-out; /* Smooth width changes if you implement actual progress updates */
+    }
+
+    @keyframes progressBarAnimation {
+      0% {
+        background-position: 40px 0;
+      }
+      100% {
+        background-position: 0 0;
+      }
+    }
   </style>
 
   <!-- Poppins font -->
@@ -324,8 +574,39 @@
 
   <div class="content">
     <h1>Personal Finance Tracker</h1>
-    <input id="pdfPicker" type="file" accept=".pdf" multiple>
+    <!-- Modified: This input will now trigger the modal. We'll hide its default appearance. -->
+    <input id="pdfPicker" type="file" accept=".pdf" multiple style="display: none;">
+    <!-- New Button to trigger the original pdfPicker input, which in turn will trigger the modal -->
+    <button id="openPdfUploadModalBtn" class="upload-modal-btn primary" style="margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;">Choose PDF Files</button>
+
     <div id="total"></div>
+
+    <!-- New PDF Upload Modal -->
+    <div id="pdfUploadModal" class="upload-modal">
+      <div class="upload-modal-content">
+        <div class="upload-modal-header">
+          <h2>Upload PDF Statements</h2>
+          <button id="closeUploadModalBtn" class="upload-modal-close-btn">&times;</button>
+        </div>
+        
+        <label for="modalPdfInput" class="upload-area" id="uploadAreaLabel">
+          <div class="upload-area-icon">&#x21E7;</div> <!-- Unicode UPWARDS ARROW -->
+          <div class="upload-area-text">Drag & drop files or click to choose files</div>
+          <div class="upload-area-subtext">Supported file types: PDF</div>
+        </label>
+        <input id="modalPdfInput" type="file" accept=".pdf" multiple>
+        <div id="selectedFilesList">
+          <!-- Selected files will be listed here -->
+        </div>
+
+        <div class="upload-modal-footer">
+          <button id="cancelUploadBtn" class="upload-modal-btn secondary">Cancel</button>
+          <button id="confirmUploadBtn" class="upload-modal-btn primary">Upload</button>
+        </div>
+      </div>
+    </div>
+    <!-- End New PDF Upload Modal -->
+
 
     <!-- New Net Worth (Monthly Income) Widget -->
     <div class="net-worth-container card">
@@ -364,6 +645,25 @@
       </div>
     </div>
 
+    <!-- New Recent Transactions Widget -->
+    <div class="recent-transactions-container card">
+      <h2>Recent Transactions</h2>
+      <div class="recent-transactions-table-container">
+        <table class="recent-transactions-table">
+          <thead>
+            <!-- Headers will be populated by JS or can be static if known -->
+          </thead>
+          <tbody id="recentTransactionsBody">
+            <!-- Transactions will be populated here by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="progressBarContainer">
+      <div id="progressBar">Processing...</div>
+    </div>
+
     <script>
       // Helper to extract month/year from filename
       function extractMonthYearFromName(name) {
@@ -376,7 +676,7 @@
           oct: 10, october: 10, nov: 11, november: 11, dec: 12, december: 12
         };
         const monthPattern = '(January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sep|Oct|October|November|Nov|December|Dec)';
-        
+
         // Try to match "Month YYYY" (e.g., "March 2025")
         // User stated format: "Month Year Bank Statement"
         const textualMatchMonthYear = trimmedName.match(new RegExp(monthPattern + '\\s+(\\d{4})', 'i'));
@@ -420,9 +720,10 @@
       // let monthlyPayments = {}; // Old
       // let monthlyDCIncome = {}; // Old
       // let totalCharges = 0; // Old - will be derived if needed
-      // let totalPayments = 0; // Old - will be derived if needed
+      // let totalPayments = 0; // Old - will be derived
 
       let dailyActivity = {}; // New: {"YYYY-MM-DD": {charges: 0, payments: 0, dcIncome: 0, categories: {"Groceries": 0,...}}}
+      let globalAllTransactions = []; // New: To store all individual transactions
 
       // --- New: Category Spending Globals ---
       // let monthlyCategorizedSpending = {}; // Old - merged into dailyActivity
@@ -442,6 +743,39 @@
       // --- File-to-Month Mapping for Robust Deletion ---
       // let fileMonthMap = JSON.parse(localStorage.getItem('financeFileMonthMap') || '{}'); // Old
       let fileDataKeysMap = JSON.parse(localStorage.getItem('financeFileDataKeysMap') || '{}'); // New: {"filename": ["YYYY-MM-DD", ...]}
+      let globalAllTransactionsStorageKey = 'financeGlobalAllTransactions'; // New
+
+      // --- Progress Bar Logic ---
+      // Call showProcessingBar() when your file processing starts.
+      // Call hideProcessingBar() when your file processing ends (in a finally block if applicable).
+      // If you have an existing element that shows a text message (e.g., <div id="status"></div>),
+      // replace 'yourStatusMessageElementId' with its actual ID to hide it when the bar is shown.
+      // If you don't have one, you can remove the lines related to 'originalStatusElement'.
+
+      const progressBarContainer = document.getElementById('progressBarContainer');
+      const progressBar = document.getElementById('progressBar');
+      // const originalStatusElement = document.getElementById('yourStatusMessageElementId'); // Optional: Replace ID
+
+      function showProcessingBar(message = "Processing file...") {
+        // if (originalStatusElement) {
+        //   originalStatusElement.style.display = 'none'; // Hide the old text message
+        // }
+        if (progressBarContainer && progressBar) {
+          progressBar.textContent = message;
+          progressBarContainer.style.display = 'block';
+        }
+      }
+
+      function hideProcessingBar() {
+        if (progressBarContainer) {
+          progressBarContainer.style.display = 'none';
+        }
+        // if (originalStatusElement) {
+        //   originalStatusElement.style.display = 'block'; // Or whatever the default state should be
+        //   originalStatusElement.textContent = ''; // Clear it or set to a success/failure message
+        // }
+      }
+      // --- End Progress Bar Logic ---
 
 
       function saveFileDataKeysMap() { // New name
@@ -488,7 +822,10 @@
           const delBtn = document.createElement('button');
           delBtn.className = 'delete-btn';
           delBtn.textContent = 'Delete';
-          delBtn.onclick = () => deleteFileHistory(f.name);
+          delBtn.onclick = (event) => { // Add event parameter
+            event.stopPropagation(); // Stop the click from bubbling to the document
+            deleteFileHistory(f.name);
+          };
           li.appendChild(nameSpan);
           li.appendChild(delBtn);
           fileHistoryList.appendChild(li);
@@ -537,19 +874,76 @@
         // updateDisplay(); // Will be called by updateAndSaveData
         updateAndSaveData();
       }
-      function removeFileData(name) {
-        const dailyKeysToRemove = fileDataKeysMap[name] || [];
-        // const isDCFile = name.toUpperCase().startsWith("DC"); // Not directly needed here if we clear all parts of dailyActivity
 
-        dailyKeysToRemove.forEach(dateKey => {
-          // This deletes all data for that day. If multiple files contribute to the same day,
-          // this is a simplification. A more complex system would track per-file contributions.
-          // For now, this matches the previous behavior of deleting the entire month's data.
-          if (dailyActivity[dateKey]) {
-            delete dailyActivity[dateKey];
+      // --- New: Helper function to rebuild dailyActivity from globalAllTransactions for specific dates ---
+      function rebuildDailyActivityForDates(dateKeysToRebuild) {
+        const dates = Array.isArray(dateKeysToRebuild) ? dateKeysToRebuild : Array.from(dateKeysToRebuild);
+
+        dates.forEach(dateKey => {
+          // Initialize/clear the specific day's activity
+          dailyActivity[dateKey] = { charges: 0, payments: 0, dcIncome: 0, categories: {} };
+          CATEGORIES.forEach(cat => dailyActivity[dateKey].categories[cat] = 0); // Ensure all categories are initialized for summing up
+        });
+
+        globalAllTransactions.forEach(tx => {
+          if (dates.includes(tx.date)) { // Process only if the transaction's date is one we're rebuilding
+            const dateKey = tx.date;
+            const amount = parseFloat(tx.amount); // Amount is stored as parsed: positive for charge, negative for income/payment
+            const isDCFile = tx.sourceFile.toUpperCase().startsWith("DC");
+
+            if (!dailyActivity[dateKey]) { // Should not happen if initialized above, but as a safeguard
+              dailyActivity[dateKey] = { charges: 0, payments: 0, dcIncome: 0, categories: {} };
+              CATEGORIES.forEach(cat => dailyActivity[dateKey].categories[cat] = 0);
+            }
+
+            if (isDCFile) {
+              if (amount < 0) { // DC income is stored as negative by parser, dcIncome in dailyActivity is positive
+                dailyActivity[dateKey].dcIncome += Math.abs(amount);
+              }
+            } else { // Not a DC file
+              if (amount > 0) { // Charge
+                dailyActivity[dateKey].charges += amount;
+                let categoryToApply = "Other"; // Default category
+                if (tx.category && CATEGORIES.includes(tx.category)) {
+                  categoryToApply = tx.category;
+                }
+                dailyActivity[dateKey].categories[categoryToApply] = (dailyActivity[dateKey].categories[categoryToApply] || 0) + amount;
+              } else if (amount < 0) { // Payment
+                dailyActivity[dateKey].payments += Math.abs(amount);
+              }
+            }
           }
         });
+
+        // Clean up days that ended up with no activity after rebuild
+        dates.forEach(dateKey => {
+          const dayData = dailyActivity[dateKey];
+          if (dayData) { // Check if dayData exists, as it might have been deleted by another process if code changes
+            let isEmpty = dayData.charges === 0 && dayData.payments === 0 && dayData.dcIncome === 0;
+            if (isEmpty) {
+              let categoriesSum = 0;
+              CATEGORIES.forEach(cat => categoriesSum += (dayData.categories[cat] || 0));
+              if (categoriesSum === 0) {
+                delete dailyActivity[dateKey];
+              }
+            }
+          }
+        });
+      }
+
+      function removeFileData(name) {
+        const dailyKeysAffectedByThisFile = fileDataKeysMap[name] || [];
+
+        // Remove transactions from globalAllTransactions associated with this file
+        globalAllTransactions = globalAllTransactions.filter(tx => tx.sourceFile !== name);
+        localStorage.setItem(globalAllTransactionsStorageKey, JSON.stringify(globalAllTransactions));
+
+        // After removing transactions, rebuild dailyActivity for the dates this file affected
+        if (dailyKeysAffectedByThisFile.length > 0) {
+          rebuildDailyActivityForDates(dailyKeysAffectedByThisFile);
+        }
         
+        // fileDataKeysMap[name] will be deleted by deleteFileHistory function
         // Totals are recalculated in updateDisplay based on remaining dailyActivity
       }
 
@@ -568,6 +962,7 @@
         // localStorage.setItem('financeCategorizedData', JSON.stringify(monthlyCategorizedSpending)); // Old
 
         localStorage.setItem('financeDailyActivity', JSON.stringify(dailyActivity)); // New: Save all daily activity
+        localStorage.setItem(globalAllTransactionsStorageKey, JSON.stringify(globalAllTransactions)); // New: Save all transactions
 
         // Update and render category chart
         populateCategoryMonthSelector();
@@ -576,12 +971,64 @@
 
         // Update and render Net Worth (Income) chart
         renderNetWorthChart(netWorthChartTimeframe); // Pass current timeframe
+
+        renderRecentTransactions(); // New: Render recent transactions
       }
 
       // --- New: Update and Save all data ---
       function updateAndSaveData() {
         updateDisplay(); // This now handles saving all primary data to localStorage
         // fileMonthMap is saved by its own function saveFileMonthMap()
+      }
+
+
+      // --- New: Render Recent Transactions ---
+      function renderRecentTransactions() {
+        const tbody = document.getElementById('recentTransactionsBody');
+        tbody.innerHTML = ''; // Clear existing rows
+
+        if (globalAllTransactions.length === 0) {
+          const tr = tbody.insertRow();
+          const td = tr.insertCell();
+          td.colSpan = 5;
+          td.textContent = 'No transactions to display yet.';
+          td.style.textAlign = 'center';
+          td.style.color = '#A0A0A0';
+          return;
+        }
+
+        // Sort transactions by date, most recent first
+        const sortedTransactions = [...globalAllTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+        
+        const recentTransactions = sortedTransactions.slice(0, 10);
+
+        recentTransactions.forEach(tx => {
+          const tr = tbody.insertRow();
+          
+          const dateCell = tr.insertCell();
+          dateCell.textContent = tx.date;
+
+          const descCell = tr.insertCell();
+          descCell.textContent = tx.description;
+          
+          const categoryCell = tr.insertCell();
+          categoryCell.textContent = tx.category || 'N/A';
+
+          const amountCell = tr.insertCell();
+          amountCell.textContent = parseFloat(tx.amount).toFixed(2);
+          // Amounts from parser: positive for charges/expenses, negative for income/payments
+          if (tx.amount < 0) { // Income or Payment
+            amountCell.className = 'amount-income';
+            amountCell.textContent = Math.abs(parseFloat(tx.amount)).toFixed(2); // Display as positive
+          } else { // Charge or Expense
+            amountCell.className = 'amount-expense';
+          }
+          
+          const sourceCell = tr.insertCell();
+          sourceCell.textContent = tx.sourceFile;
+          sourceCell.style.fontSize = '0.85em';
+          sourceCell.style.color = '#888';
+        });
       }
 
 
@@ -952,38 +1399,18 @@
 
       // On load, restore saved data
       document.addEventListener('DOMContentLoaded', () => {
-        // Wipe old finance data and file history on first load after this update
-        // const V5_RESET_KEY = 'financeDataReset_2025_05_20_dc_income_logic'; // Old reset key
-        const V6_DAILY_RESET_KEY = 'financeDataReset_V6_daily_activity_2025_05_20'; // New reset key
-        if (!localStorage.getItem(V6_DAILY_RESET_KEY)) { 
-          localStorage.removeItem('financeData'); // Old main data key
-          localStorage.removeItem('financeFileHistory'); // Keep history, but map will be new
-          localStorage.removeItem('financeFileMonthMap'); // Old map key
-          localStorage.removeItem('financeCategorizedData'); // Old categorized data key
-          
-          localStorage.removeItem('financeDailyActivity'); // Clear new main data key (just in case)
-          localStorage.removeItem('financeFileDataKeysMap'); // Clear new map key (just in case)
-          localStorage.setItem(V6_DAILY_RESET_KEY, 'true'); 
-        }
-        // const saved = localStorage.getItem('financeData'); // Old
-        // if (saved) {
-        //   const data = JSON.parse(saved);
-        //   monthlyCharges = data.monthlyCharges || {}; // Old
-        //   monthlyPayments = data.monthlyPayments || {}; // Old
-        //   monthlyDCIncome = data.monthlyDCIncome || {}; // Old
-        //   totalCharges = data.totalCharges || 0; // Old
-        //   totalPayments = data.totalPayments || 0; // Old
-        // }
-        // const savedCategorized = localStorage.getItem('financeCategorizedData'); // Old
-        // if (savedCategorized) {
-        //   monthlyCategorizedSpending = JSON.parse(savedCategorized); // Old
-        // }
-
         const savedDailyActivity = localStorage.getItem('financeDailyActivity');
         if (savedDailyActivity) {
           dailyActivity = JSON.parse(savedDailyActivity);
         } else {
           dailyActivity = {}; // Initialize if nothing is saved
+        }
+
+        const savedGlobalTransactions = localStorage.getItem(globalAllTransactionsStorageKey);
+        if (savedGlobalTransactions) {
+          globalAllTransactions = JSON.parse(savedGlobalTransactions);
+        } else {
+          globalAllTransactions = [];
         }
 
         // fileHistory is already loaded at the top
@@ -997,131 +1424,264 @@
         updateDisplay(); // Call once after all data is loaded
       });
 
-      // --- Event Listener for File Picker (supports multiple) ---
-      document.getElementById('pdfPicker').addEventListener('change', async e => { // Made async
-        const files = Array.from(e.target.files);
-        if (!files.length) return;
+      // --- New: PDF Upload Modal Logic ---
+      const pdfUploadModal = document.getElementById('pdfUploadModal');
+      const openPdfUploadModalBtn = document.getElementById('openPdfUploadModalBtn');
+      const closeUploadModalBtn = document.getElementById('closeUploadModalBtn');
+      const modalPdfInput = document.getElementById('modalPdfInput');
+      const uploadAreaLabel = document.getElementById('uploadAreaLabel');
+      const selectedFilesList = document.getElementById('selectedFilesList');
+      const confirmUploadBtn = document.getElementById('confirmUploadBtn');
+      const cancelUploadBtn = document.getElementById('cancelUploadBtn');
+      const originalPdfPicker = document.getElementById('pdfPicker'); // The original, now hidden, input
 
-        const h1Title = document.querySelector('.content h1');
-        const originalPageTitle = h1Title ? h1Title.textContent : 'Personal Finance Tracker';
+      let filesToUploadModal = []; // Renamed to avoid conflict
 
-        if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') { // Check if key is missing or is the placeholder
-          alert("Gemini API key is not set or is invalid. Please create config.js with your key (see config.js.example for GEMINI_API_KEY) and ensure it is loaded.");
-          e.target.value = null; // Clear the file input
-          return;
-        }
+      if (openPdfUploadModalBtn) {
+        openPdfUploadModalBtn.onclick = () => {
+          pdfUploadModal.style.display = 'flex';
+          filesToUploadModal = []; // Reset on open
+          updateSelectedFilesListModal(); // Renamed to avoid conflict
+        };
+      }
 
-        if (h1Title) h1Title.textContent = `Processing ${files.length} file(s)...`;
+      if (closeUploadModalBtn) {
+        closeUploadModalBtn.onclick = () => {
+          pdfUploadModal.style.display = 'none';
+        };
+      }
 
-        for (let i = 0; i < files.length; i++) {
-          const f = files[i];
-          const fileName = f.name;
-          const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+      if (cancelUploadBtn) {
+        cancelUploadBtn.onclick = () => {
+          pdfUploadModal.style.display = 'none';
+        };
+      }
 
-          if (h1Title) h1Title.textContent = `Processing ${fileName} (${i + 1} of ${files.length})...`;
-
-          if (fileExtension === 'pdf') {
-            try {
-              await handlePdfFile(f); 
-            } catch (error) {
-              console.error(`Error processing ${fileName}:`, error);
-              alert(`An error occurred while processing ${fileName}. Check the console for details.`);
-              // Optionally, break or decide how to handle errors for multiple files
+      if (modalPdfInput) {
+        modalPdfInput.onchange = (e) => {
+          const newFiles = Array.from(e.target.files);
+          newFiles.forEach(file => {
+            if (file.type === "application/pdf" && !filesToUploadModal.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)) {
+              filesToUploadModal.push(file);
             }
-          } else {
-            alert("Unsupported file type. Please upload a PDF file.");
-            e.target.value = null; 
-            if (h1Title) h1Title.textContent = originalPageTitle; // Reset title if error before processing all
-            break; 
-          }
-        }
-        
-        updateAndSaveData(); // <<< KEY FIX: Update display and save data after all files are processed
+          });
+          updateSelectedFilesListModal(); 
+          modalPdfInput.value = ''; // Clear input to allow re-selecting/re-adding the same file if needed
+        };
+      }
 
-        if (h1Title) h1Title.textContent = originalPageTitle; // Reset title after all processing
-        e.target.value = null; // Clear the file input to allow re-uploading the same file(s)
-      });
+      function updateSelectedFilesListModal() { // Renamed to avoid conflict
+        if (!selectedFilesList) return;
+        selectedFilesList.innerHTML = '';
+        if (filesToUploadModal.length === 0) {
+          selectedFilesList.innerHTML = '<div>No files selected.</div>';
+        } else {
+          filesToUploadModal.forEach(file => {
+            const fileDiv = document.createElement('div');
+            fileDiv.textContent = file.name;
+            selectedFilesList.appendChild(fileDiv);
+          });
+        }
+        if (confirmUploadBtn) confirmUploadBtn.disabled = filesToUploadModal.length === 0;
+      }
+
+      if (confirmUploadBtn) {
+        confirmUploadBtn.onclick = async () => {
+          if (filesToUploadModal.length > 0) {
+            showProcessingBar("Preparing to upload..."); // Show progress bar
+            pdfUploadModal.style.display = 'none';
+            const dataTransfer = new DataTransfer();
+            filesToUploadModal.forEach(file => dataTransfer.items.add(file));
+            if (originalPdfPicker) originalPdfPicker.files = dataTransfer.files;
+            
+            const event = new Event('change', { bubbles: true });
+            if (originalPdfPicker) originalPdfPicker.dispatchEvent(event);
+          }
+        };
+      }
+
+      // Close modal if user clicks outside of it
+      window.onclick = (event) => {
+        if (event.target == pdfUploadModal) {
+          pdfUploadModal.style.display = 'none';
+        }
+      };
+
+      // Drag and drop functionality for the upload area
+      if (uploadAreaLabel) {
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+          uploadAreaLabel.addEventListener(eventName, preventDefaultsModal, false); // Renamed to avoid conflict
+        });
+
+        function preventDefaultsModal(e) { // Renamed to avoid conflict
+          e.preventDefault();
+          e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+          uploadAreaLabel.addEventListener(eventName, () => uploadAreaLabel.classList.add('hover'), false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+          uploadAreaLabel.addEventListener(eventName, () => uploadAreaLabel.classList.remove('hover'), false);
+        });
+
+        uploadAreaLabel.addEventListener('drop', (e) => {
+          const dt = e.dataTransfer;
+          const droppedFiles = Array.from(dt.files).filter(file => file.type === "application/pdf");
+          
+          if (droppedFiles.length > 0) {
+              droppedFiles.forEach(file => {
+                if (!filesToUploadModal.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)) {
+                  filesToUploadModal.push(file);
+                }
+              });
+              updateSelectedFilesListModal(); 
+          } else if (dt.files.length > 0) {
+              alert("Please drop PDF files only.");
+          }
+          if (modalPdfInput) modalPdfInput.value = ''; 
+        }, false);
+      }
+
+      // --- Event Listener for File Picker (supports multiple) ---
+      // Ensure originalPdfPicker exists before adding event listener
+      if (originalPdfPicker) {
+        originalPdfPicker.addEventListener('change', async e => { 
+          const files = Array.from(e.target.files); // These are the files confirmed from the modal
+          if (!files.length) {
+            hideProcessingBar(); // Hide if no files somehow
+            return;
+          }
+
+          // const h1Title = document.querySelector('.content h1'); // No longer needed
+          // const originalPageTitle = h1Title ? h1Title.textContent : 'Personal Finance Tracker'; // No longer needed
+
+          if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') { // Check if key is missing or is the placeholder
+            alert("Gemini API key is not set or is invalid. Please create config.js with your key (see config.js.example for GEMINI_API_KEY) and ensure it is loaded.");
+            e.target.value = null; // Clear the file input
+            hideProcessingBar(); // Hide progress bar on error
+            return;
+          }
+
+          // if (h1Title) h1Title.textContent = `Processing ${files.length} file(s)...`; // Replaced by progress bar
+          showProcessingBar(`Processing ${files.length} file(s)...`); // Show progress bar
+
+          try {
+            for (let i = 0; i < files.length; i++) {
+              const f = files[i];
+              const fileName = f.name;
+              const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
+
+              // if (h1Title) h1Title.textContent = `Processing ${fileName} (${i + 1} of ${files.length})...`; // Replaced by progress bar
+              showProcessingBar(`Processing ${fileName} (${i + 1} of ${files.length})...`); // Update progress bar message
+
+              if (fileExtension === 'pdf') {
+                try {
+                  await handlePdfFile(f); 
+                } catch (error) {
+                  console.error(`Error processing ${fileName}:`, error);
+                  alert(`An error occurred while processing ${fileName}. Check the console for details.`);
+                  // Optionally, break or decide how to handle errors for multiple files
+                }
+              } else {
+                alert("Unsupported file type. Please upload a PDF file.");
+                e.target.value = null; 
+                // if (h1Title) h1Title.textContent = originalPageTitle; // No longer needed
+                break; 
+              }
+            }
+          } finally {
+            updateAndSaveData(); // <<< KEY FIX: Update display and save data after all files are processed
+            // if (h1Title) h1Title.textContent = originalPageTitle; // No longer needed
+            hideProcessingBar(); // Hide progress bar when all processing is done or an error broke the loop
+            e.target.value = null; // Clear the file input to allow re-uploading the same file(s)
+          }
+        });
+      }
 
       // --- Function to process PDF files (placeholder for OpenAI API call) ---
       async function handlePdfFile(file) {
         const fileName = file.name;
         console.log(`Attempting to process PDF: ${fileName}`);
-        // Title management is now handled by the caller (pdfPicker event listener)
+
+        // Store old keys this file affected, to ensure they are rebuilt correctly
+        const oldKeysForThisFile = fileDataKeysMap[fileName] ? new Set(fileDataKeysMap[fileName]) : new Set();
+        
+        // First, remove any existing transactions from this file to prevent duplication if re-uploaded
+        globalAllTransactions = globalAllTransactions.filter(tx => tx.sourceFile !== fileName);
+        // Note: At this point, dailyActivity might be stale for oldKeysForThisFile until rebuild happens.
 
         try {
           const base64File = await new Promise((resolve, reject) => {
             const reader = new FileReader();
-            reader.onload = () => resolve(reader.result); // Ensure reader.result is passed
+            reader.onload = () => resolve(reader.result); 
             reader.onerror = error => reject(error);
-            reader.readAsDataURL(file); // Read the file
+            reader.readAsDataURL(file); 
           });
 
           const pureBase64 = base64File.substring(base64File.indexOf(',') + 1);
           
-          // Assume callGeminiPdfParser is updated to return transactions like:
-          // extractedData.transactions = [
-          //   { date: "YYYY-MM-DD", description: "...", amount: 123.45, type: "charge" | "payment", category: "Groceries" | ... },
-          //   ...
-          // ];
           const extractedData = await callGeminiPdfParser(pureBase64, fileName);
+
+          let newContributedDailyKeys = new Set();
 
           if (!extractedData || !extractedData.transactions || !Array.isArray(extractedData.transactions)) {
             console.error('No transactions found or invalid format from parser for file:', fileName);
-            // Alerting is handled by the caller
-            return; // Stop processing this specific file if data is bad
+            addFileToHistory(fileName, []); // Update history with no keys for this file
+            // Rebuild any dates this file previously affected to clear its old contributions
+            if (oldKeysForThisFile.size > 0) {
+                rebuildDailyActivityForDates(Array.from(oldKeysForThisFile));
+            }
+            return; 
           }
 
-          let contributedDailyKeys = new Set(); // Stores "YYYY-MM-DD"
-          const isDCFile = fileName.toUpperCase().startsWith("DC");
+          const isDCFile = fileName.toUpperCase().startsWith("DC"); // Determine once
 
           if (extractedData.transactions.length === 0) {
             console.log(`No transactions extracted from ${fileName}.`);
             addFileToHistory(fileName, []); 
           } else {
             extractedData.transactions.forEach(transaction => {
-              const transactionDate = transaction.date; // Expect "YYYY-MM-DD"
+              const transactionDate = transaction.date; 
               
               if (!transactionDate || !/^\d{4}-\d{2}-\d{2}$/.test(transactionDate)) {
                 console.warn(`Skipping transaction in ${fileName} due to missing or invalid date:`, transaction);
-                return; // Skip this transaction
-              }
-              contributedDailyKeys.add(transactionDate);
-
-              if (!dailyActivity[transactionDate]) {
-                dailyActivity[transactionDate] = { charges: 0, payments: 0, dcIncome: 0, categories: {} };
+                return; 
               }
               
               const amount = parseFloat(transaction.amount);
               if (isNaN(amount)) {
                 console.warn(`Skipping transaction in ${fileName} due to invalid amount:`, transaction);
-                return; // Skip this transaction
+                return; 
               }
+              newContributedDailyKeys.add(transactionDate);
 
-              if (isDCFile) {
-                dailyActivity[transactionDate].dcIncome = (dailyActivity[transactionDate].dcIncome || 0) + amount;
-              } else { 
-                if (transaction.type === 'payment' || (transaction.type !== 'income' && amount < 0) ) { 
-                  dailyActivity[transactionDate].payments = (dailyActivity[transactionDate].payments || 0) + Math.abs(amount);
-                } else if (transaction.type === 'charge' || (transaction.type !== 'income' && amount > 0)) { 
-                  dailyActivity[transactionDate].charges = (dailyActivity[transactionDate].charges || 0) + amount;
-                  
-                  let categoryToApply = "Other"; 
-                  if (transaction.category && CATEGORIES.includes(transaction.category)) {
-                    categoryToApply = transaction.category;
-                  }
-                  
-                  if (!dailyActivity[transactionDate].categories[categoryToApply]) {
-                    dailyActivity[transactionDate].categories[categoryToApply] = 0;
-                  }
-                  dailyActivity[transactionDate].categories[categoryToApply] += amount; 
-                }
-              }
+              globalAllTransactions.push({
+                date: transactionDate,
+                description: transaction.description,
+                amount: amount, 
+                category: transaction.category || (isDCFile ? 'Income' : 'N/A'),
+                sourceFile: fileName
+              });
             });
-            addFileToHistory(fileName, Array.from(contributedDailyKeys));
+            addFileToHistory(fileName, Array.from(newContributedDailyKeys));
           }
+
+          // Combine old and new keys to ensure all affected dates are rebuilt
+          const allAffectedKeys = new Set([...oldKeysForThisFile, ...newContributedDailyKeys]);
+          if (allAffectedKeys.size > 0) {
+            rebuildDailyActivityForDates(Array.from(allAffectedKeys));
+          }
+
         } catch (error) {
           console.error(`Error in handlePdfFile for ${fileName}:`, error);
-          throw error; // Re-throw for the caller to handle and alert the user
+          // If an error occurred after removing old transactions, 
+          // ensure dailyActivity is rebuilt for those old keys based on the (now filtered) globalAllTransactions
+          if (oldKeysForThisFile.size > 0) {
+             rebuildDailyActivityForDates(Array.from(oldKeysForThisFile));
+          }
+          throw error; 
         }
       }
 
@@ -1244,48 +1804,14 @@ The response MUST be only the valid JSON object, with no extra text, explanation
           }
         } catch (error) {
           console.error("Error calling Gemini API:", error);
-          throw error; // Re-throw to be caught by handlePdfFile
+          // Display a more user-friendly error message on the page
+          const errorDisplay = document.getElementById('apiErrorDisplay'); // Assuming you add such an element
+          if (errorDisplay) {
+            errorDisplay.textContent = `Error communicating with the AI: ${error.message}. Please check your API key and network connection.`;
+          }
+          return { transactions: [], summary: "Error during parsing." }; // Return empty on error
         }
       }
-
-      // --- Manual Reset: Clear all finance data, file history, and file-to-month map ---
-      function resetFinanceData() {
-        localStorage.removeItem('financeData');
-        localStorage.removeItem('financeFileHistory');
-        localStorage.removeItem('financeFileMonthMap');
-        localStorage.removeItem('financeCategorizedData'); 
-        localStorage.removeItem('financeDataReset_2025_05_20_dc_income_logic'); // Use the latest key
-
-        fileHistory = [];
-        fileDataKeysMap = {};
-        dailyActivity = {}; // Reset daily activity
-        // monthlyCharges = {}; // No longer needed
-        // monthlyPayments = {}; // No longer needed
-        // monthlyDCIncome = {}; // Reset DC income
-        // monthlyCategorizedSpending = {}; // Also reset categorized spending
-        // totalCharges = 0; // No longer needed
-        // totalPayments = 0; // No longer needed
-
-        updateDisplay();
-        renderFileHistory();
-        showFileHistory(false);
-      }
-      // Add a button for manual reset (for testing/cleanup)
-      const resetBtn = document.createElement('button');
-      resetBtn.textContent = 'Reset All Data';
-      resetBtn.style.position = 'absolute';
-      resetBtn.style.top = '18px';
-      resetBtn.style.right = '40px';
-      resetBtn.style.background = '#FF4C4C';
-      resetBtn.style.color = '#fff';
-      resetBtn.style.border = 'none';
-      resetBtn.style.borderRadius = '8px';
-      resetBtn.style.padding = '8px 18px';
-      resetBtn.style.fontWeight = '600';
-      resetBtn.style.cursor = 'pointer';
-      resetBtn.style.zIndex = 1200;
-      resetBtn.onclick = resetFinanceData;
-      document.body.appendChild(resetBtn);
     </script>
   </div>
 </body>
