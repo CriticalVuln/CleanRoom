@@ -685,6 +685,49 @@
       pointer-events: none;
       z-index: 10000;
     }
+
+    /* --- Unified Button Visual Style for Options, Add Task, and Timeframe Buttons --- */
+    .task-input button, /* Add Task */
+    .task-dropdown summary.options-btn, /* Options */
+    .timeframe-toggle button, /* All timeframe buttons */
+    .landing-timeframe-controls button /* For any landing page timeframe controls */
+    {
+      background: none;
+      border: none;
+      color: #63FFDA;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
+      outline: none;
+      box-shadow: none;
+    }
+    .task-input button.active,
+    .task-dropdown summary.options-btn.active,
+    .timeframe-toggle button.active,
+    .landing-timeframe-controls button.active {
+      background: none;
+      color: #63FFDA;
+      border: 2px solid #63FFDA;
+      box-shadow: 0 0 0 2px rgba(99,255,218,0.15);
+    }
+    .task-input button:not(.active):hover,
+    .task-dropdown summary.options-btn:hover,
+    .timeframe-toggle button:not(.active):hover,
+    .landing-timeframe-controls button:not(.active):hover {
+      background-color: rgba(99, 255, 218, 0.08);
+      color: #63FFDA;
+    }
+    /* Remove previous backgrounds for these buttons */
+    .task-input button,
+    .task-dropdown summary.options-btn,
+    .timeframe-toggle button,
+    .landing-timeframe-controls button {
+      background: none;
+      color: #63FFDA;
+      border: none;
+    }
   </style>
 </head>
 <body>
@@ -810,7 +853,7 @@
                         <button data-range="year">This Year</button>
                         <button data-range="month">This Month</button>
                         <button data-range="week">This Week</button>
-                        <button data-range="day" class="active">Today</button> <!-- Default to Today -->
+                        <button data-range="day">Today</button> <!-- Default to Today - REMOVED active CLASS -->
                     </div>
                     <div class="priority-difficulty-chart-container"> <!-- New container -->
                         <canvas id="priorityDifficultyChart"></canvas> <!-- New canvas -->
@@ -1707,7 +1750,12 @@
             updateMainCharts(mainChartRange); // Update main charts
             updateDifficultyChart(mainChartRange); // Use mainChartRange
             updatePriorityDifficultyChart(mainChartRange); // Use mainChartRange
-            renderActivitySquares(calendarCurrentYear, calendarCurrentMonth); // Update calendar too
+            // Only update the calendar data, do not change the view mode
+            if (calendarViewMode === 'month') {
+                renderActivitySquares(calendarCurrentYear, calendarCurrentMonth); // Month view
+            } else {
+                renderActivitySquares(calendarCurrentYear); // Year view
+            }
             saveState(); // Save state after task completion change
         });
 

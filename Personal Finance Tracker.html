@@ -115,7 +115,7 @@
     .file-history-tab {
       position: absolute;
       top: 18px;
-      left: 70px;
+      left: 70px; /* Original position for File History */
       background: #211D30;
       color: #63FFDA;
       border: none;
@@ -153,6 +153,31 @@
       color: #63FFDA;
       font-weight: 600;
     }
+
+    /* --- New: Banks Tab Styles (Basic) --- */
+    .banks-tab {
+      position: absolute;
+      top: 18px;
+      left: 200px; /* Position to the right of File History, adjust as needed */
+      background: #211D30;
+      color: #63FFDA;
+      border: none;
+      border-radius: 8px 8px 0 0;
+      padding: 8px 22px 8px 18px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      z-index: 1100; /* Same as file history */
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      transition: background 0.15s, color 0.15s;
+    }
+    .banks-tab.active { /* Style for active state if needed later */
+      background: #63FFDA;
+      color: #0D0B14;
+    }
+    /* --- End Banks Tab Styles --- */
+
     .file-history-list {
       list-style: none;
       padding: 0;
@@ -535,6 +560,168 @@
         background-position: 0 0;
       }
     }
+
+    /* --- New: Top Right Controls --- */
+    .top-right-controls {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000; /* Ensure it's above other content */
+    }
+    #agent-action-button {
+      background-color: #63FFDA; /* Accent Cyan/Turquoise */
+      color: #0D0B14; /* Dark text for contrast */
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    #agent-action-button:hover {
+      background-color: #52D9C3;
+    }
+    /* --- End Top Right Controls --- */
+
+    /* --- Button Visual Style Update --- */
+    /* General button reset for all relevant buttons */
+    button,
+    .upload-modal-btn,
+    .file-history-tab,
+    .banks-tab { /* Added .banks-tab */
+      background: none;
+      border: none;
+      color: #63FFDA;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
+      outline: none;
+      box-shadow: none;
+    }
+    /* Active/selected state for all relevant buttons */
+    button.active,
+    .upload-modal-btn.active,
+    .file-history-tab.active,
+    .banks-tab.active, /* Added .banks-tab.active */
+    #agent-action-button.active {
+      background: none;
+      color: #63FFDA;
+      border: 2px solid #63FFDA;
+      box-shadow: 0 0 0 2px rgba(99,255,218,0.15);
+    }
+    /* On hover, if not active, add a subtle background */
+    button:not(.active):hover,
+    .upload-modal-btn:not(.active):hover,
+    .file-history-tab:not(.active):hover,
+    .banks-tab:not(.active):hover, /* Added .banks-tab:not(.active):hover */
+    #agent-action-button:not(.active):hover {
+      background-color: rgba(99, 255, 218, 0.08);
+      color: #63FFDA;
+    }
+    /* Remove previous background/outline for agent-action-button and file-history-tab */
+    #agent-action-button,
+    .file-history-tab,
+    .banks-tab { /* Added .banks-tab */
+      background: none;
+      border: none;
+      color: #63FFDA;
+      box-shadow: none;
+    }
+    /* Remove previous background for upload-modal-btn */
+    .upload-modal-btn.primary,
+    .upload-modal-btn.secondary {
+      background: none;
+      color: #63FFDA;
+      border: none;
+    }
+    /* Remove previous active background for timeframe-controls */
+    .timeframe-controls button.active {
+      background: none;
+      color: #63FFDA;
+      border: 2px solid #63FFDA;
+      box-shadow: 0 0 0 2px rgba(99,255,218,0.15);
+    }
+    /* Remove previous hover for timeframe-controls */
+    .timeframe-controls button:hover:not(.active) {
+      background-color: rgba(99, 255, 218, 0.08);
+      color: #63FFDA;
+    }
+
+    /* --- New: Banks Import Modal Styles --- */
+    #banksImportModal {
+      display: none; /* Hidden by default */
+      position: fixed;
+      z-index: 1600; /* Higher than file history and banks panel */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.7); /* Dim background */
+      align-items: center; /* Vertical center */
+      justify-content: center; /* Horizontal center */
+    }
+
+    #banksImportModal .upload-modal-content {
+      background-color: #1A1625; /* Dark card background */
+      margin: auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+      width: 90%;
+      max-width: 500px; /* Max width for the modal */
+      display: flex;
+      flex-direction: column;
+      gap: 20px; /* Space between elements */
+    }
+
+    #banksImportModal .upload-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #4F4B68; /* Separator line */
+    }
+
+    #banksImportModal .upload-modal-header h2 {
+      color: #E0E0E0;
+      font-size: 1.4em;
+      margin: 0;
+    }
+
+    #banksImportModal .upload-modal-close-btn {
+      color: #A0A0A0;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      background: none;
+      border: none;
+    }
+    #banksImportModal .upload-modal-close-btn:hover,
+    #banksImportModal .upload-modal-close-btn:focus {
+      color: #FFF;
+    }
+
+    #banksImportModal input {
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #4F4B68;
+      background: #211D30;
+      color: #E0E0E0;
+      font-size: 1em;
+    }
+
+    #banksImportModal .upload-modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 15px;
+      border-top: 1px solid #4F4B68; /* Separator line */
+    }
+
+    /* --- End Banks Import Modal Styles --- */
   </style>
 
   <!-- Poppins font -->
@@ -545,39 +732,37 @@
   <!-- ADDED: Date Adapter for Chart.js Time Scale -->
   <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script> <!-- date-fns library -->
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- date-fns adapter -->
+  <script src="config.js"></script>
+  <!-- Ensure config.js is loaded before any other scripts that use GEMINI_API_KEY -->
 </head>
 <body>
-  <script src="config.js"></script> <!-- Load config first -->
-  <button id="fileHistoryTab" class="file-history-tab">File History</button>
-  <div id="fileHistoryPanel" class="file-history-panel">
-    <h3>Uploaded Files</h3>
-    <ul id="fileHistoryList" class="file-history-list"></ul>
-  </div>
-  <nav class="sidebar">
-    <a href="Landing Page.html">
-      <svg viewBox="0 0 24 24">
+  <div class="sidebar">
+    <a href="Landing Page.html" title="Home">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
       </svg>
     </a>
-    <a href="Personal Finance Tracker.html">
-      <svg viewBox="0 0 24 24">
+    <a href="Personal Finance Tracker.html" title="Finance Tracker">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </a>
-    <a href="Productivity Tracker.html">
-      <svg viewBox="0 0 24 24">
+    <a href="Productivity Tracker.html" title="Productivity Tracker">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="12" r="9"/>
         <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </a>
-  </nav>
+  </div>
 
+  <!-- New: Top Right Controls Button -->
+  <div class="top-right-controls">
+    <button id="agent-action-button">Generate Presentation</button>
+  </div>
   <div class="content">
     <h1>Personal Finance Tracker</h1>
     <!-- Modified: This input will now trigger the modal. We'll hide its default appearance. -->
     <input id="pdfPicker" type="file" accept=".pdf" multiple style="display: none;">
-    <!-- New Button to trigger the original pdfPicker input, which in turn will trigger the modal -->
-    <button id="openPdfUploadModalBtn" class="upload-modal-btn primary" style="margin-bottom: 20px; display: block; margin-left: auto; margin-right: auto;">Choose PDF Files</button>
 
     <div id="total"></div>
 
@@ -657,6 +842,27 @@
             <!-- Transactions will be populated here by JavaScript -->
           </tbody>
         </table>
+      </div>
+    </div>    <!-- File History Tab Button -->
+    <button id="fileHistoryTab" class="file-history-tab">File History</button>
+    <!-- New Banks Tab Button -->
+    <button id="banksTab" class="banks-tab">Banks</button>
+    <!-- Upload PDF Button, relocated to be right of the Banks button -->
+    <button id="openPdfUploadModalBtn" class="banks-tab" style="left: 280px;">Upload PDF</button>
+
+    <div id="fileHistoryPanel" class="file-history-panel">
+      <h3>Uploaded Files</h3>
+      <ul id="fileHistoryList" class="file-history-list"></ul>
+    </div>
+
+    <!-- New Banks Panel (initially hidden) -->
+    <div id="banksPanel" class="file-history-panel" style="display:none; position:absolute; top:54px; left:200px; background:#1A1625; color:#E0E0E0; border-radius:0 0 12px 12px; box-shadow:0 4px 16px rgba(0,0,0,0.5); min-width:320px; max-width:420px; padding:18px 18px 10px 18px; z-index:1100;">
+      <h3>Banks</h3>
+      <ul id="banksList" class="file-history-list">
+        <li style="color:#A0A0A0;">No banks added yet.</li>
+      </ul>
+      <div style="text-align:right; margin-top:12px;">
+        <button id="importBanksBtn" class="upload-modal-btn primary">Import</button>
       </div>
     </div>
 
@@ -788,6 +994,8 @@
       const fileHistoryList = document.getElementById('fileHistoryList');
 
       function renderFileHistory() {
+        // Guard against missing element
+        if (!fileHistoryList) return;
         fileHistoryList.innerHTML = '';
         if (!fileHistory.length) {
           fileHistoryList.innerHTML = '<li style="color:#A0A0A0;">No files uploaded yet.</li>';
@@ -833,23 +1041,29 @@
       }
 
       function showFileHistory(show) {
-        if (show) {
-          fileHistoryPanel.style.display = 'block';
-          fileHistoryTab.classList.add('active');
-          renderFileHistory();
-        } else {
-          fileHistoryPanel.style.display = 'none';
-          fileHistoryTab.classList.remove('active');
-        }
+        // Guard against missing elements
+        if (!fileHistoryPanel || !fileHistoryTab) return;
+         if (show) {
+           fileHistoryPanel.style.display = 'block';
+           fileHistoryTab.classList.add('active');
+           renderFileHistory();
+         } else {
+           fileHistoryPanel.style.display = 'none';
+           fileHistoryTab.classList.remove('active');
+         }
       }
-      fileHistoryTab.addEventListener('click', () => {
-        showFileHistory(fileHistoryPanel.style.display !== 'block');
-      });
-      document.addEventListener('click', e => {
-        if (!fileHistoryPanel.contains(e.target) && e.target !== fileHistoryTab) {
-          showFileHistory(false);
-        }
-      });
+      if (fileHistoryTab) {
+        fileHistoryTab.addEventListener('click', () => {
+          showFileHistory(fileHistoryPanel.style.display !== 'block');
+        });
+      }
+      if (fileHistoryPanel) {
+        document.addEventListener('click', e => {
+          if (!fileHistoryPanel.contains(e.target) && e.target !== fileHistoryTab) {
+            showFileHistory(false);
+          }
+        });
+      }
 
       function addFileToHistory(name, keys) { // keys are now YYYY-MM-DD
         if (!fileHistory.some(f => f.name === name)) {
@@ -1557,10 +1771,10 @@
           // const h1Title = document.querySelector('.content h1'); // No longer needed
           // const originalPageTitle = h1Title ? h1Title.textContent : 'Personal Finance Tracker'; // No longer needed
 
-          if (!GEMINI_API_KEY || GEMINI_API_KEY === 'YOUR_GEMINI_API_KEY_HERE') { // Check if key is missing or is the placeholder
-            alert("Gemini API key is not set or is invalid. Please create config.js with your key (see config.js.example for GEMINI_API_KEY) and ensure it is loaded.");
-            e.target.value = null; // Clear the file input
-            hideProcessingBar(); // Hide progress bar on error
+          if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === "") {
+            alert("Gemini API key is not set or is invalid. Please create config.js with your key (set GEMINI_API_KEY) and ensure it is loaded.");
+            e.target.value = null;
+            hideProcessingBar();
             return;
           }
 
@@ -1613,6 +1827,7 @@
         // Note: At this point, dailyActivity might be stale for oldKeysForThisFile until rebuild happens.
 
         try {
+
           const base64File = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onload = () => resolve(reader.result); 
@@ -1811,6 +2026,163 @@ The response MUST be only the valid JSON object, with no extra text, explanation
           }
           return { transactions: [], summary: "Error during parsing." }; // Return empty on error
         }
+      }
+
+      // --- Banks Panel UI Logic ---
+      const banksTab = document.getElementById('banksTab');
+      let banksPanel = document.getElementById('banksPanel');
+      const banksList = document.getElementById('banksList');
+
+      // Helper: Get/Set banks links in localStorage
+      function getBankLinks() {
+        try {
+          return JSON.parse(localStorage.getItem('financeBanksLinks')) || [];
+        } catch (e) {
+          return [];
+        }
+      }
+      function setBankLinks(links) {
+        localStorage.setItem('financeBanksLinks', JSON.stringify(links));
+      }
+
+      // Render the banks list in the popup
+      function renderBanksList() {
+        if (!banksList) return;
+        const links = getBankLinks();
+        banksList.innerHTML = '';
+        if (!links.length) {
+          const li = document.createElement('li');
+          li.style.color = '#A0A0A0';
+          li.textContent = 'No banks added yet.';
+          banksList.appendChild(li);
+          return;
+        }
+        links.forEach(link => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.href = link.url;
+          a.textContent = link.name;
+          a.target = '_blank';
+          a.rel = 'noopener noreferrer';
+          a.style.color = '#7adfff';
+          a.style.textDecoration = 'underline';
+          li.appendChild(a);
+          // --- Add delete button next to each bank ---
+          const delBtn = document.createElement('button');
+          delBtn.className = 'delete-btn';
+          delBtn.textContent = 'Delete';
+          delBtn.onclick = (event) => {
+            event.stopPropagation();
+            // Remove this bank from storage and re-render
+            const links = getBankLinks();
+            const idx = links.findIndex(l => l.name === link.name && l.url === link.url);
+            if (idx !== -1) {
+              links.splice(idx, 1);
+              setBankLinks(links);
+              renderBanksList();
+            }
+          };
+          li.appendChild(delBtn);
+          banksList.appendChild(li);
+        });
+      }
+
+      // Initial render on page load
+      renderBanksList();
+
+      function showBanksPanel(show) {
+        if (!banksPanel || !banksTab) return;
+        if (show) {
+          banksPanel.style.display = 'block';
+          banksTab.classList.add('active');
+          renderBanksList(); // Always update when shown
+        } else {
+          banksPanel.style.display = 'none';
+          banksTab.classList.remove('active');
+        }
+      }
+      if (banksTab) {
+        banksTab.addEventListener('click', () => {
+          showBanksPanel(banksPanel.style.display !== 'block');
+        });
+      }
+      if (banksPanel) {
+        document.addEventListener('click', e => {
+          if (!banksPanel.contains(e.target) && e.target !== banksTab) {
+            showBanksPanel(false);
+          }
+        });
+      }
+
+      // --- Banks Import Modal Logic ---
+      // Create the modal HTML and append to body (hidden by default)
+      (function createBanksImportModal() {
+        if (document.getElementById('banksImportModal')) return; // Prevent duplicate
+        const modal = document.createElement('div');
+        modal.id = 'banksImportModal';
+        modal.className = 'upload-modal';
+        modal.style.display = 'none';
+        modal.innerHTML = `
+          <div class="upload-modal-content">
+            <div class="upload-modal-header">
+              <h2>Add Bank Link</h2>
+              <button id="closeBanksImportModalBtn" class="upload-modal-close-btn">&times;</button>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:16px;">
+              <input id="bankNameInput" type="text" placeholder="Bank Name" style="padding:10px; border-radius:4px; border:1px solid #4F4B68; background:#211D30; color:#E0E0E0; font-size:1em;" />
+              <input id="bankUrlInput" type="text" placeholder="Bank URL (https://...)" style="padding:10px; border-radius:4px; border:1px solid #4F4B68; background:#211D30; color:#E0E0E0; font-size:1em;" />
+            </div>
+            <div class="upload-modal-footer">
+              <button id="cancelBanksImportBtn" class="upload-modal-btn secondary">Cancel</button>
+              <button id="saveBanksImportBtn" class="upload-modal-btn primary">Save</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+      })();
+
+      // Show/hide logic for the modal
+      const banksImportModal = document.getElementById('banksImportModal');
+      const importBanksBtn = document.getElementById('importBanksBtn');
+      if (importBanksBtn && banksImportModal) {
+        importBanksBtn.onclick = () => {
+          banksImportModal.style.display = 'flex';
+          document.getElementById('bankNameInput').value = '';
+          document.getElementById('bankUrlInput').value = '';
+        };
+      }
+      const closeBanksImportModalBtn = document.getElementById('closeBanksImportModalBtn');
+      const cancelBanksImportBtn = document.getElementById('cancelBanksImportBtn');
+      if (closeBanksImportModalBtn) closeBanksImportModalBtn.onclick = () => { banksImportModal.style.display = 'none'; };
+      if (cancelBanksImportBtn) cancelBanksImportBtn.onclick = () => { banksImportModal.style.display = 'none'; };
+      // Close modal if user clicks outside of it
+      window.addEventListener('click', function(event) {
+        if (event.target === banksImportModal) {
+          banksImportModal.style.display = 'none';
+        }
+      });
+
+      // --- Banks Import Modal Save Logic ---
+      const saveBanksImportBtn = document.getElementById('saveBanksImportBtn');
+      if (saveBanksImportBtn) {
+        saveBanksImportBtn.onclick = () => {
+          const name = document.getElementById('bankNameInput').value.trim();
+          const url = document.getElementById('bankUrlInput').value.trim();
+          if (!name || !url) {
+            alert('Please enter both a bank name and URL.');
+            return;
+          }
+          // Basic URL validation
+          if (!/^https?:\/\//i.test(url)) {
+            alert('Please enter a valid URL starting with http:// or https://');
+            return;
+          }
+          const links = getBankLinks();
+          links.push({ name, url });
+          setBankLinks(links);
+          renderBanksList();
+          banksImportModal.style.display = 'none';
+        };
       }
     </script>
   </div>
