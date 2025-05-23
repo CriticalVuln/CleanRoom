@@ -417,8 +417,10 @@
       color: #FFF; /* Keep white for active */
       font-weight: 600;
       /* BEGIN MODIFICATION: Add styles from landing page for consistency */
-      background-color: #63FFDA;
-      color: #0D0B14;
+      background-color: #0D0B14; /* Black box */
+      color: #63FFDA; /* Turquoise text */
+      border-color: #63FFDA; /* Turquoise outline */
+      box-shadow: none; /* Remove any hover shadow when active */
       /* END MODIFICATION */
     }
     /* BEGIN ADDITION: Styles for widget titles and timeframe controls from landing page */
@@ -434,7 +436,7 @@
     }
     .landing-timeframe-controls button,
     .timeframe-toggle button { /* Apply to existing buttons as well for now */
-      background: transparent; /* MODIFIED: Transparent background */
+      background: none; /* MODIFIED: Transparent background */
       border: 1px solid transparent; /* MODIFIED: Transparent border to maintain layout */
       color: #63FFDA; /* MODIFIED: Turquoise text */
       font-size: 12px; /* Smaller font */
@@ -443,23 +445,25 @@
       cursor: pointer;
       padding: 5px 10px; /* Adjusted padding */
       border-radius: 6px; /* Rounded corners */
-      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s; /* Added box-shadow to transition */
     }
     .landing-timeframe-controls button.active,
     .landing-timeframe-controls button.selected, /* Keep .selected for existing JS */
     .timeframe-toggle button.active, /* Ensure existing active buttons get the new style */
     .timeframe-toggle button.selected /* Ensure existing selected buttons get the new style */
     {
-      background-color: #63FFDA; /* Accent Cyan */
-      color: #0D0B14; /* Dark text for contrast */
+      background-color: #0D0B14; /* MODIFIED: Black box */
+      color: #63FFDA; /* MODIFIED: Turquoise text */
       border: 1px solid #63FFDA; /* MODIFIED: Turquoise border */
       font-weight: 600; /* Bold active button */
+      box-shadow: none; /* Remove any hover shadow when active */
     }
     .landing-timeframe-controls button:hover:not(.active):not(.selected),
     .timeframe-toggle button:hover:not(.active):not(.selected) {
-      background-color: rgba(99, 255, 218, 0.1); /* MODIFIED: Subtle turquoise glow */
+      background-color: transparent; /* MODIFIED: Ensure no background on hover for non-active */
       border: 1px solid transparent; /* MODIFIED: Transparent border */
       color: #63FFDA; /* MODIFIED: Keep text turquoise */
+      box-shadow: 0 0 8px #63FFDA; /* MODIFIED: Turquoise shadow */
     }
     /* END ADDITION */
     .chart-container {
@@ -693,40 +697,33 @@
     .landing-timeframe-controls button /* For any landing page timeframe controls */
     {
       background: none;
-      border: none;
+      border: 1px solid transparent; /* Ensure consistent base for border */
       color: #63FFDA;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
+      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s; /* Corrected transition */
       outline: none;
       box-shadow: none;
     }
     .task-input button.active,
     .task-dropdown summary.options-btn.active,
-    .timeframe-toggle button.active,
+    .timeframe-toggle button.active, /* This will now use the new active style */
     .landing-timeframe-controls button.active {
-      background: none;
-      color: #63FFDA;
-      border: 2px solid #63FFDA;
-      box-shadow: 0 0 0 2px rgba(99,255,218,0.15);
+      background-color: #0D0B14; /* Black box */
+      color: #63FFDA; /* Turquoise text */
+      border: 1px solid #63FFDA; /* Turquoise outline */
+      box-shadow: none; /* Remove hover shadow when active */
     }
     .task-input button:not(.active):hover,
     .task-dropdown summary.options-btn:hover,
-    .timeframe-toggle button:not(.active):hover,
+    .timeframe-toggle button:not(.active):hover, /* This will now use the new hover style */
     .landing-timeframe-controls button:not(.active):hover {
-      background-color: rgba(99, 255, 218, 0.08);
-      color: #63FFDA;
-    }
-    /* Remove previous backgrounds for these buttons */
-    .task-input button,
-    .task-dropdown summary.options-btn,
-    .timeframe-toggle button,
-    .landing-timeframe-controls button {
-      background: none;
-      color: #63FFDA;
-      border: none;
+      background-color: transparent; /* Ensure no background on hover */
+      color: #63FFDA; /* Keep text turquoise */
+      border-color: transparent; /* Keep border transparent */
+      box-shadow: 0 0 8px #63FFDA; /* Turquoise shadow */
     }
   </style>
 </head>

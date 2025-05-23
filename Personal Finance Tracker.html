@@ -261,26 +261,34 @@
     .timeframe-controls {
       text-align: center;
       margin-bottom: 15px;
+      display: flex; /* Added to center buttons */
+      justify-content: center; /* Added to center buttons */
+      gap: 12px; /* Added from landing page for consistency */
     }
     .timeframe-controls button {
       background: none;
-      border: none;
+      border: 1px solid transparent; /* Base transparent border for layout stability */
       color: #63FFDA; /* Turquoise */
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
-      padding: 5px 12px;
+      padding: 5px 12px; /* Original padding */
       border-radius: 6px;
       cursor: pointer;
-      margin: 0 5px;
+      /* margin: 0 5px; */ /* Removed, gap is used now */
       font-size: 0.9em;
-      transition: background-color 0.2s, color 0.2s;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s; /* Updated transitions */
     }
     .timeframe-controls button.active {
-      background-color: #63FFDA;
-      color: #0D0B14; /* Dark background for active button text */
+      background-color: #0D0B14; /* Black box */
+      color: #63FFDA; /* Turquoise text */
+      border-color: #63FFDA; /* Turquoise outline */
+      box-shadow: none; /* Remove any hover shadow when active */
     }
     .timeframe-controls button:hover:not(.active) {
-      background-color: rgba(99, 255, 218, 0.1); /* Slight hover effect */
+      background-color: transparent; /* Ensure no background on hover for non-active */
+      color: #63FFDA; /* Ensure text remains turquoise */
+      border-color: transparent; /* Ensure border remains transparent */
+      box-shadow: 0 0 8px #63FFDA; /* Turquoise shadow */
     }
 
     /* --- Rule for Expenses title --- */
@@ -499,19 +507,21 @@
       transition: background-color 0.2s, color 0.2s;
     }
     .upload-modal-btn.primary {
-      background-color: #63FFDA; /* Turquoise */
-      color: #0D0B14; /* Dark text */
+      /* background-color: #63FFDA; */ /* Turquoise */
+      /* color: #0D0B14; */ /* Dark text */
+      /* Styles removed to inherit from .upload-modal-btn and unified button styles */
     }
-    .upload-modal-btn.primary:hover {
-      background-color: #82ffe5;
-    }
+    /* .upload-modal-btn.primary:hover { */
+      /* background-color: #82ffe5; */
+    /* } */
     .upload-modal-btn.secondary {
-      background-color: #4F4B68; /* Darker grey */
-      color: #E0E0E0;
+      /* background-color: #4F4B68; */ /* Darker grey */
+      /* color: #E0E0E0; */
+      /* Styles removed to inherit from .upload-modal-btn and unified button styles */
     }
-    .upload-modal-btn.secondary:hover {
-      background-color: #5f5a7a;
-    }
+    /* .upload-modal-btn.secondary:hover { */
+      /* background-color: #5f5a7a; */
+    /* } */
 
     /* --- New: Progress Bar Styles --- */
     #progressBarContainer {
@@ -583,145 +593,87 @@
     }
     /* --- End Top Right Controls --- */
 
-    /* --- Button Visual Style Update --- */
-    /* General button reset for all relevant buttons */
-    button,
-    .upload-modal-btn,
+    /* --- Unified Button Visual Style --- */
+    /* This section replaces the previous "Button Visual Style Update" */
+
+    /* General style for all relevant buttons */
+    button, /* Covers generic buttons, like the assumed "Import" in Banks menu */
+    .upload-modal-btn, /* Covers Save/Cancel in Banks Import Modal and PDF Upload Modal */
     .file-history-tab,
-    .banks-tab { /* Added .banks-tab */
-      background: none;
-      border: none;
-      color: #63FFDA;
+    .banks-tab,
+    #agent-action-button {
+      background: transparent; /* Default: transparent background */
+      border: 1px solid transparent; /* Default: transparent border for layout consistency */
+      color: #63FFDA; /* Default: Turquoise text */
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
+      /* Default padding - specific elements below will override if they have their own padding */
+      padding: 8px 15px;
       border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s;
+      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
       outline: none;
       box-shadow: none;
+      text-decoration: none; /* For <a> tags styled as buttons */
+      display: inline-block; /* For <a> tags styled as buttons */
+      text-align: center;
+      vertical-align: middle; /* Align text and icons nicely if any */
     }
-    /* Active/selected state for all relevant buttons */
-    button.active,
-    .upload-modal-btn.active,
-    .file-history-tab.active,
-    .banks-tab.active, /* Added .banks-tab.active */
-    #agent-action-button.active {
-      background: none;
-      color: #63FFDA;
-      border: 2px solid #63FFDA;
-      box-shadow: 0 0 0 2px rgba(99,255,218,0.15);
+
+    /* Specific paddings should be maintained or adjusted as needed. */
+    /* These rules will override the padding from the general rule above due to specificity or order. */
+    /* Note: .timeframe-controls button padding (5px 12px) is defined earlier and is more specific, so it will be preserved. */
+    .file-history-tab, .banks-tab {
+        padding: 8px 22px 8px 18px;
     }
-    /* On hover, if not active, add a subtle background */
-    button:not(.active):hover,
-    .upload-modal-btn:not(.active):hover,
-    .file-history-tab:not(.active):hover,
-    .banks-tab:not(.active):hover, /* Added .banks-tab:not(.active):hover */
-    #agent-action-button:not(.active):hover {
-      background-color: rgba(99, 255, 218, 0.08);
-      color: #63FFDA;
+    #agent-action-button {
+        padding: 10px 15px;
     }
-    /* Remove previous background/outline for agent-action-button and file-history-tab */
-    #agent-action-button,
-    .file-history-tab,
-    .banks-tab { /* Added .banks-tab */
-      background: none;
-      border: none;
-      color: #63FFDA;
+    .upload-modal-btn { /* Applies to Save/Cancel in Banks Import Modal */
+        padding: 10px 20px;
+    }
+    /* If the "Import" button in the Banks menu (if it's not a generic .upload-modal-btn) */
+    /* needs specific padding, it would be defined here. For now, it uses default or <button> padding. */
+    /* e.g. #banksPanelOpenImportModalButton { padding: 10px 15px; } */
+
+
+    /* Hover state (not active/selected, not disabled) */
+    button:not(.active):not(:disabled):hover,
+    .upload-modal-btn:not(.active):not(:disabled):hover,
+    .file-history-tab:not(.active):not(:disabled):hover,
+    .banks-tab:not(.active):not(:disabled):hover,
+    #agent-action-button:not(.active):not(:disabled):hover {
+      background-color: transparent; /* Hover: transparent background */
+      color: #63FFDA; /* Hover: Turquoise text */
+      border-color: transparent; /* Hover: transparent border */
+      box-shadow: 0 0 8px #63FFDA; /* Hover: Turquoise shadow */
+    }
+
+    /* Active/Selected state (also applies to :active pseudo-class for click feedback) */
+    button.active, button:active,
+    .upload-modal-btn.active, .upload-modal-btn:active,
+    .file-history-tab.active, .file-history-tab:active,
+    .banks-tab.active, .banks-tab:active,
+    #agent-action-button.active, #agent-action-button:active {
+      background-color: #0D0B14; /* Active: Black background */
+      color: #63FFDA; /* Active: Turquoise text */
+      border: 1px solid #63FFDA; /* Active: Turquoise outline */
+      box-shadow: none; /* Remove any hover shadow */
+    }
+
+    /* Disabled state */
+    button:disabled,
+    .upload-modal-btn:disabled,
+    .file-history-tab:disabled,
+    .banks-tab:disabled,
+    #agent-action-button:disabled {
+      color: #4F4B68; /* Muted text */
+      background-color: #211D30; /* Muted background */
+      border-color: #4F4B68; /* Muted border */
+      cursor: not-allowed;
       box-shadow: none;
     }
-    /* Remove previous background for upload-modal-btn */
-    .upload-modal-btn.primary,
-    .upload-modal-btn.secondary {
-      background: none;
-      color: #63FFDA;
-      border: none;
-    }
-    /* Remove previous active background for timeframe-controls */
-    .timeframe-controls button.active {
-      background: none;
-      color: #63FFDA;
-      border: 2px solid #63FFDA;
-      box-shadow: 0 0 0 2px rgba(99,255,218,0.15);
-    }
-    /* Remove previous hover for timeframe-controls */
-    .timeframe-controls button:hover:not(.active) {
-      background-color: rgba(99, 255, 218, 0.08);
-      color: #63FFDA;
-    }
-
-    /* --- New: Banks Import Modal Styles --- */
-    #banksImportModal {
-      display: none; /* Hidden by default */
-      position: fixed;
-      z-index: 1600; /* Higher than file history and banks panel */
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.7); /* Dim background */
-      align-items: center; /* Vertical center */
-      justify-content: center; /* Horizontal center */
-    }
-
-    #banksImportModal .upload-modal-content {
-      background-color: #1A1625; /* Dark card background */
-      margin: auto;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
-      width: 90%;
-      max-width: 500px; /* Max width for the modal */
-      display: flex;
-      flex-direction: column;
-      gap: 20px; /* Space between elements */
-    }
-
-    #banksImportModal .upload-modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-bottom: 15px;
-      border-bottom: 1px solid #4F4B68; /* Separator line */
-    }
-
-    #banksImportModal .upload-modal-header h2 {
-      color: #E0E0E0;
-      font-size: 1.4em;
-      margin: 0;
-    }
-
-    #banksImportModal .upload-modal-close-btn {
-      color: #A0A0A0;
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
-      background: none;
-      border: none;
-    }
-    #banksImportModal .upload-modal-close-btn:hover,
-    #banksImportModal .upload-modal-close-btn:focus {
-      color: #FFF;
-    }
-
-    #banksImportModal input {
-      padding: 10px;
-      border-radius: 4px;
-      border: 1px solid #4F4B68;
-      background: #211D30;
-      color: #E0E0E0;
-      font-size: 1em;
-    }
-
-    #banksImportModal .upload-modal-footer {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      padding-top: 15px;
-      border-top: 1px solid #4F4B68; /* Separator line */
-    }
-
-    /* --- End Banks Import Modal Styles --- */
+    /* --- End Unified Button Visual Style --- */
   </style>
 
   <!-- Poppins font -->
@@ -1768,8 +1720,7 @@
             return;
           }
 
-          // const h1Title = document.querySelector('.content h1'); // No longer needed
-          // const originalPageTitle = h1Title ? h1Title.textContent : 'Personal Finance Tracker'; // No longer needed
+         
 
           if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === "") {
             alert("Gemini API key is not set or is invalid. Please create config.js with your key (set GEMINI_API_KEY) and ensure it is loaded.");

@@ -270,7 +270,7 @@
     }
     .landing-timeframe-controls button {
       background: none;
-      border: none;
+      border: 1px solid transparent; /* Base transparent border for layout stability */
       color: #63FFDA; /* Turquoise */
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
@@ -279,16 +279,21 @@
       cursor: pointer;
       /* margin: 0 5px; */ /* Removed, gap is used */
       font-size: 0.9em; /* Consistent with Personal Finance Tracker */
-      transition: background-color 0.2s, color 0.2s;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s; /* Updated transitions */
     }
     .landing-timeframe-controls button.active,
     .landing-timeframe-controls button.selected /* Keep .selected for existing JS */
     {
-      background-color: #63FFDA;
-      color: #0D0B14; /* Dark background for active button text */
+      background-color: #0D0B14; /* Black box */
+      color: #63FFDA; /* Turquoise text */
+      border-color: #63FFDA; /* Turquoise outline */
+      box-shadow: none; /* Remove any hover shadow when active */
     }
     .landing-timeframe-controls button:hover:not(.active):not(.selected) {
-      background-color: rgba(99, 255, 218, 0.1); /* Slight hover effect */
+      background-color: transparent; /* Ensure no background on hover for non-active */
+      color: #63FFDA; /* Ensure text remains turquoise */
+      border-color: transparent; /* Ensure border remains transparent */
+      box-shadow: 0 0 8px #63FFDA; /* Turquoise shadow */
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
