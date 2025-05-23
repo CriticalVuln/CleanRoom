@@ -890,8 +890,7 @@
 
       // --- New: Net Worth (Income) Chart Global ---
       let netWorthChartInstance = null;
-      let expensesChartTimeframe = 'month'; // Default timeframe for expenses chart
-      let netWorthChartTimeframe = 'month'; // Default timeframe for net worth chart
+      let sharedChartTimeframe = 'month'; // New: Shared timeframe for Expenses and Net Worth charts
 
       // API Key will now be loaded from config.js
       const GEMINI_API_KEY = window.APP_CONFIG && window.APP_CONFIG.GEMINI_API_KEY;
@@ -935,6 +934,40 @@
       }
       // --- End Progress Bar Logic ---
 
+      // --- New: Synchronized Timeframe Controls Setup ---
+      function setupTimeframeControls() {
+        const timeframeButtons = document.querySelectorAll('.timeframe-controls button[data-range]');
+
+        timeframeButtons.forEach(button => {
+          button.addEventListener('click', (event) => {
+            const clickedButton = event.target;
+            // Ensure the clicked element is a button with data-range
+            if (!clickedButton.matches('button[data-range]')) return;
+
+            const newTimeframe = clickedButton.dataset.range;
+            
+            // Update the shared timeframe state
+            sharedChartTimeframe = newTimeframe;
+
+            // Update 'active' class on ALL timeframe buttons
+            document.querySelectorAll('.timeframe-controls button[data-range]').forEach(btn => {
+              btn.classList.remove('active');
+              if (btn.dataset.range === newTimeframe) {
+                btn.classList.add('active');
+              }
+            });
+
+            // Re-render both charts with the new timeframe
+            if (typeof renderSpendChart === 'function') {
+              renderSpendChart(sharedChartTimeframe);
+            }
+            if (typeof renderNetWorthChart === 'function') {
+              renderNetWorthChart(sharedChartTimeframe);
+            }
+          });
+        });
+      }
+      // --- End Synchronized Timeframe Controls Setup ---
 
       function saveFileDataKeysMap() { // New name
         localStorage.setItem('financeFileDataKeysMap', JSON.stringify(fileDataKeysMap));
@@ -1122,7 +1155,7 @@
         // Clear numeric summary
         document.getElementById('total').innerHTML = '';
 
-        renderSpendChart(expensesChartTimeframe); // Pass current timeframe
+        renderSpendChart(sharedChartTimeframe); // Use shared timeframe
 
         // localStorage.setItem('financeData', JSON.stringify({ monthlyCharges, monthlyPayments, monthlyDCIncome, totalCharges, totalPayments })); // Old
         // localStorage.setItem('financeCategorizedData', JSON.stringify(monthlyCategorizedSpending)); // Old
@@ -1136,7 +1169,7 @@
         renderCategoriesChart(selectedMonthForCategory);
 
         // Update and render Net Worth (Income) chart
-        renderNetWorthChart(netWorthChartTimeframe); // Pass current timeframe
+        renderNetWorthChart(sharedChartTimeframe); // Use shared timeframe
 
         renderRecentTransactions(); // New: Render recent transactions
       }
@@ -2135,7 +2168,11 @@ The response MUST be only the valid JSON object, with no extra text, explanation
           banksImportModal.style.display = 'none';
         };
       }
+
+      // Assuming initial calls are made here, like updateDisplay()
+      // For example, if updateDisplay() is called at the end:
+      // updateDisplay(); // This should already be there if it's part of the initial load
+      setupTimeframeControls(); // Call to initialize the new synchronized controls
     </script>
-  </div>
 </body>
 </html>

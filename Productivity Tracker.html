@@ -1405,158 +1405,191 @@
 
     // AGGREGATION LOGIC
     function aggregate(range) {
-      const now = new Date();
+      const now = new Date(); // This is effectively the 'current date' for the dashboard
       const currentYear = now.getFullYear();
-      const currentMonth = now.getMonth();
+      const currentMonth = now.getMonth(); // 0-11
+      const currentDayOfMonth = now.getDate(); // 1-31
+      const currentDayOfWeek = (now.getDay() + 6) % 7; // 0=Mon, 6=Sun
+
       let labels, low, med, high, completed, allottedHours, spentHours, easyCompleted, hardCompleted;
-      // Add temporary arrays for priority completion counts within the range
       let completedLowArr, completedMedArr, completedHighArr;
       let previousTotalSpent = 0;
 
-      // --- Calculate Current Period Data ---
       if (range === 'year') {
         labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        low = Array(12).fill(0); med = Array(12).fill(0); high = Array(12).fill(0); completed = Array(12).fill(0);
-        allottedHours = Array(12).fill(0); spentHours = Array(12).fill(0);
-        easyCompleted = Array(12).fill(0); hardCompleted = Array(12).fill(0);
-        // Initialize temporary priority completion arrays
-        completedLowArr = Array(12).fill(0); completedMedArr = Array(12).fill(0); completedHighArr = Array(12).fill(0);
+        // Only include months up to the current month
+        labels = labels.slice(0, currentMonth + 1);
+
+        low = Array(currentMonth + 1).fill(0); med = Array(currentMonth + 1).fill(0); high = Array(currentMonth + 1).fill(0); completed = Array(currentMonth + 1).fill(0);
+        allottedHours = Array(currentMonth + 1).fill(0); spentHours = Array(currentMonth + 1).fill(0);
+        easyCompleted = Array(currentMonth + 1).fill(0); hardCompleted = Array(currentMonth + 1).fill(0);
+        completedLowArr = Array(currentMonth + 1).fill(0); completedMedArr = Array(currentMonth + 1).fill(0); completedHighArr = Array(currentMonth + 1).fill(0);
+
         tasks.forEach(t => {
-          // Current year assignment data
-          if (t.created.getFullYear() === currentYear) {
-            const m = t.created.getMonth();
-            if (t.priority==='low') low[m]++; if (t.priority==='med') med[m]++; if (t.priority==='high') high[m]++;
-            allottedHours[m] += (t.timeAllotted || 0);
-            spentHours[m] += (t.timeSpent || 0);
+          const taskDate = t.created;
+          const taskCompletedDate = t.completedAt;
+
+          if (taskDate.getFullYear() === currentYear) {
+            const m = taskDate.getMonth();
+            if (m <= currentMonth) { // Process only up to the current month
+              if (m < currentMonth || (m === currentMonth && taskDate.getDate() <= currentDayOfMonth)) {
+                if (t.priority==='low') low[m]++; if (t.priority==='med') med[m]++; if (t.priority==='high') high[m]++;
+                allottedHours[m] += (t.timeAllotted || 0);
+                spentHours[m] += (t.timeSpent || 0);
+              }
+            }
           }
-          // Current year completion data
-          if (t.completedAt && t.completedAt.getFullYear() === currentYear) {
-            const m = t.completedAt.getMonth();
-            completed[m]++;
-            if (t.difficulty === 'easy') easyCompleted[m]++;
-            else if (t.difficulty === 'hard') hardCompleted[m]++;
-            // Count completed by priority into temporary arrays
-            if (t.priority === 'low') completedLowArr[m]++;
-            if (t.priority === 'med') completedMedArr[m]++;
-            if (t.priority === 'high') completedHighArr[m]++;
+          if (taskCompletedDate && taskCompletedDate.getFullYear() === currentYear) {
+            const m = taskCompletedDate.getMonth();
+            if (m <= currentMonth) { // Process only up to the current month
+              if (m < currentMonth || (m === currentMonth && taskCompletedDate.getDate() <= currentDayOfMonth)) {
+                completed[m]++;
+                if (t.difficulty === 'easy') easyCompleted[m]++;
+                else if (t.difficulty === 'hard') hardCompleted[m]++;
+                if (t.priority === 'low') completedLowArr[m]++;
+                if (t.priority === 'med') completedMedArr[m]++;
+                if (t.priority === 'high') completedHighArr[m]++;
+              }
+            }
           }
-          // Previous year data for delta calculation
+          // Previous year data for delta calculation (remains unchanged)
           if (t.created.getFullYear() === currentYear - 1) {
             previousTotalSpent += (t.timeSpent || 0);
           }
         });
       } else if (range === 'month') {
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        labels = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
-        low = Array(daysInMonth).fill(0); med = Array(daysInMonth).fill(0); high = Array(daysInMonth).fill(0); completed = Array(daysInMonth).fill(0);
-        allottedHours = Array(daysInMonth).fill(0); spentHours = Array(daysInMonth).fill(0);
-        easyCompleted = Array(daysInMonth).fill(0); hardCompleted = Array(daysInMonth).fill(0);
-        // Initialize temporary priority completion arrays
-        completedLowArr = Array(daysInMonth).fill(0); completedMedArr = Array(daysInMonth).fill(0); completedHighArr = Array(daysInMonth).fill(0);
+        // Labels will be days of the current month, up to currentDayOfMonth
+        labels = Array.from({ length: currentDayOfMonth }, (_, i) => (i + 1).toString());
+        low = Array(currentDayOfMonth).fill(0); med = Array(currentDayOfMonth).fill(0); high = Array(currentDayOfMonth).fill(0); completed = Array(currentDayOfMonth).fill(0);
+        allottedHours = Array(currentDayOfMonth).fill(0); spentHours = Array(currentDayOfMonth).fill(0);
+        easyCompleted = Array(currentDayOfMonth).fill(0); hardCompleted = Array(currentDayOfMonth).fill(0);
+        completedLowArr = Array(currentDayOfMonth).fill(0); completedMedArr = Array(currentDayOfMonth).fill(0); completedHighArr = Array(currentDayOfMonth).fill(0);
+
         const prevMonthDate = new Date(currentYear, currentMonth, 1);
         prevMonthDate.setMonth(prevMonthDate.getMonth() - 1);
         const prevMonth = prevMonthDate.getMonth();
         const prevMonthYear = prevMonthDate.getFullYear();
+
         tasks.forEach(t => {
-            // Current month assignment data
-            if (t.created.getFullYear() === currentYear && t.created.getMonth() === currentMonth) {
-                const dayIndex = t.created.getDate() - 1;
-                if (t.priority === 'low') low[dayIndex]++; if (t.priority === 'med') med[dayIndex]++; if (t.priority === 'high') high[dayIndex]++;
-                allottedHours[dayIndex] += (t.timeAllotted || 0); spentHours[dayIndex] += (t.timeSpent || 0);
+          const taskDate = t.created;
+          const taskCompletedDate = t.completedAt;
+
+          if (taskDate.getFullYear() === currentYear && taskDate.getMonth() === currentMonth) {
+            const dayIndex = taskDate.getDate() - 1;
+            if (dayIndex < currentDayOfMonth) { // Process only up to current day
+              if (t.priority === 'low') low[dayIndex]++; if (t.priority === 'med') med[dayIndex]++; if (t.priority === 'high') high[dayIndex]++;
+              allottedHours[dayIndex] += (t.timeAllotted || 0); spentHours[dayIndex] += (t.timeSpent || 0);
             }
-            // Current month completion data
-            if (t.completedAt && t.completedAt.getFullYear() === currentYear && t.completedAt.getMonth() === currentMonth) {
-                const dayIndex = t.completedAt.getDate() - 1;
-                completed[dayIndex]++;
-                if (t.difficulty === 'easy') easyCompleted[dayIndex]++;
-                else if (t.difficulty === 'hard') hardCompleted[dayIndex]++;
-                // Count completed by priority into temporary arrays
-                if (t.priority === 'low') completedLowArr[dayIndex]++;
-                if (t.priority === 'med') completedMedArr[dayIndex]++;
-                if (t.priority === 'high') completedHighArr[dayIndex]++;
+          }
+          if (taskCompletedDate && taskCompletedDate.getFullYear() === currentYear && taskCompletedDate.getMonth() === currentMonth) {
+            const dayIndex = taskCompletedDate.getDate() - 1;
+            if (dayIndex < currentDayOfMonth) { // Process only up to current day
+              completed[dayIndex]++;
+              if (t.difficulty === 'easy') easyCompleted[dayIndex]++;
+              else if (t.difficulty === 'hard') hardCompleted[dayIndex]++;
+              if (t.priority === 'low') completedLowArr[dayIndex]++;
+              if (t.priority === 'med') completedMedArr[dayIndex]++;
+              if (t.priority === 'high') completedHighArr[dayIndex]++;
             }
-            // Previous month data for delta calculation
-            if (t.created.getFullYear() === prevMonthYear && t.created.getMonth() === prevMonth) {
-                previousTotalSpent += (t.timeSpent || 0);
-            }
+          }
+          if (t.created.getFullYear() === prevMonthYear && t.created.getMonth() === prevMonth) {
+            previousTotalSpent += (t.timeSpent || 0);
+          }
         });
       } else if (range === 'week') {
-        const day = now.getDay(), iso = (day+6)%7; // 0=Mon, 6=Sun
-        const start = new Date(now); start.setDate(now.getDate()-iso); start.setHours(0,0,0,0);
-        const end   = new Date(start); end.setDate(start.getDate()+6); end.setHours(23,59,59,999);
-        const prevWeekStart = new Date(start); prevWeekStart.setDate(start.getDate() - 7);
-        const prevWeekEnd = new Date(end); prevWeekEnd.setDate(end.getDate() - 7);
         labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-        low = Array(7).fill(0); med = Array(7).fill(0); high = Array(7).fill(0); completed = Array(7).fill(0);
-        allottedHours = Array(7).fill(0); spentHours = Array(7).fill(0);
-        easyCompleted = Array(7).fill(0); hardCompleted = Array(7).fill(0);
-        // Initialize temporary priority completion arrays
-        completedLowArr = Array(7).fill(0); completedMedArr = Array(7).fill(0); completedHighArr = Array(7).fill(0);
-        tasks.forEach(t=>{
-          // Current week assignment data
-          if (t.created>=start && t.created<=end) {
-            const i=(t.created.getDay()+6)%7;
-            if(t.priority==='low') low[i]++; if(t.priority==='med') med[i]++; if(t.priority==='high') high[i]++;
-            allottedHours[i] += (t.timeAllotted || 0); spentHours[i] += (t.timeSpent || 0);
+        // Only include days of the week up to the current day of the week
+        labels = labels.slice(0, currentDayOfWeek + 1);
+
+        low = Array(currentDayOfWeek + 1).fill(0); med = Array(currentDayOfWeek + 1).fill(0); high = Array(currentDayOfWeek + 1).fill(0); completed = Array(currentDayOfWeek + 1).fill(0);
+        allottedHours = Array(currentDayOfWeek + 1).fill(0); spentHours = Array(currentDayOfWeek + 1).fill(0);
+        easyCompleted = Array(currentDayOfWeek + 1).fill(0); hardCompleted = Array(currentDayOfWeek + 1).fill(0);
+        completedLowArr = Array(currentDayOfWeek + 1).fill(0); completedMedArr = Array(currentDayOfWeek + 1).fill(0); completedHighArr = Array(currentDayOfWeek + 1).fill(0);
+
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - currentDayOfWeek); // Set to Monday of the current week
+        startOfWeek.setHours(0,0,0,0);
+
+        const endOfWeek = new Date(now); // Current day is the end of the week for chart purposes
+        endOfWeek.setHours(23,59,59,999);
+
+
+        const prevWeekStart = new Date(startOfWeek); prevWeekStart.setDate(startOfWeek.getDate() - 7);
+        const prevWeekEnd = new Date(endOfWeek); prevWeekEnd.setDate(endOfWeek.getDate() - 7);
+
+
+        tasks.forEach(t => {
+          const taskDate = t.created;
+          const taskCompletedDate = t.completedAt;
+          const dayIndexInWeek = (taskDate.getDay() + 6) % 7;
+          const completedDayIndexInWeek = taskCompletedDate ? (taskCompletedDate.getDay() + 6) % 7 : -1;
+
+          if (taskDate >= startOfWeek && taskDate <= endOfWeek) {
+            if (dayIndexInWeek <= currentDayOfWeek) {
+              if(t.priority==='low') low[dayIndexInWeek]++; if(t.priority==='med') med[dayIndexInWeek]++; if(t.priority==='high') high[dayIndexInWeek]++;
+              allottedHours[dayIndexInWeek] += (t.timeAllotted || 0); spentHours[dayIndexInWeek] += (t.timeSpent || 0);
+            }
           }
-          // Current week completion data
-          if(t.completedAt && t.completedAt>=start && t.completedAt<=end) {
-            const i = (t.completedAt.getDay()+6)%7;
-            completed[i]++;
-            if (t.difficulty === 'easy') easyCompleted[i]++;
-            else if (t.difficulty === 'hard') hardCompleted[i]++;
-            // Count completed by priority into temporary arrays
-            if (t.priority === 'low') completedLowArr[i]++;
-            if (t.priority === 'med') completedMedArr[i]++;
-            if (t.priority === 'high') completedHighArr[i]++;
+          if(taskCompletedDate && taskCompletedDate >= startOfWeek && taskCompletedDate <= endOfWeek) {
+            if (completedDayIndexInWeek <= currentDayOfWeek) {
+              completed[completedDayIndexInWeek]++;
+              if (t.difficulty === 'easy') easyCompleted[completedDayIndexInWeek]++;
+              else if (t.difficulty === 'hard') hardCompleted[completedDayIndexInWeek]++;
+              if (t.priority === 'low') completedLowArr[completedDayIndexInWeek]++;
+              if (t.priority === 'med') completedMedArr[completedDayIndexInWeek]++;
+              if (t.priority === 'high') completedHighArr[completedDayIndexInWeek]++;
+            }
           }
-          // Previous week data for delta calculation
           if (t.created >= prevWeekStart && t.created <= prevWeekEnd) {
             previousTotalSpent += (t.timeSpent || 0);
           }
         });
-      } else { // day
-        labels = Array.from({length:24},(_,i)=>`${i}:00`);
-        low = Array(24).fill(0); med = Array(24).fill(0); high = Array(24).fill(0); completed = Array(24).fill(0);
-        allottedHours = Array(24).fill(0); spentHours = Array(24).fill(0); // Initialize spentHours
-        easyCompleted = Array(24).fill(0); hardCompleted = Array(24).fill(0);
-        // Initialize temporary priority completion arrays
-        completedLowArr = Array(24).fill(0); completedMedArr = Array(24).fill(0); completedHighArr = Array(24).fill(0);
+      } else { // day (today)
+        labels = Array.from({length: now.getHours() + 1},(_,i)=>`${i}:00`); // Hours up to current hour
+        const currentHour = now.getHours();
+        low = Array(currentHour + 1).fill(0); med = Array(currentHour + 1).fill(0); high = Array(currentHour + 1).fill(0); completed = Array(currentHour + 1).fill(0);
+        allottedHours = Array(currentHour + 1).fill(0); spentHours = Array(currentHour + 1).fill(0);
+        easyCompleted = Array(currentHour + 1).fill(0); hardCompleted = Array(currentHour + 1).fill(0);
+        completedLowArr = Array(currentHour + 1).fill(0); completedMedArr = Array(currentHour + 1).fill(0); completedHighArr = Array(currentHour + 1).fill(0);
+
         const yesterday = new Date(now); yesterday.setDate(now.getDate() - 1);
-        tasks.forEach(t=>{
-          // Current day assignment data (Keep allotted time based on creation)
-          if (isSameDay(t.created, now)) {
-            const h = t.created.getHours();
-            low[h]+=(t.priority==='low'); med[h]+=(t.priority==='med'); high[h]+=(t.priority==='high');
-            allottedHours[h] += (t.timeAllotted || 0);
+
+        tasks.forEach(t => {
+          const taskDate = t.created;
+          const taskCompletedDate = t.completedAt;
+
+          if (isSameDay(taskDate, now)) {
+            const h = taskDate.getHours();
+            if (h <= currentHour) { // Process only up to current hour
+              low[h]+=(t.priority==='low'); med[h]+=(t.priority==='med'); high[h]+=(t.priority==='high');
+              allottedHours[h] += (t.timeAllotted || 0);
+            }
           }
-          // Current day completion data
-          if (t.completedAt && isSameDay(t.completedAt, now)) {
-            const h = t.completedAt.getHours();
-            completed[h]++;
-            spentHours[h] += (t.timeSpent || 0); // ADD spentHours aggregation based on completion hour
-            if (t.difficulty === 'easy') easyCompleted[h]++;
-            else if (t.difficulty === 'hard') hardCompleted[h]++;
-            // Count completed by priority into temporary arrays
-            if (t.priority === 'low') completedLowArr[h]++;
-            if (t.priority === 'med') completedMedArr[h]++;
-            if (t.priority === 'high') completedHighArr[h]++;
+          if (taskCompletedDate && isSameDay(taskCompletedDate, now)) {
+            const h = taskCompletedDate.getHours();
+            if (h <= currentHour) { // Process only up to current hour
+              completed[h]++;
+              spentHours[h] += (t.timeSpent || 0); // ADD spentHours aggregation based on completion hour
+              if (t.difficulty === 'easy') easyCompleted[h]++;
+              else if (t.difficulty === 'hard') hardCompleted[h]++;
+              if (t.priority === 'low') completedLowArr[h]++;
+              if (t.priority === 'med') completedMedArr[h]++;
+              if (t.priority === 'high') completedHighArr[h]++;
+            }
           }
-          // Previous day data for delta calculation (Aggregate spent time based on creation for previous day comparison)
-          if (isSameDay(t.created, yesterday)) {
-            previousTotalSpent += (t.timeSpent || 0);
+          if (isSameDay(t.created, yesterday)) { // Previous day for delta
+             previousTotalSpent += (t.timeSpent || 0);
           }
         });
       }
 
-      // --- Calculate Totals and Percentage Change ---
-      const assignedSum = low.map((_,i)=> low[i]+med[i]+high[i]);
-      const totalSpentInRange = spentHours.reduce((sum, hours) => sum + hours, 0);
+      const assignedSum = low.map((l,i) => l + med[i] + high[i]);
+      const totalSpentInRange = spentHours.reduce((a,b) => a+b, 0);
       let percentageChange = 0;
       if (previousTotalSpent > 0) {
-          percentageChange = ((totalSpentInRange - previousTotalSpent) / previousTotalSpent) * 100;
-      } else if (totalSpentInRange > 0) {
-          percentageChange = Infinity; // Indicate increase from zero
+        percentageChange = ((totalSpentInRange - previousTotalSpent) / previousTotalSpent) * 100;
+      } else if (totalSpentInRange > 0) { // If previous was 0 and current is > 0, it's a 100% increase effectively
+        percentageChange = 100;
       } // else percentageChange remains 0
 
       // --- Calculate total completed counts by priority for the range ---
