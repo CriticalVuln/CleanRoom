@@ -291,13 +291,14 @@
       transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
       outline: none;
       box-shadow: none;
-      height: 40px;
-      padding: 8px 16px;
+      height: 42px;
+      padding: 14px 18px;
       font-size: 14px;
       margin-left: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
+      line-height: 1;
     }
 
     .task-input button.active,
@@ -473,11 +474,14 @@
       height: 560px;
       margin-top: 12px;
       overflow: hidden;
-    }.difficulty-chart-container,
+    }    .difficulty-chart-container,
     .priority-difficulty-chart-container {
       height: 250px;
-      margin-top: 8px;
+      margin-top: 13px;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .card:has(.difficulty-toggle),
@@ -487,7 +491,11 @@
       flex-direction: column;
     }
 
-    /* === ACTIVITY CALENDAR SQUARES === */
+    /* Ensure pie chart canvas is properly centered */
+    #priorityDifficultyChart {
+      max-width: 100%;
+      max-height: 100%;
+    }    /* === ACTIVITY CALENDAR SQUARES === */
     .activity-squares-container {
       display: flex;
       flex-wrap: wrap;
@@ -508,8 +516,8 @@
       padding: 5px;
       height: 100%;
     }    .activity-square {
-      width: 25px;
-      height: 25px;
+      width: 24px;
+      height: 24px;
       background-color: #211D30;
       border-radius: 2px;
     }

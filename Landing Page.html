@@ -3,17 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Landing Page</title>
-  <style>
+  <title>Landing Page</title>  <style>
+    /* === CSS VARIABLES FOR THEMING === */    :root {
+      /* Light Mode (Default) */
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8F9FA;
+      --bg-tertiary: #F5F5F5;
+      --text-primary: #333333;
+      --text-secondary: #6B7280;
+      --text-accent: #8B5CF6;
+      --border-color: #E0E0E0;
+      --shadow-light: rgba(0,0,0,0.08);
+      --shadow-medium: rgba(0,0,0,0.1);      --button-gradient-start: #8B5CF6;
+      --button-gradient-end: #A855F7;
+      --button-shadow: rgba(139, 92, 246, 0.3);
+      --button-hover-glow: rgba(139, 92, 246, 0.6);
+      --button-text-selected: #FFFFFF;
+      --button-hover-border: rgba(139, 92, 246, 0.4);
+      --button-hover-gradient-center: rgba(139, 92, 246, 0.4);
+      --button-hover-gradient-mid: rgba(139, 92, 246, 0.2);
+      --button-active-gradient-center: rgba(255, 255, 255, 0.3);
+      --button-active-gradient-mid: rgba(255, 255, 255, 0.1);
+      --switch-active: #8B5CF6;
+      --priority-low: #4CAF50;
+      --priority-medium: #FFC107;
+      --priority-high: #F44336;
+      --button-disabled-bg: #E5E7EB;
+      --button-disabled-text: #9CA3AF;
+    }    /* Dark Mode */
+    [data-theme="dark"] {
+      --bg-primary: #0D0B14;
+      --bg-secondary: #1A1625;
+      --bg-tertiary: #211D30;
+      --text-primary: #E0E0E0;
+      --text-secondary: #A0A0A0;
+      --text-accent: #63FFDA;
+      --border-color: #4F4B68;
+      --shadow-light: rgba(33,29,48,0.45);
+      --shadow-medium: rgba(0,0,0,0.7);      --button-gradient-start: #63FFDA;
+      --button-gradient-end: #63FFDA;
+      --button-shadow: rgba(99, 255, 218, 0.3);
+      --button-hover-glow: rgba(99, 255, 218, 1);
+      --button-text-selected: #000000;
+      --button-hover-border: rgba(99, 255, 218, 0.5);
+      --button-hover-gradient-center: rgba(99, 255, 218, 0.4);
+      --button-hover-gradient-mid: rgba(99, 255, 218, 0.2);
+      --button-active-gradient-center: rgba(0, 0, 0, 0.3);
+      --button-active-gradient-mid: rgba(0, 0, 0, 0.1);
+      --switch-active: #A076F9;
+      --priority-low: #4CAF50;
+      --priority-medium: #FFC107;
+      --priority-high: #F44336;
+      --button-disabled-bg: #4F4B68;
+      --button-disabled-text: #6B7280;
+    }
+
     /* === GLOBAL RESET & BASE === */
     * { box-sizing: border-box; }
-    
-    body {
-      background: #0D0B14;
-      color: #E0E0E0;
+      body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
       font-family: "Poppins", sans-serif;
       margin: 0;
       padding-top: 40px;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* === LAYOUT === */
@@ -25,38 +78,56 @@
     h1 {
       margin-bottom: 30px;
       font-size: 2em;
-    }
-
-    /* === SIDEBAR === */
+    }    /* === SIDEBAR === */
     .sidebar {
       position: fixed;
       top: 0;
       left: 0;
       bottom: 0;
       width: 60px;
-      background: #1A1625;
+      background: var(--bg-tertiary);
+      border-right: 1px solid var(--border-color);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 20px;
+      padding: 20px 0;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
     }
 
     .sidebar a {
-      color: #63FFDA;
+      color: var(--text-accent);
       font-size: 24px;
       margin: 16px 0;
       text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      color: var(--text-accent);
+      transform: scale(1.1);
+      filter: brightness(1.2);
     }
 
     .sidebar a svg {
       width: 24px;
       height: 24px;
       fill: none;
-      stroke: #63FFDA;
+      stroke: var(--text-accent);
       stroke-width: 2;
+      transition: all 0.3s ease;
     }
 
-    /* === QUICK ADD BUTTON === */
+    .sidebar a:hover svg {
+      stroke: var(--text-accent);
+      filter: brightness(1.2);
+    }    /* === QUICK ADD BUTTON === */
     .open-popup-btn {
       position: fixed;
       top: 16px;
@@ -67,8 +138,15 @@
       border: none;
       cursor: pointer;
       z-index: 1000;
-      color: #63FFDA;
+      color: var(--text-accent);
       padding: 0;
+      transition: all 0.3s ease;
+    }
+
+    .open-popup-btn:hover {
+      color: var(--text-accent);
+      transform: scale(1.1);
+      filter: brightness(1.2);
     }
 
     .open-popup-btn svg {
@@ -77,6 +155,40 @@
       stroke: currentColor;
       fill: none;
       stroke-width: 2;
+    }    /* === DARK MODE TOGGLE === */
+    .theme-toggle {
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-accent);
+      padding: 0;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .theme-toggle:hover {
+      color: var(--text-accent);
+      transform: scale(1.1);
+      filter: brightness(1.2);
+    }    .theme-toggle svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .theme-toggle .sun-icon {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .theme-toggle .moon-icon {
+      fill: currentColor;
+      stroke: none;
     }
 
     /* === TASK INPUT SYSTEM === */
@@ -91,47 +203,74 @@
     .priority-select { 
       gap: 6px; 
       margin-right: 6px; 
-    }
-
-    .priority-btn { 
+    }    .priority-btn { 
       width: 16px; 
       height: 16px; 
       border: none; 
       border-radius: 4px; 
       cursor: pointer; 
       opacity: 0.6; 
+      transition: opacity 0.3s ease;
     }
     .priority-btn.selected { opacity: 1; }
-    .priority-btn.low { background: #4CAF50; }
-    .priority-btn.med { background: #FFC107; }
-    .priority-btn.high { background: #F44336; }
-
-    .task-input input[type="text"] {
+    .priority-btn.low { background: var(--priority-low); }
+    .priority-btn.med { background: var(--priority-medium); }
+    .priority-btn.high { background: var(--priority-high); }.task-input input[type="text"] {
       min-width: 0;
       width: 100%;
       font-size: 15px;
       height: 36px;
       padding: 7px 10px;
-    }
-
-    .task-input input[type="number"] {
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    }    .task-input input[type="number"] {
       width: 54px;
       min-width: 0;
       font-size: 14px;
       padding: 4px 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    }.task-input button, 
+    .task-dropdown summary.options-btn {
+      background: none;
+      border: 1px solid transparent;
+      color: #8B5CF6;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
+      box-shadow: none;
+      height: 42px;
+      padding: 14px 18px;
+      font-size: 14px;
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
     }
 
-    .task-input button, 
-    .task-dropdown summary.options-btn {
-      height: 36px;
-      padding: 0 14px;
-      border: none;
-      border-radius: 4px;
-      background: #63FFDA;
-      color: #0D0B14;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px;
+    .task-input button.active,
+    .task-dropdown summary.options-btn.active {
+      background: linear-gradient(135deg, #8B5CF6, #A855F7);
+      color: #FFFFFF;
+      border: 1px solid #8B5CF6;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }    .task-input button:not(.active):hover,
+    .task-dropdown summary.options-btn:hover {
+      background-color: transparent;
+      color: #8B5CF6;
+      border-color: transparent;
+      box-shadow: 0 0 12px rgba(139, 92, 246, 0.6);
+      transform: translateY(-1px);
     }
 
     .task-input button { 
@@ -153,35 +292,43 @@
 
     .task-dropdown summary::-webkit-details-marker { 
       display: none; 
-    }
-
-    .task-dropdown-content {
+    }    .task-dropdown-content {
       position: absolute;
       top: calc(100% + 4px);
       left: unset;
       right: 0;
-      background: #211D30;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
       padding: 8px;
       border-radius: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px var(--shadow-medium);
       display: none;
       font-family: inherit;
       font-size: 14px;
       font-weight: 600;
       min-width: 170px;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .task-dropdown[open] .task-dropdown-content { 
       display: block; 
-    }
-
-    .task-dropdown-content label { 
+    }    .task-dropdown-content label { 
       display: flex; 
       align-items: center; 
       gap: 4px; 
-      color: #E0E0E0; 
+      color: var(--text-primary); 
       font-size: 14px; 
       margin-bottom: 2px; 
+    }    .task-dropdown-content input[type="number"] {
+      width: 54px;
+      min-width: 0;
+      font-size: 14px;
+      padding: 4px 6px;
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
     }
 
     /* === SWITCH SYSTEM === */
@@ -221,22 +368,20 @@
       background: #FFF; 
       border-radius: 50%; 
       transition: .4s; 
-    }
-
-    .switch input:checked + .slider { 
-      background: #A076F9; 
+    }    .switch input:checked + .slider { 
+      background: #8B5CF6; 
     }
 
     .switch input:checked + .slider:before { 
       transform: translateX(14px); 
     }    /* === MODAL SYSTEM === */
     #quickAddModal {
-      background: #1A1625;
-      color: #E0E0E0;
-      border: none;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
       border-radius: 12px;
       padding: 18px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.7);
+      box-shadow: 0 4px 16px var(--shadow-medium);
       position: fixed;
       top: 60px;
       right: 16px;
@@ -244,92 +389,110 @@
       max-width: 95vw;
       z-index: 2000;
       display: none;
-    }
-
-    .weekly-review-modal {
-      background: #1A1625 !important;
-      color: #E0E0E0;
-      border: none;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }    .weekly-review-modal {
+      background: var(--bg-secondary) !important;
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
       border-radius: 16px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.7);
+      box-shadow: 0 8px 32px var(--shadow-medium);
       padding: 32px 32px 24px 32px;
       max-width: 480px;
       width: 95vw;
       min-height: 320px;
       z-index: 3000;
       text-align: left;
-    }
-
-    .weekly-review-modal h2 {
-      color: #63FFDA;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }    .weekly-review-modal h2 {
+      color: #8B5CF6;
       font-size: 1.25em;
       font-weight: 600;
       margin: 0 0 18px 0;
-    }
-
-    #weeklyReviewText {
+    }    #weeklyReviewText {
       width: 100%;
       min-height: 140px;
-      background: #211D30;
-      color: #E0E0E0;
-      border: none;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
       border-radius: 8px;
       padding: 14px 16px;
       font-family: 'Poppins', sans-serif;
       font-size: 1em;
       margin-bottom: 0;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
       resize: vertical;
       box-sizing: border-box;
-    }
-
-    #weeklyReviewText::placeholder {
-      color: #A0A0A0;
+    }    #weeklyReviewText::placeholder {
+      color: var(--text-secondary);
       opacity: 1;
-    }
-
-    #saveWeeklyReviewBtn {
-      background: #63FFDA;
-      color: #0D0B14;
+      transition: color 0.3s ease;
+    }#saveWeeklyReviewBtn {
+      background: linear-gradient(135deg, #8B5CF6, #A855F7);
+      color: #FFFFFF;
       border: none;
       border-radius: 6px;
       padding: 8px 22px;
       font-weight: 600;
       font-size: 1em;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
-    }
-
-    #saveWeeklyReviewBtn:disabled {
-      background: #29223a;
-      color: #A0A0A0;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }    #saveWeeklyReviewBtn:disabled {
+      background: var(--button-disabled-bg);
+      color: var(--button-disabled-text);
       cursor: not-allowed;
+      box-shadow: none;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     #closeWeeklyReviewBtn {
       background: none;
-      color: #A0A0A0;
+      color: var(--text-secondary);
       border: none;
       border-radius: 6px;
       padding: 8px 22px;
       font-weight: 600;
       font-size: 1em;
       cursor: pointer;
-      transition: background 0.15s, color 0.15s;
+      transition: all 0.3s ease;
     }
 
     @media (max-width: 600px) {
       .weekly-review-modal { 
         padding: 18px 6vw 18px 6vw; 
       }
+    }    /* === WIDGET COMPONENTS === */    .widget-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      box-shadow: 0 8px 32px var(--shadow-light);
+      padding: 28px 24px 18px 24px;
+      min-width: 0;
+      min-height: 340px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    /* === WIDGET COMPONENTS === */
+    .widget-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 1.2rem;
+      transition: color 0.3s ease;
+    }
+
     .widget-title {
       text-align: center;
-      color: #63FFDA;
+      color: var(--text-accent);
       font-weight: 600;
       margin-bottom: 18px;
       font-size: 1.18rem;
+      transition: color 0.3s ease;
     }
 
     .landing-timeframe-controls {
@@ -338,55 +501,121 @@
       display: flex;
       justify-content: center;
       gap: 12px;
-    }
-
-    .landing-timeframe-controls button {
+    }    .landing-timeframe-controls button {
       background: none;
       border: 1px solid transparent;
-      color: #63FFDA;
+      color: var(--text-accent);
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
       padding: 4px 14px;
       border-radius: 6px;
       cursor: pointer;
       font-size: 0.9em;
-      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+    }
+
+    .landing-timeframe-controls button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        var(--button-hover-gradient-center) 0%,
+        var(--button-hover-gradient-mid) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 6px;
+      z-index: 1;
+    }
+
+    .landing-timeframe-controls button:hover::before {
+      opacity: 1;
+    }
+
+    .landing-timeframe-controls button span {
+      position: relative;
+      z-index: 2;
     }
 
     .landing-timeframe-controls button.active,
     .landing-timeframe-controls button.selected {
-      background-color: #0D0B14;
-      color: #63FFDA;
-      border-color: #63FFDA;
-      box-shadow: none;
+      background: linear-gradient(135deg, var(--button-gradient-start), var(--button-gradient-end));
+      color: var(--button-text-selected);
+      border-color: var(--text-accent);
+      box-shadow: 0 4px 15px var(--button-shadow);
+    }
+
+    .landing-timeframe-controls button.active::before,
+    .landing-timeframe-controls button.selected::before {
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        var(--button-active-gradient-center) 0%,
+        var(--button-active-gradient-mid) 30%,
+        transparent 60%
+      );
+      opacity: 0.7;
+    }
+
+    .landing-timeframe-controls button.active:hover::before,
+    .landing-timeframe-controls button.selected:hover::before {
+      opacity: 1;
     }
 
     .landing-timeframe-controls button:hover:not(.active):not(.selected) {
-      background-color: transparent;
-      color: #63FFDA;
-      border-color: transparent;
-      box-shadow: 0 0 8px #63FFDA;
+      color: var(--text-accent);
+      border-color: var(--button-hover-border);
+      box-shadow: 0 0 12px var(--button-hover-glow);
+      transform: translateY(-1px);
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>  <nav class="sidebar">
-    <a href="Landing Page.html">
-      <svg viewBox="0 0 24 24">
-        <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
+    <div class="sidebar-nav">
+      <a href="Landing Page.html">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
+        </svg>
+      </a>
+      <a href="Personal Finance Tracker.html">
+        <svg viewBox="0 0 24 24">
+          <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="Productivity Tracker.html">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+    
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" title="Toggle Dark/Light Mode" class="theme-toggle">
+      <svg viewBox="0 0 24 24" class="sun-icon">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
       </svg>
-    </a>
-    <a href="Personal Finance Tracker.html">
-      <svg viewBox="0 0 24 24">
-        <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg viewBox="0 0 24 24" class="moon-icon" style="display: none;">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
-    </a>
-    <a href="Productivity Tracker.html">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="9"/>
-        <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </a>
+    </button>
   </nav>
 
   <!-- Quick Add Task Button & Modal -->
@@ -429,16 +658,13 @@
     </form>
   </dialog>
   <div class="main-content">
-    <h1>Dashboard Overview</h1>
-    <div class="dashboard-widgets-row" style="display: flex; gap: 32px; margin-top: 32px;">
-      <!-- Overall Performance Widget (from Productivity Tracker) -->
-      <div class="widget-card" style="flex:1; background:#18142A; border-radius:18px; box-shadow:0 8px 32px 0 rgba(33,29,48,0.45); padding:28px 24px 18px 24px; min-width:0; min-height:340px; display:flex; flex-direction:column;">
-        <h2 class="widget-title">Overall Performance</h2>
-        <div class="timeframe-controls landing-timeframe-controls">
-          <button class="timeframe-btn active" data-timeframe="day">Day</button>
-          <button class="timeframe-btn" data-timeframe="week">Week</button>
-          <button class="timeframe-btn" data-timeframe="month">Month</button>
-          <button class="timeframe-btn" data-timeframe="year">Year</button>
+    <h1>Dashboard Overview</h1>    <div class="dashboard-widgets-row" style="display: flex; gap: 32px; margin-top: 32px;">      <!-- Overall Performance Widget (from Productivity Tracker) -->
+      <div class="widget-card" style="flex:1;">
+        <h2 class="widget-title">Overall Performance</h2>        <div class="timeframe-controls landing-timeframe-controls">
+          <button class="timeframe-btn active" data-timeframe="day"><span>Day</span></button>
+          <button class="timeframe-btn" data-timeframe="week"><span>Week</span></button>
+          <button class="timeframe-btn" data-timeframe="month"><span>Month</span></button>
+          <button class="timeframe-btn" data-timeframe="year"><span>Year</span></button>
         </div>
         <div style="flex:1; min-height:220px;">
           <canvas id="landingOverallPerformanceChart" style="width:100%;height:220px;"></canvas>
@@ -446,28 +672,27 @@
       </div>
 
       <!-- Net Worth Placeholder Widget -->
-      <div class="widget-card" style="flex:1; background:#18142A; border-radius:18px; box-shadow:0 8px 32px 0 rgba(33,29,48,0.45); padding:28px 24px 18px 24px; min-width:0; min-height:340px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
-        <h2 class="widget-title">Net Worth</h2>
-        <div class="timeframe-controls landing-timeframe-controls">
-          <button class="networth-timeframe-btn active" data-timeframe="day">Day</button>
-          <button class="networth-timeframe-btn" data-timeframe="week">Week</button>
-          <button class="networth-timeframe-btn" data-timeframe="month">Month</button>
-          <button class="networth-timeframe-btn" data-timeframe="year">Year</button>
+      <div class="widget-card" style="flex:1;">        <h2 class="widget-title">Net Worth</h2>        <div class="timeframe-controls landing-timeframe-controls">
+          <button class="networth-timeframe-btn active" data-timeframe="day"><span>Day</span></button>
+          <button class="networth-timeframe-btn" data-timeframe="week"><span>Week</span></button>
+          <button class="networth-timeframe-btn" data-timeframe="month"><span>Month</span></button>
+          <button class="networth-timeframe-btn" data-timeframe="year"><span>Year</span></button>
         </div>
-        <div style="flex:1; display:flex; align-items:center; justify-content:center; color:#A0A0A0; font-size:1.2rem;">(Coming soon)</div>
+        <div class="widget-placeholder">(Coming soon)</div>
       </div>
     </div>
   </div>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="theme.js"></script>
   <script>
+    // === QUICK ADD MODAL FUNCTIONALITY ===
     const openQuick = document.getElementById('openQuickAddBtn');
     const quickModal = document.getElementById('quickAddModal');
     const quickText = document.getElementById('quickTaskText');
     const quickTime = document.getElementById('quickTimeAllotted');
     const quickDiff = document.getElementById('quickDifficulty');
     const quickLabel = document.getElementById('quickDiffLabel');
-    let quickPri = 'low';    // Show modal
+    let quickPri = 'low';// Show modal
     openQuick.addEventListener('click', () => {
       quickModal.style.display = quickModal.style.display === 'none' ? 'block' : 'none';
     });
@@ -682,14 +907,13 @@
           }
         }
       }
-    });
-
-    // --- AGGREGATION LOGIC FOR LANDING PAGE OVERALL PERFORMANCE ---
+    });    // --- AGGREGATION LOGIC FOR LANDING PAGE OVERALL PERFORMANCE ---
     function aggregateLanding(range) {
       const tasks = JSON.parse(localStorage.getItem('productivityTasks')||'[]');
       const now = new Date();
       const currentYear = now.getFullYear();
       const currentMonth = now.getMonth();
+      const currentDay = now.getDate();
       let labels, low, med, high, completed, assignedSum;
       
       if (range === 'year') {
@@ -700,64 +924,91 @@
           const completedAt = t.completedAt ? new Date(t.completedAt) : null;
           if (created && created.getFullYear() === currentYear) {
             const m = created.getMonth();
-            if (t.priority==='low') low[m]++; if (t.priority==='med') med[m]++; if (t.priority==='high') high[m]++;
+            // Only include data up to current month, or if it's current month, up to current day
+            if (m < currentMonth || (m === currentMonth && created.getDate() <= currentDay)) {
+              if (t.priority==='low') low[m]++; if (t.priority==='med') med[m]++; if (t.priority==='high') high[m]++;
+            }
           }
           if (completedAt && completedAt.getFullYear() === currentYear) {
             const m = completedAt.getMonth();
-            completed[m]++;
+            // Only include data up to current month, or if it's current month, up to current day
+            if (m < currentMonth || (m === currentMonth && completedAt.getDate() <= currentDay)) {
+              completed[m]++;
+            }
           }
         });
+        // Truncate labels and data to current month
+        labels = labels.slice(0, currentMonth + 1);
+        low = low.slice(0, currentMonth + 1);
+        med = med.slice(0, currentMonth + 1);
+        high = high.slice(0, currentMonth + 1);
+        completed = completed.slice(0, currentMonth + 1);
         assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);
       } else if (range === 'month') {
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        labels = Array.from({ length: daysInMonth }, (_, i) => (i + 1).toString());
-        low = Array(daysInMonth).fill(0); med = Array(daysInMonth).fill(0); high = Array(daysInMonth).fill(0); completed = Array(daysInMonth).fill(0);
+        const daysToShow = Math.min(currentDay, daysInMonth);
+        labels = Array.from({ length: daysToShow }, (_, i) => (i + 1).toString());
+        low = Array(daysToShow).fill(0); med = Array(daysToShow).fill(0); high = Array(daysToShow).fill(0); completed = Array(daysToShow).fill(0);
         tasks.forEach(t => {
           const created = t.created ? new Date(t.created) : null;
           const completedAt = t.completedAt ? new Date(t.completedAt) : null;
-          if (created && created.getFullYear() === currentYear && created.getMonth() === currentMonth) {
+          if (created && created.getFullYear() === currentYear && created.getMonth() === currentMonth && created.getDate() <= currentDay) {
             const d = created.getDate() - 1;
-            if (t.priority==='low') low[d]++; if (t.priority==='med') med[d]++; if (t.priority==='high') high[d]++;
+            if (d < daysToShow) {
+              if (t.priority==='low') low[d]++; if (t.priority==='med') med[d]++; if (t.priority==='high') high[d]++;
+            }
           }
-          if (completedAt && completedAt.getFullYear() === currentYear && completedAt.getMonth() === currentMonth) {
+          if (completedAt && completedAt.getFullYear() === currentYear && completedAt.getMonth() === currentMonth && completedAt.getDate() <= currentDay) {
             const d = completedAt.getDate() - 1;
-            completed[d]++;
+            if (d < daysToShow) {
+              completed[d]++;
+            }
           }
         });
-        assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);
-      } else if (range === 'week') {
+        assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);      } else if (range === 'week') {
         // ISO week: Monday-Sunday
         const day = now.getDay(), iso = (day+6)%7;
         const start = new Date(now); start.setDate(now.getDate()-iso); start.setHours(0,0,0,0);
         const end   = new Date(start); end.setDate(start.getDate()+6); end.setHours(23,59,59,999);
-        labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-        low = Array(7).fill(0); med = Array(7).fill(0); high = Array(7).fill(0); completed = Array(7).fill(0);
+        const currentDayOfWeek = iso; // Current day in ISO week (0=Monday, 6=Sunday)
+        const daysToShow = currentDayOfWeek + 1; // Include current day
+        labels = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'].slice(0, daysToShow);
+        low = Array(daysToShow).fill(0); med = Array(daysToShow).fill(0); high = Array(daysToShow).fill(0); completed = Array(daysToShow).fill(0);
         tasks.forEach(t => {
           const created = t.created ? new Date(t.created) : null;
           const completedAt = t.completedAt ? new Date(t.completedAt) : null;
-          if (created && created >= start && created <= end) {
+          if (created && created >= start && created <= now) { // Only up to current moment
             const i = (created.getDay()+6)%7;
-            if (t.priority==='low') low[i]++; if (t.priority==='med') med[i]++; if (t.priority==='high') high[i]++;
+            if (i < daysToShow) {
+              if (t.priority==='low') low[i]++; if (t.priority==='med') med[i]++; if (t.priority==='high') high[i]++;
+            }
           }
-          if (completedAt && completedAt >= start && completedAt <= end) {
+          if (completedAt && completedAt >= start && completedAt <= now) { // Only up to current moment
             const i = (completedAt.getDay()+6)%7;
-            completed[i]++;
+            if (i < daysToShow) {
+              completed[i]++;
+            }
           }
         });
-        assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);
-      } else { // day
-        labels = Array.from({length:24},(_,i)=>`${i}:00`);
-        low = Array(24).fill(0); med = Array(24).fill(0); high = Array(24).fill(0); completed = Array(24).fill(0);
+        assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);      } else { // day
+        const currentHour = now.getHours();
+        const hoursToShow = currentHour + 1; // Include current hour
+        labels = Array.from({length:hoursToShow},(_,i)=>`${i}:00`);
+        low = Array(hoursToShow).fill(0); med = Array(hoursToShow).fill(0); high = Array(hoursToShow).fill(0); completed = Array(hoursToShow).fill(0);
         tasks.forEach(t => {
           const created = t.created ? new Date(t.created) : null;
           const completedAt = t.completedAt ? new Date(t.completedAt) : null;
-          if (created && isSameDay(created, now)) {
+          if (created && isSameDay(created, now) && created.getHours() <= currentHour) {
             const h = created.getHours();
-            if (t.priority==='low') low[h]++; if (t.priority==='med') med[h]++; if (t.priority==='high') high[h]++;
+            if (h < hoursToShow) {
+              if (t.priority==='low') low[h]++; if (t.priority==='med') med[h]++; if (t.priority==='high') high[h]++;
+            }
           }
-          if (completedAt && isSameDay(completedAt, now)) {
+          if (completedAt && isSameDay(completedAt, now) && completedAt.getHours() <= currentHour) {
             const h = completedAt.getHours();
-            completed[h]++;
+            if (h < hoursToShow) {
+              completed[h]++;
+            }
           }
         });
         assignedSum = low.map((_,i)=>low[i]+med[i]+high[i]);
@@ -792,16 +1043,48 @@
         updateLandingOverallChart(btn.dataset.timeframe);
       });
     });
-    
-    // Net Worth toggles (UI only)
+      // Net Worth toggles (UI only)
     const networthBtns = document.querySelectorAll('.landing-timeframe-controls .networth-timeframe-btn');
     networthBtns.forEach(btn => {
       btn.addEventListener('click', () => {
         networthBtns.forEach(b => { b.classList.remove('active'); b.classList.remove('selected'); });
         btn.classList.add('active');
         // No data logic yet
+      });    });
+
+    // === ANIMATED GRADIENT EFFECT FOR TIMEFRAME BUTTONS ===
+    function setupAnimatedTimeframeButtons() {
+      const timeframeButtons = document.querySelectorAll('.landing-timeframe-controls button');
+      
+      timeframeButtons.forEach(button => {
+        button.addEventListener('mousemove', (e) => {
+          const rect = button.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          
+          button.style.setProperty('--mouse-x', `${x}%`);
+          button.style.setProperty('--mouse-y', `${y}%`);
+        });
+        
+        button.addEventListener('mouseleave', () => {
+          // Reset to center when mouse leaves
+          button.style.setProperty('--mouse-x', '50%');
+          button.style.setProperty('--mouse-y', '50%');
+        });
       });
-    });
+    }
+
+    // Initialize animated buttons
+    setupAnimatedTimeframeButtons();
+
+    // === THEME SYSTEM INITIALIZATION ===
+    // Ensure theme system is properly initialized after DOM is loaded
+    if (typeof initializeTheme === 'function') {
+      initializeTheme();
+    }
+    if (typeof setupThemeToggle === 'function') {
+      setupThemeToggle();
+    }
   </script>
 </body>
 </html>

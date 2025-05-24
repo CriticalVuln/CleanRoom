@@ -4,13 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Personal Finance Tracker</title>
+  <style>
+    /* === CSS VARIABLES FOR THEMING === */
+    :root {
+      /* Light Mode (Default) */
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8F9FA;
+      --bg-tertiary: #F5F5F5;
+      --text-primary: #333333;
+      --text-secondary: #6B7280;
+      --text-accent: #8B5CF6;
+      --border-color: #E0E0E0;
+      --shadow-light: rgba(0,0,0,0.08);
+      --shadow-medium: rgba(0,0,0,0.1);
+      --button-gradient-start: #8B5CF6;      --button-gradient-end: #A855F7;
+      --button-shadow: rgba(139, 92, 246, 0.3);
+      --button-hover-bg: #A855F7;
+      --button-hover-glow: rgba(139, 92, 246, 0.6);
+      --button-text-selected: #FFFFFF;
+      --button-hover-border: rgba(139, 92, 246, 0.4);
+      --button-hover-gradient-center: rgba(139, 92, 246, 0.4);
+      --button-hover-gradient-mid: rgba(139, 92, 246, 0.2);
+      --button-active-gradient-center: rgba(255, 255, 255, 0.3);
+      --button-active-gradient-mid: rgba(255, 255, 255, 0.1);
+      --switch-active: #8B5CF6;
+      --priority-low: #4CAF50;
+      --priority-medium: #FFC107;
+      --priority-high: #F44336;
+      --button-disabled-bg: #E5E7EB;
+      --button-disabled-text: #9CA3AF;
+    }
 
-  <!-- Your original inline styles -->  <style>
+    /* Dark Mode */
+    [data-theme="dark"] {
+      --bg-primary: #0D0B14;
+      --bg-secondary: #1A1625;
+      --bg-tertiary: #211D30;
+      --text-primary: #E0E0E0;
+      --text-secondary: #A0A0A0;
+      --text-accent: #63FFDA;
+      --border-color: #4F4B68;
+      --shadow-light: rgba(33,29,48,0.45);
+      --shadow-medium: rgba(0,0,0,0.7);
+      --button-gradient-start: #63FFDA;      --button-gradient-end: #63FFDA;
+      --button-shadow: rgba(99, 255, 218, 0.3);
+      --button-hover-bg: #52D9C3;
+      --button-hover-glow: rgba(99, 255, 218, 1);
+      --button-text-selected: #000000;
+      --button-hover-border: rgba(99, 255, 218, 0.5);
+      --button-hover-gradient-center: rgba(99, 255, 218, 0.4);
+      --button-hover-gradient-mid: rgba(99, 255, 218, 0.2);
+      --button-active-gradient-center: rgba(0, 0, 0, 0.3);
+      --button-active-gradient-mid: rgba(0, 0, 0, 0.1);
+      --switch-active: #A076F9;
+      --priority-low: #4CAF50;
+      --priority-medium: #FFC107;
+      --priority-high: #F44336;
+      --button-disabled-bg: #4F4B68;
+      --button-disabled-text: #6B7280;
+    }
+
     /* Global Reset and Base Styles */
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+    
     body {
-      background: #0D0B14;
-      color: #E0E0E0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       font-family: "Poppins", sans-serif;
       margin: 0;
       padding: 40px;
@@ -21,18 +83,21 @@
     
     /* Reusable Card Component */
     .card, .app-container {
-      background: #1A1625;
+      background: var(--bg-secondary);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px var(--shadow-medium);
       margin-bottom: 24px;
+      border: 1px solid var(--border-color);
     }
     .app-container {
       width: 100%;
       max-width: 1000px;
       padding: 25px;
       margin-top: 70px;
-    }    /* Content Layout */
+    }
+
+    /* Content Layout */
     .content {
       width: 100%;
       max-width: 1400px;
@@ -47,23 +112,36 @@
     }
     .chart-container > h2, .category-chart-container h2, .net-worth-container h2, .recent-transactions-container h2 {
       text-align: center;
-      color: #63FFDA;
+      color: var(--text-accent);
       font-weight: 600;
       margin-bottom: 15px;
       font-size: 1.2em;
-    }
-    .category-chart-inner-container, .net-worth-chart-inner-container, .charges-payments-chart-inner-container {
+    }    .category-chart-inner-container, .net-worth-chart-inner-container, .charges-payments-chart-inner-container {
       position: relative;
       height: 300px;
+    }
+    
+    .category-chart-inner-container {
+      height: 380px;
+    }.category-chart-inner-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 10px;
+      padding: 15px 0;
+    }
+    .category-chart-inner-container canvas {
+      max-width: 100%;
+      max-height: 100%;
     }
     .net-worth-chart-inner-container {
       height: 250px;
     }
     .charges-payments-chart-inner-container {
       height: 350px;
-    }    /* Page Elements */
+    }/* Page Elements */
     h1 {
-      color: #FFF;
+      color: var(--text-primary);
       font-weight: 600;
       margin-bottom: 20px;
       text-align: center;
@@ -72,35 +150,28 @@
     #total {
       text-align: center;
       font-size: 1.1em;
-      color: #FFF;
+      color: var(--text-primary);
     }
-    
-    /* Form Elements */
-    #csvPicker, #categoryMonthSelector {
+      /* Form Elements */
+    #csvPicker {
       display: block;
       margin: 0 auto 20px auto;
       padding: 10px;
-      border: 1px solid #4F4B68;
+      border: 1px solid var(--border-color);
       border-radius: 4px;
-      background: #211D30;
-      color: #E0E0E0;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
       cursor: pointer;
     }
     #csvPicker::file-selector-button {
       padding: 8px 16px;
       border: none;
       border-radius: 4px;
-      background: #63FFDA;
-      color: #0D0B14;
+      background: var(--text-accent);
+      color: var(--button-text-selected);
       font-weight: 600;
       cursor: pointer;
-      margin-right: 10px;
-    }
-    #categoryMonthSelector {
-      margin: 15px auto 10px auto;
-      padding: 8px;
-    }
-
+      margin-right: 10px;    }
     /* Sidebar Navigation */
     .sidebar {
       position: fixed;
@@ -108,32 +179,89 @@
       left: 0;
       bottom: 0;
       width: 60px;
-      background: #1A1625;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 20px 0;
+    }
+    
+    .sidebar-nav {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding-top: 20px;
     }
+    
     .sidebar a {
-      color: #63FFDA;
-            font-size: 24px;
+      color: var(--text-accent);
+      font-size: 24px;
       margin: 16px 0;
       text-decoration: none;
+      transition: all 0.3s ease;
     }
+    
+    .sidebar a:hover {
+      transform: scale(1.1);
+      color: var(--text-accent);
+    }
+    
     .sidebar a svg {
       width: 24px;
       height: 24px;
       fill: none;
-      stroke: #63FFDA;
+      stroke: var(--text-accent);
       stroke-width: 2;
+    }    /* Theme Toggle Button */
+    .theme-toggle {
+      width: 32px;
+      height: 32px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-accent);
+      padding: 0;
+      margin: 10px;
+      transition: all 0.3s ease;
     }
-    
-    /* Tab Components - Consolidated styling for File History and Banks tabs */
-    .file-history-tab, .banks-tab {
+
+    .theme-toggle:hover {
+      color: var(--text-accent);
+      transform: scale(1.1);
+      filter: brightness(1.2);
+    }
+
+    .theme-toggle svg {
+      width: 100%;
+      height: 100%;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    .theme-toggle .sun-icon {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    .theme-toggle .moon-icon {
+      fill: currentColor;
+      stroke: none;
+    }
+
+    [data-theme="dark"] .theme-toggle .sun-icon {
+      display: none;
+    }
+
+    [data-theme="dark"] .theme-toggle .moon-icon {
+      display: block;
+    }/* Tab Components - Consolidated styling for File History and Banks tabs */
+    .file-history-tab, .banks-tab, .upload-pdf-btn {
       position: absolute;
       top: 18px;
-      background: #211D30;
-      color: #63FFDA;
+      background: var(--bg-tertiary);
+      color: var(--text-accent);
       border: none;
       border-radius: 8px 8px 0 0;
       padding: 8px 22px 8px 18px;
@@ -142,7 +270,7 @@
       font-weight: 600;
       cursor: pointer;
       z-index: 1100;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      box-shadow: 0 2px 8px var(--shadow-light);
       transition: background 0.15s, color 0.15s;
     }
     .file-history-tab {
@@ -151,20 +279,22 @@
     .banks-tab {
       left: 200px;
     }
-    .file-history-tab.active, .banks-tab.active {
-      background: #63FFDA;
-      color: #0D0B14;
+    .upload-pdf-btn {
+      left: 330px;
     }
-    
-    /* Panel Components - Consolidated styling for both panels */
+    .file-history-tab.active, .banks-tab.active, .upload-pdf-btn.active {
+      background: var(--text-accent);
+      color: var(--button-text-selected);
+    }
+      /* Panel Components - Consolidated styling for both panels */
     .file-history-panel {
       position: absolute;
       top: 54px;
       left: 70px;
-      background: #1A1625;
-      color: #E0E0E0;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
       border-radius: 0 0 12px 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 16px var(--shadow-medium);
       min-width: 320px;
       max-width: 420px;
       padding: 18px 18px 10px 18px;
@@ -174,7 +304,7 @@
     .file-history-panel h3 {
       margin: 0 0 10px 0;
       font-size: 1.1em;
-      color: #63FFDA;
+      color: var(--text-accent);
       font-weight: 600;
     }    /* List Components */
     .file-history-list {
@@ -189,7 +319,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 7px 0;
-      border-bottom: 1px solid #29223a;
+      border-bottom: 1px solid var(--border-color);
       font-size: 14px;
     }
     .file-history-list li:last-child { 
@@ -197,7 +327,7 @@
     }
     .file-history-list .filename {
       flex: 1;
-      color: #E0E0E0;
+      color: var(--text-primary);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -205,7 +335,7 @@
     .file-history-list .delete-btn {
       background: none;
       border: none;
-      color: #FF6B6B;
+      color: var(--priority-high);
       font-size: 15px;
       cursor: pointer;
       margin-left: 12px;
@@ -214,7 +344,7 @@
       transition: background 0.15s;
     }
     .file-history-list .delete-btn:hover {
-      background: #2a263a;
+      background: var(--bg-tertiary);
     }    /* Timeframe Controls - Consolidated */
     .timeframe-controls {
       text-align: center;
@@ -226,7 +356,7 @@
     .timeframe-controls button {
       background: none;
       border: 1px solid transparent;
-      color: #63FFDA;
+      color: var(--text-accent);
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
       padding: 5px 12px;
@@ -236,17 +366,17 @@
       transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
     .timeframe-controls button.active {
-      background-color: #0D0B14;
-      color: #63FFDA;
-      border-color: #63FFDA;
+      background-color: var(--bg-primary);
+      color: var(--text-accent);
+      border-color: var(--text-accent);
       box-shadow: none;
     }
     .timeframe-controls button:hover:not(.active) {
       background-color: transparent;
-      color: #63FFDA;
+      color: var(--text-accent);
       border-color: transparent;
-      box-shadow: 0 0 8px #63FFDA;
-    }    /* Layout Components */
+      box-shadow: 0 0 8px var(--button-hover-glow);
+    }/* Layout Components */
     .charts-row-container {
       display: flex;
       justify-content: space-between;
@@ -259,12 +389,11 @@
       min-width: 300px;
       margin-bottom: 0;
     }
-    
-    /* Recent Transactions Table */
+      /* Recent Transactions Table */
     .recent-transactions-table-container {
       max-height: 300px;
       overflow-y: auto;
-      border: 1px solid #29223a;
+      border: 1px solid var(--border-color);
       border-radius: 8px;
     }
     .recent-transactions-table {
@@ -275,53 +404,30 @@
     .recent-transactions-table td {
       padding: 10px 12px;
       text-align: left;
-      border-bottom: 1px solid #29223a;
+      border-bottom: 1px solid var(--border-color);
     }
     .recent-transactions-table th {
-      background-color: #211D30;
-      color: #E0E0E0;
+      background-color: var(--bg-tertiary);
+      color: var(--text-primary);
       font-weight: 600;
       position: sticky;
       top: 0;
       z-index: 1;
     }
     .recent-transactions-table td {
-      color: #C0C0C0;
+      color: var(--text-secondary);
     }
     .recent-transactions-table tr:last-child td {
       border-bottom: none;
     }
     .recent-transactions-table .amount-income {
-      color: #63FFDA;
+      color: var(--text-accent);
       font-weight: 500;
     }
     .recent-transactions-table .amount-expense {
-      color: #FF6B6B;
+      color: var(--priority-high);
       font-weight: 500;
-    }    /* Light Mode Overrides */
-    body.light-mode .recent-transactions-container h2 {
-      color: #00796b;
-    }
-    body.light-mode .recent-transactions-table-container {
-      border: 1px solid #D0D0D0;
-    }
-    body.light-mode .recent-transactions-table th {
-      background-color: #E8E8E8;
-      color: #333;
-      border-bottom: 1px solid #C0C0C0;
-    }
-    body.light-mode .recent-transactions-table td {
-      color: #555;
-      border-bottom: 1px solid #D0D0D0;
-    }
-    body.light-mode .recent-transactions-table .amount-income {
-      color: #00796b;
-    }
-    body.light-mode .recent-transactions-table .amount-expense {
-      color: #d32f2f;
-    }
-    
-    /* Modal Components - Consolidated */
+    }      /* Modal Components - Consolidated */
     .upload-modal {
       display: none;
       position: fixed;
@@ -336,11 +442,11 @@
       justify-content: center;
     }
     .upload-modal-content {
-      background-color: #1A1625;
+      background-color: var(--bg-secondary);
       margin: auto;
       padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+      box-shadow: 0 8px 25px var(--shadow-medium);
       width: 90%;
       max-width: 550px;
       display: flex;
@@ -352,15 +458,15 @@
       justify-content: space-between;
       align-items: center;
       padding-bottom: 15px;
-      border-bottom: 1px solid #4F4B68;
+      border-bottom: 1px solid var(--border-color);
     }
     .upload-modal-header h2 {
-      color: #E0E0E0;
+      color: var(--text-primary);
       font-size: 1.4em;
       margin: 0;
     }
     .upload-modal-close-btn {
-      color: #A0A0A0;
+      color: var(--text-secondary);
       font-size: 28px;
       font-weight: bold;
       cursor: pointer;
@@ -369,33 +475,33 @@
     }
     .upload-modal-close-btn:hover,
     .upload-modal-close-btn:focus {
-      color: #FFF;
+      color: var(--text-primary);
     }    /* Upload Area Components */
     .upload-area {
-      border: 2px dashed #4F4B68;
+      border: 2px dashed var(--border-color);
       border-radius: 8px;
       padding: 40px 20px;
       text-align: center;
       cursor: pointer;
-      background-color: #0D0B14;
+      background-color: var(--bg-primary);
       transition: background-color 0.2s, border-color 0.2s;
     }
     .upload-area:hover {
-      background-color: #211D30;
-      border-color: #63FFDA;
+      background-color: var(--bg-tertiary);
+      border-color: var(--text-accent);
     }
     .upload-area-icon {
       font-size: 40px;
-      color: #63FFDA;
+      color: var(--text-accent);
       margin-bottom: 15px;
     }
     .upload-area-text {
-      color: #E0E0E0;
+      color: var(--text-primary);
       font-size: 1.1em;
       margin-bottom: 8px;
     }
     .upload-area-subtext {
-      color: #A0A0A0;
+      color: var(--text-secondary);
       font-size: 0.9em;
     }
     #modalPdfInput {
@@ -406,7 +512,7 @@
       max-height: 100px;
       overflow-y: auto;
       font-size: 0.9em;
-      color: #C0C0C0;
+      color: var(--text-secondary);
     }
     #selectedFilesList div {
       padding: 3px 0;
@@ -416,7 +522,7 @@
       justify-content: flex-end;
       gap: 10px;
       padding-top: 15px;
-      border-top: 1px solid #4F4B68;
+      border-top: 1px solid var(--border-color);
     }    /* Universal Button Styling - Consolidated */
     .upload-modal-btn {
       padding: 10px 20px;
@@ -429,31 +535,29 @@
       transition: background-color 0.2s, color 0.2s;
     }
     .upload-modal-btn.primary {
-      background: #63FFDA;
-      color: #0D0B14;
+      background: var(--text-accent);
+      color: var(--button-text-selected);
     }
     .upload-modal-btn.secondary {
-      background: #4F4B68;
-      color: #E0E0E0;
+      background: var(--border-color);
+      color: var(--text-primary);
     }
     
     /* Progress Bar Component */
     #progressBarContainer {
       position: fixed;
-      top: 0;
-      left: 0;
+      top: 0;      left: 0;
       width: 100%;
-      background-color: #0D0B14;
+      background-color: var(--bg-primary);
       padding: 8px 0;
       box-shadow: 0 2px 8px rgba(0,0,0,0.7);
       display: none;
       z-index: 9999;
     }
     #progressBar {
-      width: 80%;
-      margin: 0 auto;
+      width: 80%;      margin: 0 auto;
       height: 20px;
-      background-color: #63FFDA;
+      background-color: var(--text-accent);
       background-image: linear-gradient(
         45deg,
         rgba(13, 11, 20, 0.25) 25%,
@@ -466,9 +570,8 @@
       );
       background-size: 40px 40px;
       border-radius: 5px;
-      text-align: center;
-      line-height: 20px;
-      color: #0D0B14;
+      text-align: center;      line-height: 20px;
+      color: var(--bg-primary);
       font-weight: bold;
       animation: progressBarAnimation 2s linear infinite;
       transition: width 0.3s ease-in-out;
@@ -480,28 +583,54 @@
     .top-right-controls {
       position: fixed;
       top: 20px;
-      right: 20px;
+      left: 80px;  /* Position just to the right of 60px sidebar */
       z-index: 1000;
+      display: flex;
+      gap: 16px;  /* Increased gap for better spacing */
+      align-items: center;
     }
-    #agent-action-button {
-      background-color: #63FFDA;
-      color: #0D0B14;
+
+    .control-btn {
+      background: var(--bg-tertiary);
+      color: var(--text-accent);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px var(--shadow-light);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .control-btn:hover {
+      background: var(--text-accent);
+      color: var(--button-text-selected);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--button-shadow);
+    }
+
+    .control-btn.active {
+      background: var(--text-accent);
+      color: var(--button-text-selected);
+    }#agent-action-button {
+      background-color: var(--text-accent);
+      color: var(--bg-primary);
       border: none;
       padding: 10px 15px;
       border-radius: 5px;
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }    #agent-action-button:hover {
+      background-color: var(--button-hover-bg);
     }
-    #agent-action-button:hover {
-      background-color: #52D9C3;
-    }
-    
-    /* Consolidated Button States */
-    button, .upload-modal-btn, .file-history-tab, .banks-tab, #agent-action-button {
-      background: transparent;
+      /* Consolidated Button States */
+    button, .upload-modal-btn, .file-history-tab, .banks-tab, .control-btn, #agent-action-button {      background: transparent;
       border: 1px solid transparent;
-      color: #63FFDA;
+      color: var(--text-accent);
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
       padding: 8px 15px;
@@ -518,34 +647,88 @@
     .file-history-tab, .banks-tab {
       padding: 8px 22px 8px 18px;
     }
-    #agent-action-button {
-      padding: 10px 15px;
+    .control-btn, #agent-action-button {
+      padding: 10px 16px;
     }
     .upload-modal-btn {
       padding: 10px 20px;
     }
-    
-    /* Button Hover States */
+      /* Button Hover States */
     button:not(.active):not(:disabled):hover,
     .upload-modal-btn:not(.active):not(:disabled):hover,
     .file-history-tab:not(.active):not(:disabled):hover,
     .banks-tab:not(.active):not(:disabled):hover,
+    .control-btn:not(.active):not(:disabled):hover,
     #agent-action-button:not(.active):not(:disabled):hover {
       background-color: transparent;
-      color: #63FFDA;
+      color: var(--text-accent);
       border-color: transparent;
-      box-shadow: 0 0 8px #63FFDA;
+      box-shadow: 0 0 8px var(--text-accent);
+    }      /* === ANIMATED GRADIENT EFFECTS === */
+    button, .upload-modal-btn, .file-history-tab, .banks-tab, .control-btn, #agent-action-button, .timeframe-controls button {
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
     }
     
-    /* Button Active States */
+    button::before, .upload-modal-btn::before, .file-history-tab::before, .banks-tab::before, .control-btn::before, #agent-action-button::before, .timeframe-controls button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        var(--button-hover-gradient-center) 0%,
+        var(--button-hover-gradient-mid) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: inherit;
+      z-index: 1;
+      pointer-events: none;
+    }
+      button:hover::before, .upload-modal-btn:hover::before, .file-history-tab:hover::before, .banks-tab:hover::before, .control-btn:hover::before, #agent-action-button:hover::before, .timeframe-controls button:hover::before {
+      opacity: 1;
+    }
+    
+    button span, .upload-modal-btn span, .file-history-tab span, .banks-tab span, .control-btn span, #agent-action-button span, .timeframe-controls button span {
+      position: relative;
+      z-index: 2;
+    }
+    
+    button.active, .upload-modal-btn.active, .file-history-tab.active, .banks-tab.active, .control-btn.active, #agent-action-button.active, .timeframe-controls button.active {
+      background: linear-gradient(135deg, var(--button-gradient-start), var(--button-gradient-end));
+      color: var(--button-text-selected);
+      border-color: var(--text-accent);
+      box-shadow: 0 4px 15px var(--button-shadow);
+    }
+    
+    button.active::before, .upload-modal-btn.active::before, .file-history-tab.active::before, .banks-tab.active::before, .control-btn.active::before, #agent-action-button.active::before, .timeframe-controls button.active::before {
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        var(--button-active-gradient-center) 0%,
+        var(--button-active-gradient-mid) 30%,
+        transparent 60%
+      );
+      opacity: 0.7;
+    }
+      button.active:hover::before, .upload-modal-btn.active:hover::before, .file-history-tab.active:hover::before, .banks-tab.active:hover::before, .control-btn.active:hover::before, #agent-action-button.active:hover::before, .timeframe-controls button.active:hover::before {
+      opacity: 1;
+    }
+      /* Button Active States */
     button.active, button:active,
     .upload-modal-btn.active, .upload-modal-btn:active,
     .file-history-tab.active, .file-history-tab:active,
     .banks-tab.active, .banks-tab:active,
+    .control-btn.active, .control-btn:active,
     #agent-action-button.active, #agent-action-button:active {
-      background-color: #0D0B14;
-      color: #63FFDA;
-      border: 1px solid #63FFDA;
+      background-color: var(--bg-primary);
+      color: var(--text-accent);
+      border: 1px solid var(--text-accent);
       box-shadow: none;
     }
     
@@ -554,12 +737,45 @@
     .upload-modal-btn:disabled,
     .file-history-tab:disabled,
     .banks-tab:disabled,
+    .control-btn:disabled,
     #agent-action-button:disabled {
       color: #4F4B68;
       background-color: #211D30;
       border-color: #4F4B68;
       cursor: not-allowed;
       box-shadow: none;
+    }    /* Category Chart Dropdown Positioning */
+    .category-chart-container {
+      position: relative;
+    }
+      .category-chart-header {
+      position: relative;
+      margin-bottom: 5px;
+    }    .category-chart-header h2 {
+      margin: 0 0 20px 0;
+      text-align: center;
+      color: var(--text-accent);
+      font-weight: 600;
+      font-size: 1.2em;
+    }
+    #categoryMonthSelector {
+      position: absolute;
+      top: 0;
+      right: 0;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: var(--text-primary);
+      font-size: 0.9em;
+      min-width: 140px;
+      transition: all 0.3s ease;
+    }
+    
+    #categoryMonthSelector:focus {
+      outline: none;
+      border-color: var(--text-accent);
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
     }
   </style>
 
@@ -570,33 +786,53 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script> <!-- Chart.js UMD bundle :contentReference[oaicite:1]{index=1} -->
   <!-- ADDED: Date Adapter for Chart.js Time Scale -->
   <script src="https://cdn.jsdelivr.net/npm/date-fns@3.6.0/cdn.min.js"></script> <!-- date-fns library -->
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- date-fns adapter -->
-  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script> <!-- date-fns adapter -->  <script src="config.js"></script>
   <!-- Ensure config.js is loaded before any other scripts that use GEMINI_API_KEY -->
+  <script src="theme.js"></script>
 </head>
-<body>
-  <div class="sidebar">
-    <a href="Landing Page.html" title="Home">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
+<body>  <div class="sidebar">
+    <div class="sidebar-nav">
+      <a href="Landing Page.html" title="Home">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
+        </svg>
+      </a>
+      <a href="Personal Finance Tracker.html" title="Finance Tracker">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="Productivity Tracker.html" title="Productivity Tracker">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9"/>
+          <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+    
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" title="Toggle Dark/Light Mode" class="theme-toggle">
+      <svg viewBox="0 0 24 24" class="sun-icon">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
       </svg>
-    </a>
-    <a href="Personal Finance Tracker.html" title="Finance Tracker">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg viewBox="0 0 24 24" class="moon-icon" style="display: none;">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
-    </a>
-    <a href="Productivity Tracker.html" title="Productivity Tracker">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="12" cy="12" r="9"/>
-        <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </a>
-  </div>
-
-  <!-- New: Top Right Controls Button -->
+    </button>
+  </div>  <!-- New: Top Right Controls Button -->
   <div class="top-right-controls">
-    <button id="agent-action-button">Generate Presentation</button>
+    <button id="banksTab" class="control-btn">Banks</button>
+    <button id="openPdfUploadModalBtn" class="control-btn">Upload PDF</button>
+    <button id="fileHistoryTab" class="control-btn">File History</button>
+    <button id="agent-action-button" class="control-btn">Generate Presentation</button>
   </div>
   <div class="content">
     <h1>Personal Finance Tracker</h1>
@@ -659,10 +895,11 @@
         <div class="charges-payments-chart-inner-container"> <!-- NEW WRAPPER -->
           <canvas id="spendChart"></canvas>
         </div>
-      </div>
-
-      <div class="category-chart-container card"> <!-- Ensured .card class is present -->
-        <select id="categoryMonthSelector"></select>
+      </div>      <div class="category-chart-container card"> <!-- Ensured .card class is present -->
+        <div class="category-chart-header">
+          <h2>Spending Categories</h2>
+          <select id="categoryMonthSelector"></select>
+        </div>
         <div class="category-chart-inner-container">
           <canvas id="categorySpendChart"></canvas>
         </div>
@@ -681,24 +918,16 @@
             <!-- Transactions will be populated here by JavaScript -->
           </tbody>
         </table>
-      </div>
-    </div>    <!-- File History Tab Button -->
-    <button id="fileHistoryTab" class="file-history-tab">File History</button>
-    <!-- New Banks Tab Button -->
-    <button id="banksTab" class="banks-tab">Banks</button>
-    <!-- Upload PDF Button, relocated to be right of the Banks button -->
-    <button id="openPdfUploadModalBtn" class="banks-tab" style="left: 280px;">Upload PDF</button>
+      </div>    </div>
 
     <div id="fileHistoryPanel" class="file-history-panel">
       <h3>Uploaded Files</h3>
       <ul id="fileHistoryList" class="file-history-list"></ul>
-    </div>
-
-    <!-- New Banks Panel (initially hidden) -->
-    <div id="banksPanel" class="file-history-panel" style="display:none; position:absolute; top:54px; left:200px; background:#1A1625; color:#E0E0E0; border-radius:0 0 12px 12px; box-shadow:0 4px 16px rgba(0,0,0,0.5); min-width:320px; max-width:420px; padding:18px 18px 10px 18px; z-index:1100;">
+    </div>    <!-- New Banks Panel (initially hidden) -->
+    <div id="banksPanel" class="file-history-panel" style="display:none; position:absolute; top:54px; left:200px;">
       <h3>Banks</h3>
       <ul id="banksList" class="file-history-list">
-        <li style="color:#A0A0A0;">No banks added yet.</li>
+        <li style="color:var(--text-secondary);">No banks added yet.</li>
       </ul>
       <div style="text-align:right; margin-top:12px;">
         <button id="importBanksBtn" class="upload-modal-btn primary">Import</button>
@@ -1197,51 +1426,45 @@
             ctx.fillText("No spending in categories for " + monthKey_YYYY_MM, container.offsetWidth / 2, container.offsetHeight / 2);
             return;
         }
-        
-        const [year, monthNum] = monthKey_YYYY_MM.split('-');
-        const monthName = new Date(year, monthNum - 1, 1).toLocaleString('default', { month: 'long' });
-        const chartTitle = `Spending Categories for ${monthName} ${year}`;
-
-
-        categoryChart = new Chart(ctx, {
+          categoryChart = new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: filteredLabels,
                 datasets: [{
                     label: 'Spending by Category',
-                    data: filteredData,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.7)', // Groceries
-                        'rgba(54, 162, 235, 0.7)', // Food Delivery/Restaurant
-                        'rgba(255, 206, 86, 0.7)', // Gas
-                        'rgba(75, 192, 192, 0.7)', // Bills
-                        'rgba(153, 102, 255, 0.7)', // Other
-                        'rgba(255, 159, 64, 0.7)'  // Extra color
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
+                    data: filteredData,                    backgroundColor: [
+                        '#FF6B6B', // Groceries - Red
+                        '#4CAF50', // Food Delivery/Restaurant - Green  
+                        '#FFC107', // Gas - Amber
+                        '#63FFDA', // Bills - Cyan
+                        '#8B5CF6', // Other - Purple
+                        '#FF9800'  // Extra color - Orange
+                    ],                    borderColor: [
+                        '#FF6B6B',
+                        '#4CAF50',
+                        '#FFC107',
+                        '#63FFDA',
+                        '#8B5CF6',
+                        '#FF9800'
                     ],
                     borderWidth: 1
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
+                maintainAspectRatio: false,                plugins: {
                     legend: {
                         position: 'top',
-                        labels: { color: '#E0E0E0' }
+                        labels: { 
+                            color: '#A0A0A0',
+                            font: {
+                                size: 14
+                            },
+                            padding: 15
+                        }
                     },
                     title: {
-                        display: true,
-                        text: chartTitle,
-                        color: '#E0E0E0',
-                        font: { size: 16 }
+                        display: false
                     }
                 }
             }
@@ -1295,35 +1518,32 @@
                 borderWidth: 2, // Line thickness
                 fill: true, // Enable fill
                 tension: 0.4, // Smooth curve
-                pointRadius: 4, // Size of the points
-                pointBackgroundColor: '#4CFF4C', // Green points
-                pointBorderColor: '#1A1625', // Match card background for point border
+                pointRadius: 4, // Size of the points                pointBackgroundColor: '#4CFF4C', // Green points
+                pointBorderColor: 'var(--bg-secondary)', // Match card background for point border
                 pointHoverRadius: 7, // Size of points on hover
                 pointHoverBackgroundColor: '#4CFF4C',
-                pointHoverBorderColor: '#FFF' 
+                pointHoverBorderColor: 'var(--bg-primary)'
               }
             ]
           },
           options: {
             responsive: true,
-            maintainAspectRatio: false,
-            scales: {
+            maintainAspectRatio: false,            scales: {
               x: { 
-                grid: { color: '#333' }, 
+                grid: { color: 'var(--border-color)' }, 
                 ticks: { 
-                    color: '#ccc',
+                    color: 'var(--text-secondary)',
                     // autoSkip: true, // May be useful for many data points
                     // maxTicksLimit: 20 // Adjust as needed
                 } 
               },
-              y: { grid: { color: '#333' }, ticks: { color: '#ccc' }, beginAtZero: true }
-            },
-            plugins: {
-              legend: { display: true, labels: { color: '#E0E0E0' } },
+              y: { grid: { color: 'var(--border-color)' }, ticks: { color: 'var(--text-secondary)' }, beginAtZero: true }
+            },            plugins: {
+              legend: { display: true, labels: { color: 'var(--text-primary)' } },
               title: {
                 display: false, // Main title is in H2
                 // text: 'Monthly Income Over Time', // Already have H2
-                color: '#E0E0E0'
+                color: 'var(--text-primary)'
               }
             }
           }
@@ -1389,15 +1609,29 @@
         });
 
         return { labels: formattedLabels, data };
-      }
-
-      // --- Modified: renderSpendChart to accept timeframe ---
+      }      // --- Modified: renderSpendChart to accept timeframe ---
       function renderSpendChart(timeframe = 'month') {
         const { labels: chartLabels, data: chargesData } = aggregateDataForChart(dailyActivity, timeframe, 'charges');
         const { data: paymentsData } = aggregateDataForChart(dailyActivity, timeframe, 'payments'); // Labels will be the same
 
-        if (chart) chart.destroy();
-        chart = new Chart(document.getElementById('spendChart'), {
+        // Properly destroy existing chart and refresh canvas
+        if (chart) {
+          chart.destroy();
+          chart = null;
+        }
+        
+        // Get the chart container and refresh the canvas
+        const chartContainer = document.querySelector('.charges-payments-chart-inner-container');
+        if (chartContainer) {
+          chartContainer.innerHTML = '<canvas id="spendChart"></canvas>';
+        }
+        
+        const canvas = document.getElementById('spendChart');
+        if (!canvas) {
+          console.error('Canvas element not found');
+          return;
+        }
+          chart = new Chart(canvas, {
           type: 'bar',
           data: {
             labels: chartLabels,
@@ -1405,32 +1639,46 @@
               {
                 label: 'Charges',
                 data: chargesData,
-                backgroundColor: '#FF4C4C',
-                borderColor: '#1A1625',
-                borderWidth: 1
+                backgroundColor: '#FF6B6B',
+                borderRadius: 6,
+                borderSkipped: false,
+                barPercentage: 0.6
               },
               {
                 label: 'Payments',
                 data: paymentsData,
-                backgroundColor: '#4CFF4C',
-                borderColor: '#1A1625',
-                borderWidth: 1
+                backgroundColor: '#4CAF50',
+                borderRadius: 6,
+                borderSkipped: false,
+                barPercentage: 0.6
               }
             ]
           },
           options: {
             responsive: true,
             maintainAspectRatio: false,
-            scales: {
+            elements: { 
+              bar: { 
+                borderRadius: 8, 
+                borderSkipped: false 
+              } 
+            },            scales: {
               x: {
-                grid: { color: '#333' },
-                ticks: { color: '#ccc' }
+                grid: { color: '#A0A0A0' },
+                ticks: { color: '#A0A0A0' }
               },
-              y: { grid: { color: '#333' }, ticks: { color: '#ccc' }, beginAtZero: true }
-            },
-            plugins: {
-              legend: { labels: { color: '#E0E0E0' } },
-              title: { display: false, text: 'Expenses Over Time', color: '#E0E0E0' }
+              y: { 
+                grid: { color: '#A0A0A0' }, 
+                ticks: { color: '#A0A0A0' }, 
+                beginAtZero: true 
+              }
+            },            plugins: {
+              legend: { 
+                labels: { color: '#A0A0A0' }
+              },
+              title: { 
+                display: false
+              }
             }
           }
         });
@@ -1454,8 +1702,27 @@
             netWorthChartTimeframe = range;
             renderNetWorthChart(netWorthChartTimeframe);
           }
+        });      });      // === ANIMATED GRADIENT EFFECT FOR BUTTONS ===
+      function setupAnimatedButtons() {
+        const buttons = document.querySelectorAll('button, .upload-modal-btn, .file-history-tab, .banks-tab, #agent-action-button, .timeframe-controls button');
+        
+        buttons.forEach(button => {
+          button.addEventListener('mousemove', (e) => {
+            const rect = button.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            button.style.setProperty('--mouse-x', `${x}%`);
+            button.style.setProperty('--mouse-y', `${y}%`);
+          });
+          
+          button.addEventListener('mouseleave', () => {
+            // Reset to center when mouse leaves
+            button.style.setProperty('--mouse-x', '50%');
+            button.style.setProperty('--mouse-y', '50%');
+          });
         });
-      });
+      }
 
       // On load, restore saved data
       document.addEventListener('DOMContentLoaded', () => {
@@ -1479,9 +1746,8 @@
           fileDataKeysMap = JSON.parse(savedFileDataKeysMap);
         } else {
           fileDataKeysMap = {}; // Initialize if nothing is saved
-        }
-
-        updateDisplay(); // Call once after all data is loaded
+        }        updateDisplay(); // Call once after all data is loaded
+        setupAnimatedButtons(); // Initialize animated gradient effects
       });
 
       // --- New: PDF Upload Modal Logic ---
@@ -1611,7 +1877,6 @@
             hideProcessingBar(); // Hide if no files somehow
             return;
           }
-
          
 
           if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === "") {
@@ -2269,9 +2534,7 @@ The response MUST be only the valid JSON object, with no extra text, explanation
           await sendToN8N(dataForN8N);
         });
       }
-      // --- End Presentation Generation Logic ---
-
-      setupTimeframeControls(); // Call to initialize the new synchronized controls
+      // --- End Presentation Generation Logic ---      setupTimeframeControls(); // Call to initialize the new synchronized controls
     </script>
 </body>
 </html>
