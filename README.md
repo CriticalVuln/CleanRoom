@@ -35,6 +35,8 @@ A comprehensive two-column task dashboard featuring interactive analytics and a 
 
 *   **Polished User Interface & Experience:**
     *   Enjoy a dark, minimalist aesthetic featuring the Poppins font, rounded interface elements, and soft shadows.
+    *   **NEW: Dual-Theme Support:** Seamlessly switch between a sophisticated dark mode and a clean light mode.
+    *   **NEW: Interactive Gradient Accents:** Buttons and interactive elements feature a subtle gradient effect that follows the mouse cursor, enhancing visual feedback.
     *   Experience a responsive two-column layout that adapts gracefully to smaller screens.
     *   Navigate effortlessly between dashboards using the persistent sidebar.
 
@@ -67,6 +69,8 @@ A smart spending and income tracker that leverages AI to extract transaction dat
 
 *   **Sleek User Interface & Experience:**
     *   Features a dark theme consistent with the Productivity Tracker for a unified look and feel.
+    *   **NEW: Dual-Theme Support:** Seamlessly switch between a sophisticated dark mode and a clean light mode.
+    *   **NEW: Interactive Gradient Accents:** Buttons and interactive elements feature a subtle gradient effect that follows the mouse cursor, enhancing visual feedback.
     *   Includes sidebar navigation for easy switching between different dashboards.
     *   Offers a mobile-friendly layout with a clean, card-based structure.
 
