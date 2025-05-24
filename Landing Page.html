@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Landing Page</title>
   <style>
+    /* === GLOBAL RESET & BASE === */
     * { box-sizing: border-box; }
+    
     body {
       background: #0D0B14;
       color: #E0E0E0;
@@ -13,6 +15,19 @@
       margin: 0;
       padding-top: 40px;
     }
+
+    /* === LAYOUT === */
+    .main-content {
+      margin-left: 60px;
+      padding: 0 40px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+
+    /* === SIDEBAR === */
     .sidebar {
       position: fixed;
       top: 0;
@@ -25,12 +40,14 @@
       align-items: center;
       padding-top: 20px;
     }
+
     .sidebar a {
       color: #63FFDA;
       font-size: 24px;
       margin: 16px 0;
       text-decoration: none;
     }
+
     .sidebar a svg {
       width: 24px;
       height: 24px;
@@ -38,41 +55,8 @@
       stroke: #63FFDA;
       stroke-width: 2;
     }
-    .main-content {
-      margin-left: 60px;
-      padding: 0 40px;
-    }
-    h1 {
-      margin-bottom: 30px;
-      font-size: 2em;
-    }
-    .tab-bar {
-      display: flex;
-      gap: 0;
-      border-bottom: 2px solid #29223a;
-      margin-bottom: 24px;
-      margin-top: 18px;
-    }
-    .tab-btn {
-      background: none;
-      border: none;
-      outline: none;
-      color: #63FFDA;
-      font-family: 'Poppins', sans-serif;
-      font-size: 1.1em;
-      font-weight: 600;
-      padding: 12px 32px 10px 32px;
-      cursor: pointer;
-      border-radius: 12px 12px 0 0;
-      margin-right: 2px;
-      transition: background 0.15s, color 0.15s;
-      text-decoration: none;
-      display: inline-block;
-    }
-    .tab-btn:hover {
-      background: #211D30;
-      color: #0D0B14;
-    }
+
+    /* === QUICK ADD BUTTON === */
     .open-popup-btn {
       position: fixed;
       top: 16px;
@@ -83,9 +67,10 @@
       border: none;
       cursor: pointer;
       z-index: 1000;
-      color: #63FFDA; /* Neon turquoise */
+      color: #63FFDA;
       padding: 0;
     }
+
     .open-popup-btn svg {
       width: 100%;
       height: 100%;
@@ -93,7 +78,8 @@
       fill: none;
       stroke-width: 2;
     }
-    /* Quick Add Modal Styles (from Productivity Tracker) */
+
+    /* === TASK INPUT SYSTEM === */
     .task-input {
       display: flex;
       align-items: center;
@@ -101,12 +87,25 @@
       margin-bottom: 0;
       width: 100%;
     }
-    .priority-select { gap: 6px; margin-right: 6px; }
-    .priority-btn { width: 16px; height: 16px; border: none; border-radius: 4px; cursor: pointer; opacity: 0.6; }
+
+    .priority-select { 
+      gap: 6px; 
+      margin-right: 6px; 
+    }
+
+    .priority-btn { 
+      width: 16px; 
+      height: 16px; 
+      border: none; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      opacity: 0.6; 
+    }
     .priority-btn.selected { opacity: 1; }
     .priority-btn.low { background: #4CAF50; }
     .priority-btn.med { background: #FFC107; }
     .priority-btn.high { background: #F44336; }
+
     .task-input input[type="text"] {
       min-width: 0;
       width: 100%;
@@ -114,21 +113,48 @@
       height: 36px;
       padding: 7px 10px;
     }
+
     .task-input input[type="number"] {
       width: 54px;
       min-width: 0;
       font-size: 14px;
       padding: 4px 6px;
     }
-    .task-input button, .task-dropdown summary.options-btn {
+
+    .task-input button, 
+    .task-dropdown summary.options-btn {
       height: 36px;
       padding: 0 14px;
-      font-size: 15px;
+      border: none;
+      border-radius: 4px;
+      background: #63FFDA;
+      color: #0D0B14;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 14px;
     }
-    .task-input button { margin-left: 8px; border: none; border-radius: 4px; background: #63FFDA; color: #0D0B14; font-weight: 600; cursor: pointer; font-size: 14px; }
-    .task-dropdown { position: relative; margin-left: 0; }
-    .task-dropdown summary.options-btn { list-style: none; cursor: pointer; border: none; border-radius: 4px; background: #63FFDA; color: #0D0B14; display: flex; align-items: center; font-family: inherit; font-size: 14px; font-weight: 600; }
-    .task-dropdown summary::-webkit-details-marker { display: none; }
+
+    .task-input button { 
+      margin-left: 8px; 
+    }
+
+    /* === DROPDOWN SYSTEM === */
+    .task-dropdown { 
+      position: relative; 
+      margin-left: 0; 
+    }
+
+    .task-dropdown summary.options-btn { 
+      list-style: none; 
+      display: flex; 
+      align-items: center; 
+      font-family: inherit; 
+    }
+
+    .task-dropdown summary::-webkit-details-marker { 
+      display: none; 
+    }
+
     .task-dropdown-content {
       position: absolute;
       top: calc(100% + 4px);
@@ -144,45 +170,82 @@
       font-weight: 600;
       min-width: 170px;
     }
-    .task-dropdown[open] .task-dropdown-content { display: block; }
-    .task-dropdown-content label { display: flex; align-items: center; gap: 4px; color: #E0E0E0; font-size: 14px; margin-bottom: 2px; }
-    .switch { position: relative; display: inline-block; width: 32px; height: 18px; margin-left: 6px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #4F4B68; border-radius: 34px; transition: .4s; }
-    .slider:before { position: absolute; content: ''; height: 14px; width: 14px; left: 2px; bottom: 2px; background: #FFF; border-radius: 50%; transition: .4s; }
-    .switch input:checked + .slider { background: #A076F9; }
-    .switch input:checked + .slider:before { transform: translateX(14px); }
-    /* Quick Add Modal container styling */
-    dialog#quickAddModal {
-      background: #1A1625 !important;
+
+    .task-dropdown[open] .task-dropdown-content { 
+      display: block; 
+    }
+
+    .task-dropdown-content label { 
+      display: flex; 
+      align-items: center; 
+      gap: 4px; 
+      color: #E0E0E0; 
+      font-size: 14px; 
+      margin-bottom: 2px; 
+    }
+
+    /* === SWITCH SYSTEM === */
+    .switch { 
+      position: relative; 
+      display: inline-block; 
+      width: 32px; 
+      height: 18px; 
+      margin-left: 6px; 
+    }
+
+    .switch input { 
+      opacity: 0; 
+      width: 0; 
+      height: 0; 
+    }
+
+    .slider { 
+      position: absolute; 
+      cursor: pointer; 
+      top: 0; 
+      left: 0; 
+      right: 0; 
+      bottom: 0; 
+      background: #4F4B68; 
+      border-radius: 34px; 
+      transition: .4s; 
+    }
+
+    .slider:before { 
+      position: absolute; 
+      content: ''; 
+      height: 14px; 
+      width: 14px; 
+      left: 2px; 
+      bottom: 2px; 
+      background: #FFF; 
+      border-radius: 50%; 
+      transition: .4s; 
+    }
+
+    .switch input:checked + .slider { 
+      background: #A076F9; 
+    }
+
+    .switch input:checked + .slider:before { 
+      transform: translateX(14px); 
+    }    /* === MODAL SYSTEM === */
+    #quickAddModal {
+      background: #1A1625;
       color: #E0E0E0;
       border: none;
       border-radius: 12px;
-      padding: 18px 18px 14px 18px;
+      padding: 18px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.7);
       position: fixed;
-      top: 16px;
+      top: 60px;
       right: 16px;
-      left: auto;
-      bottom: auto;
-      margin: 0;
       width: 370px;
       max-width: 95vw;
       z-index: 2000;
-      transform: none !important;
-      overflow: visible !important;
-      min-height: unset;
-      max-height: unset;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: stretch;
+      display: none;
     }
-    dialog#quickAddModal::-webkit-scrollbar { display: none; }
-    dialog#quickAddModal, dialog#quickAddModal * {
-      scrollbar-width: none !important;
-      -ms-overflow-style: none !important;
-    }
+
     .weekly-review-modal {
       background: #1A1625 !important;
       color: #E0E0E0;
@@ -196,12 +259,14 @@
       z-index: 3000;
       text-align: left;
     }
+
     .weekly-review-modal h2 {
       color: #63FFDA;
       font-size: 1.25em;
       font-weight: 600;
       margin: 0 0 18px 0;
     }
+
     #weeklyReviewText {
       width: 100%;
       min-height: 140px;
@@ -216,10 +281,12 @@
       resize: vertical;
       box-sizing: border-box;
     }
+
     #weeklyReviewText::placeholder {
       color: #A0A0A0;
       opacity: 1;
     }
+
     #saveWeeklyReviewBtn {
       background: #63FFDA;
       color: #0D0B14;
@@ -231,11 +298,13 @@
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
     }
+
     #saveWeeklyReviewBtn:disabled {
       background: #29223a;
       color: #A0A0A0;
       cursor: not-allowed;
     }
+
     #closeWeeklyReviewBtn {
       background: none;
       color: #A0A0A0;
@@ -247,59 +316,61 @@
       cursor: pointer;
       transition: background 0.15s, color 0.15s;
     }
+
     @media (max-width: 600px) {
-      .weekly-review-modal { padding: 18px 6vw 18px 6vw; }
+      .weekly-review-modal { 
+        padding: 18px 6vw 18px 6vw; 
+      }
     }
 
-    /* --- Widget Title Styles (consistent with Personal Finance Tracker) --- */
+    /* === WIDGET COMPONENTS === */
     .widget-title {
       text-align: center;
-      color: #63FFDA; /* Turquoise */
+      color: #63FFDA;
       font-weight: 600;
-      margin-bottom: 18px; /* Adjusted from 15px for landing page */
-      font-size: 1.18rem; /* Adjusted from 1.2em for landing page */
+      margin-bottom: 18px;
+      font-size: 1.18rem;
     }
 
-    /* --- Timeframe Controls (consistent with Personal Finance Tracker, specific for landing) --- */
     .landing-timeframe-controls {
       text-align: center;
-      margin-bottom: 12px; /* Adjusted from 15px for landing page */
-      display: flex; /* Added to center buttons */
-      justify-content: center; /* Added to center buttons */
-      gap: 12px; /* Added from inline style */
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
     }
+
     .landing-timeframe-controls button {
       background: none;
-      border: 1px solid transparent; /* Base transparent border for layout stability */
-      color: #63FFDA; /* Turquoise */
+      border: 1px solid transparent;
+      color: #63FFDA;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
-      padding: 4px 14px; /* From inline style */
+      padding: 4px 14px;
       border-radius: 6px;
       cursor: pointer;
-      /* margin: 0 5px; */ /* Removed, gap is used */
-      font-size: 0.9em; /* Consistent with Personal Finance Tracker */
-      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s; /* Updated transitions */
+      font-size: 0.9em;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
+
     .landing-timeframe-controls button.active,
-    .landing-timeframe-controls button.selected /* Keep .selected for existing JS */
-    {
-      background-color: #0D0B14; /* Black box */
-      color: #63FFDA; /* Turquoise text */
-      border-color: #63FFDA; /* Turquoise outline */
-      box-shadow: none; /* Remove any hover shadow when active */
+    .landing-timeframe-controls button.selected {
+      background-color: #0D0B14;
+      color: #63FFDA;
+      border-color: #63FFDA;
+      box-shadow: none;
     }
+
     .landing-timeframe-controls button:hover:not(.active):not(.selected) {
-      background-color: transparent; /* Ensure no background on hover for non-active */
-      color: #63FFDA; /* Ensure text remains turquoise */
-      border-color: transparent; /* Ensure border remains transparent */
-      box-shadow: 0 0 8px #63FFDA; /* Turquoise shadow */
+      background-color: transparent;
+      color: #63FFDA;
+      border-color: transparent;
+      box-shadow: 0 0 8px #63FFDA;
     }
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
-<body>
-  <nav class="sidebar">
+<body>  <nav class="sidebar">
     <a href="Landing Page.html">
       <svg viewBox="0 0 24 24">
         <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
@@ -317,11 +388,12 @@
       </svg>
     </a>
   </nav>
+
   <!-- Quick Add Task Button & Modal -->
   <button id="openQuickAddBtn" title="Quick Add Task" class="open-popup-btn">
     <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
   </button>
-  <dialog id="quickAddModal" style="display:none;">
+  <div id="quickAddModal">
     <div class="task-input">
       <div class="priority-select" id="quickPrioritySelect">
         <button class="priority-btn low selected" data-priority="low" title="Low"></button>
@@ -343,7 +415,8 @@
       </details>
       <button id="quickAddConfirm">Add</button>
     </div>
-  </dialog>
+  </div>
+
   <!-- Weekly Review Modal -->
   <dialog id="weeklyReviewModal" class="weekly-review-modal">
     <form method="dialog" style="margin:0;">
@@ -356,6 +429,7 @@
     </form>
   </dialog>
   <div class="main-content">
+    <h1>Dashboard Overview</h1>
     <div class="dashboard-widgets-row" style="display: flex; gap: 32px; margin-top: 32px;">
       <!-- Overall Performance Widget (from Productivity Tracker) -->
       <div class="widget-card" style="flex:1; background:#18142A; border-radius:18px; box-shadow:0 8px 32px 0 rgba(33,29,48,0.45); padding:28px 24px 18px 24px; min-width:0; min-height:340px; display:flex; flex-direction:column;">
@@ -370,6 +444,7 @@
           <canvas id="landingOverallPerformanceChart" style="width:100%;height:220px;"></canvas>
         </div>
       </div>
+
       <!-- Net Worth Placeholder Widget -->
       <div class="widget-card" style="flex:1; background:#18142A; border-radius:18px; box-shadow:0 8px 32px 0 rgba(33,29,48,0.45); padding:28px 24px 18px 24px; min-width:0; min-height:340px; display:flex; flex-direction:column; align-items:center; justify-content:center;">
         <h2 class="widget-title">Net Worth</h2>
@@ -383,6 +458,7 @@
       </div>
     </div>
   </div>
+
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const openQuick = document.getElementById('openQuickAddBtn');
@@ -391,41 +467,63 @@
     const quickTime = document.getElementById('quickTimeAllotted');
     const quickDiff = document.getElementById('quickDifficulty');
     const quickLabel = document.getElementById('quickDiffLabel');
-    let quickPri = 'low';
-    // Show modal
+    let quickPri = 'low';    // Show modal
     openQuick.addEventListener('click', () => {
-      quickModal.style.display = '';
-      quickModal.showModal();
+      quickModal.style.display = quickModal.style.display === 'none' ? 'block' : 'none';
     });
+
     // Hide modal by default (on DOMContentLoaded)
     document.addEventListener('DOMContentLoaded', () => {
       quickModal.style.display = 'none';
     });
+
+    // Hide modal when clicking outside of it
+    document.addEventListener('click', (e) => {
+      if (!quickModal.contains(e.target) && !openQuick.contains(e.target)) {
+        quickModal.style.display = 'none';
+      }
+    });
+
     // Priority
     document.querySelectorAll('#quickPrioritySelect .priority-btn').forEach(b => b.addEventListener('click', () => {
       document.querySelectorAll('#quickPrioritySelect .priority-btn').forEach(n=>n.classList.remove('selected'));
       b.classList.add('selected'); quickPri = b.dataset.priority;
-    }));
-    // Difficulty toggle
+    }));    // Difficulty toggle
     quickDiff.addEventListener('change', e => quickLabel.textContent = e.target.checked ? 'Hard' : 'Easy');
+
     // Confirm
     document.getElementById('quickAddConfirm').addEventListener('click', () => {
-      const text = quickText.value.trim(); if (!text) return;
-      const payload = { type:'addTask', text, timeAllotted: parseInt(quickTime.value)||0,
-                        difficulty: quickDiff.checked?'hard':'easy', priority: quickPri };
+      const text = quickText.value.trim(); 
+      if (!text) return;
+      
+      const payload = { 
+        type:'addTask', 
+        text, 
+        timeAllotted: parseInt(quickTime.value)||0,
+        difficulty: quickDiff.checked?'hard':'easy', 
+        priority: quickPri 
+      };
+      
       // Only use localStorage for cross-tab sync (no window.open)
       localStorage.setItem('productivityQuickAdd', JSON.stringify(payload));
-      // reset & close
-      quickText.value=''; quickTime.value=''; quickDiff.checked=false; quickLabel.textContent='Easy';
-      document.querySelector('#quickPrioritySelect .priority-btn.low').classList.add('selected'); quickPri='low';
-      quickModal.close();
+      
+      // Clear inputs and close modal
+      quickText.value = '';
+      quickTime.value = '';
+      quickDiff.checked = false;
+      quickLabel.textContent = 'Easy';
+      document.querySelectorAll('#quickPrioritySelect .priority-btn').forEach(b => b.classList.remove('selected'));
+      document.querySelector('#quickPrioritySelect .priority-btn.low').classList.add('selected');
+      quickPri = 'low';
       quickModal.style.display = 'none';
     });
+
     // Close on backdrop
     quickModal.addEventListener('click', e=>{ if(e.target===quickModal) {
       quickModal.close();
       quickModal.style.display = 'none';
     }});
+
     // Weekly Review logic
     const oldCard = document.querySelector('.weekly-review-card');
     if (oldCard) oldCard.remove();
@@ -439,6 +537,7 @@
     weeklyReviewText.addEventListener('input', () => {
       saveWeeklyReviewBtn.disabled = weeklyReviewText.value.trim() === '';
     });
+
     // Save review to localStorage
     saveWeeklyReviewBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -451,9 +550,11 @@
         weeklyReviewModal.close();
       }
     });
+
     closeWeeklyReviewBtn.addEventListener('click', () => {
       weeklyReviewModal.close();
     });
+
     // Helper to get ISO week number
     function getWeekNumber(d) {
       d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
@@ -462,6 +563,7 @@
       const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
       return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
     }
+
     // Show modal only on Fridays and pre-fill with saved review
     window.addEventListener('DOMContentLoaded', () => {
       const today = new Date();
@@ -476,11 +578,13 @@
         }
       }
     });
+
     // --- LANDING PAGE OVERALL PERFORMANCE CHART ---
     const ctxLandingOverall = document.getElementById('landingOverallPerformanceChart').getContext('2d');
     const gradientLandingCyan = ctxLandingOverall.createLinearGradient(0, 0, 0, 300);
     gradientLandingCyan.addColorStop(0, 'rgba(99, 255, 218, 0.4)');
     gradientLandingCyan.addColorStop(1, 'rgba(99, 255, 218, 0)');
+
     const landingOverallChart = new Chart(ctxLandingOverall, {
       type: 'bar',
       data: {
@@ -587,6 +691,7 @@
       const currentYear = now.getFullYear();
       const currentMonth = now.getMonth();
       let labels, low, med, high, completed, assignedSum;
+      
       if (range === 'year') {
         labels = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         low = Array(12).fill(0); med = Array(12).fill(0); high = Array(12).fill(0); completed = Array(12).fill(0);
@@ -659,6 +764,7 @@
       }
       return { labels, low, med, high, assignedSum, completed };
     }
+
     function isSameDay(a,b){ return a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate(); }
 
     // --- Populate landing chart with productivity data from localStorage (default: year) ---
@@ -678,20 +784,21 @@
 
     // --- Timeframe toggle logic for UI (Net Worth only UI, no data logic) ---
     // Overall Performance toggles
-    const overallBtns = document.querySelectorAll('.landing-timeframe-controls .timeframe-btn'); // Adjusted selector
+    const overallBtns = document.querySelectorAll('.landing-timeframe-controls .timeframe-btn');
     overallBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        overallBtns.forEach(b => { b.classList.remove('active'); b.classList.remove('selected'); }); // Clear both
-        btn.classList.add('active'); // Use 'active'
+        overallBtns.forEach(b => { b.classList.remove('active'); b.classList.remove('selected'); });
+        btn.classList.add('active');
         updateLandingOverallChart(btn.dataset.timeframe);
       });
     });
+    
     // Net Worth toggles (UI only)
-    const networthBtns = document.querySelectorAll('.landing-timeframe-controls .networth-timeframe-btn'); // Adjusted selector
+    const networthBtns = document.querySelectorAll('.landing-timeframe-controls .networth-timeframe-btn');
     networthBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        networthBtns.forEach(b => { b.classList.remove('active'); b.classList.remove('selected'); }); // Clear both
-        btn.classList.add('active'); // Use 'active'
+        networthBtns.forEach(b => { b.classList.remove('active'); b.classList.remove('selected'); });
+        btn.classList.add('active');
         // No data logic yet
       });
     });

@@ -9,79 +9,71 @@
   <!-- SortableJS -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
   <!-- Poppins font -->
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">  <style>
+    /* === GLOBAL RESET & BASE === */
     * { box-sizing: border-box; }
-    /* Prevent clone or drag-induced overflow */
-    html, body, .app-container, .dashboard {
-        overflow-x: hidden;
-    }
-    /* Prevent horizontal overflow while dragging */
+    
     html, body, .app-container, .dashboard, .widget-row {
       overflow-x: hidden;
     }
-    /* Keep drag clones out of layout flow */
-    .sortable-fallback, .sortable-ghost {
-      position: fixed !important;
-      pointer-events: none;
-      z-index: 10000;
-    }
+    
     body {
-      background: #0D0B14; /* Darker background */
-      color: #E0E0E0; /* Lighter default text */
+      background: #0D0B14;
+      color: #E0E0E0;
       font-family: "Poppins", sans-serif;
       margin: 0;
       padding: 40px;
       display: flex;
       justify-content: center;
-      overflow-x: hidden; /* Prevent horizontal scrollbar during drag */
     }
+    
     .app-container {
       width: 100%;
-      max-width: 1400px; /* Increased from 1000px */
+      max-width: 1400px;
     }
-    /* Removed .dashboard ruleset as it was empty */
+
+    /* === DRAG & DROP === */
+    .sortable-fallback, .sortable-ghost {
+      position: fixed !important;
+      pointer-events: none;
+      z-index: 10000;
+      width: auto !important;
+      max-width: 100% !important;
+      height: auto !important;
+    }
+
+    /* === REUSABLE COMPONENTS === */
     .card {
-      background: #1A1625; /* Darker card background */
+      background: #1A1625;
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      margin-bottom: 24px; /* Add margin between cards in the same column */
+      margin-bottom: 24px;
       position: relative;
+      width: 100%;
     }
-    /* Ensure cards maintain full width within their containers to prevent resizing during drag */
-    .dashboard > .card,
-    .widget-row > div > .card {
-        width: 100%;
-    }
-    /* Add drag handle to cards */
-    .card .drag-handle {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        width: 24px;
-        height: 24px;
-        cursor: grab;
-        background: url('data:image/svg+xml;utf8,<svg width="24" height="24" fill="%23A0A0A0" xmlns="http://www.w3.org/2000/svg"><path d="M4 9h2V7H4v2zm4 0h2V7H8v2zm4 0h2V7h-2v2zm4 0h2V7h-2v2zM4 13h2v-2H4v2zm4 0h2v-2H8v2zm4 0h2v-2h-2v2zm4 0h2v-2h-2v2z"/></svg>') no-repeat center;
-    }
-    /* Preserve dimensions for ghost and fallback clones */
-    .sortable-ghost,
-    .sortable-fallback {
-        width: auto !important;
-        max-width: 100% !important;
-        height: auto !important;
-    }
-    /* To‑Do Card */
+
+    .drag-handle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 24px;
+      height: 24px;
+      cursor: grab;
+      background: url('data:image/svg+xml;utf8,<svg width="24" height="24" fill="%23A0A0A0" xmlns="http://www.w3.org/2000/svg"><path d="M4 9h2V7H4v2zm4 0h2V7H8v2zm4 0h2V7h-2v2zm4 0h2V7h-2v2zM4 13h2v-2H4v2zm4 0h2v-2H8v2zm4 0h2v-2h-2v2zm4 0h2v-2h-2v2z"/></svg>') no-repeat center;
+    }    /* === TASK MANAGEMENT === */
     .task-input {
       display: flex;
       align-items: center;
       margin-bottom: 12px;
     }
+
     .priority-select {
       display: flex;
       gap: 8px;
       margin-right: 8px;
     }
+
     .priority-btn {
       width: 16px;
       height: 16px;
@@ -91,130 +83,95 @@
       opacity: 0.6;
     }
     .priority-btn.selected { opacity: 1; }
-    .priority-btn.low  { background: #4CAF50; }
-    .priority-btn.med  { background: #FFC107; }
+    .priority-btn.low { background: #4CAF50; }
+    .priority-btn.med { background: #FFC107; }
     .priority-btn.high { background: #F44336; }
 
     .task-input input {
       flex: 1;
-      /* match button height */
       height: 36px;
       padding: 8px 12px;
       border: none;
       border-radius: 4px;
-      background: #211D30; /* Darker input background */
+      background: #211D30;
       color: #FFF;
       font-size: 14px;
     }
-    .task-input button {
-      margin-left: 8px;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 4px;
-      background: #63FFDA; /* Accent Cyan/Turquoise */
-      color: #0D0B14; /* Dark text for contrast on light button */
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 14px; /* Ensure consistent font size */
-    }
-    .task-input button,
-    .task-dropdown summary.options-btn {
-      height: 36px;
-      padding: 0 16px;  /* only left/right padding */
-    }
+
     .task-list {
       list-style: none;
       padding: 0;
       margin: 0;
       max-height: 300px;
       overflow-y: auto;
-      padding-top: 24px; /* ensure first tooltip shows above without being cut off */
+      padding-top: 24px;
     }
+
     .task-list li {
       display: flex;
       align-items: center;
       padding: 8px 0;
-      border-bottom: 1px solid #4F4B68; /* Darker border */
+      border-bottom: 1px solid #4F4B68;
       position: relative;
     }
+
     .task-list label {
       margin-left: 8px;
       flex: 1;
-      color: #E0E0E0; /* Lighter text */
-      margin-right: 8px; /* Add margin to separate label from potential delete button */
+      color: #E0E0E0;
+      margin-right: 8px;
     }
 
-    /* Style for the delete button */
-    .delete-btn {
-        background: transparent; /* Transparent background */
-        color: #FF6B6B; /* Accent Red */
-        border: none;
-        border-radius: 4px;
-        padding: 4px; /* Adjust click target */
-        font-size: 12px;
-        cursor: pointer;
-        margin-left: 8px; /* Add some space between edit/delete */
-    }
-    .delete-btn:hover {
-        opacity: 0.8;
+    .edit-btn, .delete-btn {
+      background: none !important;
+      border: none !important;
+      padding: 0 !important;
+      margin: 0 8px !important;
+      line-height: 1;
+      font-size: 16px;
+      cursor: pointer;
     }
 
-    /* Styles for Edit button and inline editing */
-    .edit-btn, .save-btn {
-        background: transparent; /* Transparent background */
-        color: #A076F9; /* Accent Purple */
-        border: none;
-        border-radius: 4px;
-        padding: 4px; /* Adjust click target */
-        font-size: 12px;
-        cursor: pointer;
-        margin-left: auto; /* Push edit/save controls to the right */
-    }
-    .edit-btn:hover, .save-btn:hover {
-        opacity: 0.8;
-    }
+    .edit-btn { color: #A0A0A0; }
+    .delete-btn { color: #FF6B6B; }
+    .edit-btn svg { width: 16px; height: 16px; }
+    .delete-btn svg { width: 18px; height: 18px; }
+    .edit-btn svg, .delete-btn svg { vertical-align: middle; }
+    .edit-btn .pencil-icon { fill: #A0A0A0; }
+    .delete-btn .trash-icon { fill: #FF6B6B; }
+
     .edit-container {
-        display: flex;
-        align-items: center;
-        margin-left: auto; /* Push container to the right */
-        gap: 4px; /* Space between input and save button */
+      display: none;
+      align-items: center;
+      margin-left: auto;
+      gap: 4px;
+    }    .edit-container input[type="number"] {
+      width: 60px;
+      padding: 4px 6px;
+      border: none;
+      border-radius: 4px;
+      background: #211D30;
+      color: #FFF;
+      font-size: 12px;
+      appearance: textfield;
+      -moz-appearance: textfield;
     }
-    .edit-container input[type="number"] {
-        width: 60px; /* Adjust width as needed */
-        padding: 4px 6px;
-        border: none;
-        border-radius: 4px;
-        background: #211D30; /* Darker input background */
-        color: #FFF;
-        font-size: 12px;
-        appearance: textfield; /* Standard property for compatibility */
-        -moz-appearance: textfield; /* hide Firefox spinner */
-    }
+
     .edit-container input[type="number"]::-webkit-outer-spin-button,
     .edit-container input[type="number"]::-webkit-inner-spin-button {
-        -webkit-appearance: none; /* hide Chrome/Safari spinner */
-        margin: 0;
-    }
-    /* Hide edit container by default */
-    .edit-container {
-        display: none;
-    }
-    /* Hide edit button when editing */
-    .task-list li.editing .edit-btn {
-        display: none;
-    }
-    /* Show edit container when editing */
-    .task-list li.editing .edit-container {
-        display: flex;
+      -webkit-appearance: none;
+      margin: 0;
     }
 
-    /* Tooltip for task time info */
-    .task-list li .tooltip {
+    .task-list li.editing .edit-btn { display: none; }
+    .task-list li.editing .edit-container { display: flex; }
+
+    .tooltip {
       display: none;
       position: absolute;
       bottom: 100%;
       left: 8px;
-      background: #211D30; /* Darker tooltip background */
+      background: #211D30;
       color: #FFF;
       padding: 4px 8px;
       border-radius: 4px;
@@ -223,49 +180,62 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.5);
       z-index: 10;
     }
-    .task-list li:hover .tooltip {
-      display: block;
+    .task-list li:hover .tooltip { display: block; }    /* === DROPDOWN & SWITCHES === */
+    .task-dropdown {
+      position: relative;
+      margin-left: 8px;
     }
 
-    /* dropdown menu for time fields */
-    .task-dropdown { position: relative; margin-left: 8px; }
-    /* Style the summary like a button */
     .task-dropdown summary.options-btn {
-      /* match Add Task button sizing */
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 36px;      /* same as input */
-      padding: 0 16px;   /* only horizontal padding */
+      height: 36px;
+      padding: 0 16px;
       border: none;
       border-radius: 4px;
-      background: #63FFDA; /* Accent Cyan/Turquoise */
-      color: #0D0B14; /* Dark text for contrast on light button */
+      background: #63FFDA;
+      color: #0D0B14;
       font-weight: 600;
       font-size: 14px;
       cursor: pointer;
       line-height: normal;
     }
-    /* Hide default summary arrow in Webkit browsers */
+
     .task-dropdown summary.options-btn::-webkit-details-marker {
       display: none;
     }
+
     .task-dropdown-content {
       position: absolute;
-      top: calc(100% + 4px); /* Position below the button */
+      top: calc(100% + 4px);
       left: 0;
-      min-width: 150px; /* Give it some minimum width */
-      background: #211D30; padding: 8px; border-radius: 4px; z-index: 10; display: none; /* Darker dropdown background */
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5); /* Add shadow */
-    }
-    .task-dropdown[open] .task-dropdown-content { display: block; }
-    .task-dropdown-content label { display: block; color: #E0E0E0; margin-bottom: 4px; font-size: 14px; } /* Lighter text */
-    .task-dropdown-content input {
-      width: 100%; padding: 4px 8px; margin-top: 2px;
-      border: none; border-radius: 4px; background: #0D0B14; color: #FFF; /* Match body background */
+      min-width: 150px;
+      background: #211D30;
+      padding: 8px;
+      border-radius: 4px;
+      z-index: 10;
+      display: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
-    /* iOS‑style toggle switch */
+    .task-dropdown[open] .task-dropdown-content { display: block; }
+    .task-dropdown-content label { 
+      display: block; 
+      color: #E0E0E0; 
+      margin-bottom: 4px; 
+      font-size: 14px; 
+    }
+    .task-dropdown-content input {
+      width: 100%; 
+      padding: 4px 8px; 
+      margin-top: 2px;
+      border: none; 
+      border-radius: 4px; 
+      background: #0D0B14; 
+      color: #FFF;
+    }
+
     .switch {
       position: relative;
       display: inline-block;
@@ -274,15 +244,18 @@
       margin-left: 8px;
       vertical-align: middle;
     }
+
     .switch input { opacity: 0; width: 0; height: 0; }
+
     .slider {
       position: absolute;
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: #4F4B68; /* Neutral Dark */
+      background: #4F4B68;
       border-radius: 34px;
       transition: .4s;
     }
+
     .slider:before {
       position: absolute;
       content: "";
@@ -294,365 +267,297 @@
       border-radius: 50%;
       transition: .4s;
     }
+
     .switch input:checked + .slider {
-      background: #A076F9; /* Accent Purple */
-    }
-    .switch input:checked + .slider:before {
-      transform: translateX(20px);
+      background: #A076F9;
     }
 
-    /* Chart Card */
+    .switch input:checked + .slider:before {
+      transform: translateX(20px);
+    }    /* === UNIFIED BUTTON SYSTEM === */
+    .task-input button,
+    .task-dropdown summary.options-btn,
+    .timeframe-toggle button,
+    .landing-timeframe-controls button,
+    .difficulty-toggle button,
+    .priority-difficulty-toggle button {
+      background: none;
+      border: 1px solid transparent;
+      color: #63FFDA;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
+      outline: none;
+      box-shadow: none;
+      height: 40px;
+      padding: 8px 16px;
+      font-size: 14px;
+      margin-left: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .task-input button.active,
+    .task-dropdown summary.options-btn.active,
+    .timeframe-toggle button.active,
+    .landing-timeframe-controls button.active,
+    .difficulty-toggle button.active,
+    .priority-difficulty-toggle button.active,
+    .timeframe-toggle button.selected,
+    .landing-timeframe-controls button.selected {
+      background-color: #0D0B14;
+      color: #63FFDA;
+      border: 1px solid #63FFDA;
+      box-shadow: none;
+    }
+
+    .task-input button:not(.active):hover,
+    .task-dropdown summary.options-btn:hover,
+    .timeframe-toggle button:not(.active):hover,
+    .landing-timeframe-controls button:not(.active):hover,
+    .difficulty-toggle button:not(.active):hover,
+    .priority-difficulty-toggle button:not(.active):hover,
+    .timeframe-toggle button:not(.selected):hover,
+    .landing-timeframe-controls button:not(.selected):hover {
+      background-color: transparent;
+      color: #63FFDA;
+      border-color: transparent;
+      box-shadow: 0 0 8px #63FFDA;
+    }
+
+    /* === CHART HEADERS & CONTROLS === */
     .chart-header {
       display: flex;
-      justify-content: space-between; /* Default alignment */
-      align-items: center; /* Default alignment */
-      margin-bottom: 8px; /* Add some space below header */
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
     }
-    /* Specific style to center the Activity Calendar header and align items */
-    .activity-calendar-header {
-        justify-content: space-between; /* Distribute items: Title | Nav | Legend */
-        align-items: center; /* Vertically align items */
-        position: relative; /* Ensure positioning context for toggle */
+
+    .widget-title {
+      font-size: 1.3em;
+      font-weight: 600;
+      color: #63FFDA;
+      margin: 0;
     }
-    /* NEW: Container for the toggle switch */
-    .calendar-view-toggle-container {
-        position: absolute;
-        left: 50%;
-        top: 5px; /* Adjust vertical position as needed */
-        transform: translateX(-50%);
-        display: flex;
-        align-items: center;
-        gap: 8px; /* Space between label and switch */
-    }
-    .calendar-view-toggle-container label {
-        font-size: 12px;
-        color: #A0A0A0;
-    }
-    /* NEW: Styles to hide/show navigation based on view mode */
-    .calendar-view-year .calendar-title-month-nav,
-    .calendar-view-month .calendar-title-year-nav {
-        display: none; /* Hide the inactive navigation */
-    }
-    .calendar-view-month .calendar-title-month-nav,
-    .calendar-view-year .calendar-title-year-nav {
-        display: flex; /* Show the active navigation */
-        align-items: center;
-        gap: 15px;
-        /* Center the active navigation */
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        /* Adjust top position if toggle is present */
-        top: 35px; /* Position below the toggle */
-    }
-    /* Adjust header title position when month view is active */
-     .calendar-view-month .activity-calendar-header h3 {
-         /* Optionally adjust if needed, maybe more margin-bottom */
-         margin-bottom: 10px; /* Add space below title if nav moves down */
-     }
-    .calendar-title-year-nav { /* Wrapper for center elements (Arrows + Year) */
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        align-items: center;
-        gap: 15px; /* Gap between arrows and year */
-    }
-    .activity-calendar-header h3 { /* Style for the title now on the left */
-        margin: 0;
-        font-weight: 600;
-        font-size: 18px; /* Keep original size or adjust as needed */
-        width: 120px; /* Adjusted width for balance */
-        text-align: left; /* Ensure text aligns left */
-    }
-    #calendarYearDisplay {
-        font-size: 16px;   /* Increased from 14px */
-        color: #A0A0A0; /* Secondary Text */
-        font-weight: bold; /* Bold year display */
-    }
-    .calendar-nav-btn {
-        background: transparent;
-        border: none;
-        color: #A0A0A0; /* Secondary Text */
-        font-size: 20px; /* Make arrows larger */
-        cursor: pointer;
-        padding: 0 5px; /* Add some padding */
-        font-weight: bold; /* Bold arrow buttons */
-    }
-    .calendar-nav-btn:hover {
-        color: #FFF;
-    }
-    /* Style for the calendar legend (Resized and on the right) */
-    .calendar-legend {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end; /* Align items to the right within the legend */
-        gap: 3px; /* Reduced gap */
-        padding: 3px 6px; /* Slightly reduced padding */
-        border-radius: 4px;
-        font-size: 10px; /* Reduced font size by ~20% */
-        color: #A0A0A0; /* Secondary Text */
-        width: 120px; /* Adjusted width to match title */
-    }
-    /* MODIFIED: Ensure legend squares keep their fixed size regardless of view */
-    .calendar-legend .activity-square {
-        width: 11px !important; /* Use !important to override month view grid styles */
-        height: 11px !important; /* Use !important to override month view grid styles */
-        aspect-ratio: unset !important; /* Remove aspect ratio if applied */
-    }
-    .timeframe-toggle {
+
+    .timeframe-toggle,
+    .landing-timeframe-controls,
+    .difficulty-toggle,
+    .priority-difficulty-toggle {
       display: flex;
       gap: 8px;
     }
-    .timeframe-toggle button {
+
+    .activity-calendar-header {
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+
+    .calendar-view-toggle-container {
+      position: absolute;
+      left: 50%;
+      top: 5px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .calendar-view-toggle-container label {
+      font-size: 12px;
+      color: #A0A0A0;
+    }    /* === CALENDAR NAVIGATION === */
+    .calendar-view-year .calendar-title-month-nav,
+    .calendar-view-month .calendar-title-year-nav {
+      display: none;
+    }
+
+    .calendar-view-month .calendar-title-month-nav,
+    .calendar-view-year .calendar-title-year-nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 35px;
+    }
+
+    .calendar-view-month .activity-calendar-header h3 {
+      margin-bottom: 10px;
+    }
+
+    .calendar-title-year-nav {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .activity-calendar-header h3 {
+      margin: 0;
+      font-weight: 600;
+      font-size: 18px;
+      width: 120px;
+      text-align: left;
+    }
+
+    #calendarYearDisplay {
+      font-size: 16px;
+      color: #A0A0A0;
+      font-weight: bold;
+    }
+
+    .calendar-nav-btn {
       background: transparent;
       border: none;
-      color: #A0A0A0; /* Secondary Text */
-      font-size: 13px;
+      color: #A0A0A0;
+      font-size: 20px;
       cursor: pointer;
-      padding: 4px 8px;
-      border-radius: 4px;
+      padding: 0 5px;
+      font-weight: bold;
     }
-    .timeframe-toggle button.active {
-      color: #FFF; /* Keep white for active */
-      font-weight: 600;
-      /* BEGIN MODIFICATION: Add styles from landing page for consistency */
-      background-color: #0D0B14; /* Black box */
-      color: #63FFDA; /* Turquoise text */
-      border-color: #63FFDA; /* Turquoise outline */
-      box-shadow: none; /* Remove any hover shadow when active */
-      /* END MODIFICATION */
+
+    .calendar-nav-btn:hover {
+      color: #FFF;
     }
-    /* BEGIN ADDITION: Styles for widget titles and timeframe controls from landing page */
-    .widget-title {
-      font-size: 1.3em; /* Consistent with Personal Finance Tracker */
-      font-weight: 600;
-      color: #63FFDA; /* MODIFIED: Primary Text to Turquoise */
-      margin-bottom: 12px; /* Space below title */
-    }
-    .landing-timeframe-controls {
+
+    .calendar-legend {
       display: flex;
-      gap: 6px; /* Slightly reduced gap */
+      align-items: center;
+      justify-content: flex-end;
+      gap: 3px;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 10px;
+      color: #A0A0A0;
+      width: 120px;
     }
-    .landing-timeframe-controls button,
-    .timeframe-toggle button { /* Apply to existing buttons as well for now */
-      background: none; /* MODIFIED: Transparent background */
-      border: 1px solid transparent; /* MODIFIED: Transparent border to maintain layout */
-      color: #63FFDA; /* MODIFIED: Turquoise text */
-      font-size: 12px; /* Smaller font */
-      font-family: 'Poppins', sans-serif;
-      font-weight: 400; /* Regular weight */
-      cursor: pointer;
-      padding: 5px 10px; /* Adjusted padding */
-      border-radius: 6px; /* Rounded corners */
-      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s; /* Added box-shadow to transition */
+
+    .calendar-legend .activity-square {
+      width: 11px !important;
+      height: 11px !important;
+      aspect-ratio: unset !important;
     }
-    .landing-timeframe-controls button.active,
-    .landing-timeframe-controls button.selected, /* Keep .selected for existing JS */
-    .timeframe-toggle button.active, /* Ensure existing active buttons get the new style */
-    .timeframe-toggle button.selected /* Ensure existing selected buttons get the new style */
-    {
-      background-color: #0D0B14; /* MODIFIED: Black box */
-      color: #63FFDA; /* MODIFIED: Turquoise text */
-      border: 1px solid #63FFDA; /* MODIFIED: Turquoise border */
-      font-weight: 600; /* Bold active button */
-      box-shadow: none; /* Remove any hover shadow when active */
-    }
-    .landing-timeframe-controls button:hover:not(.active):not(.selected),
-    .timeframe-toggle button:hover:not(.active):not(.selected) {
-      background-color: transparent; /* MODIFIED: Ensure no background on hover for non-active */
-      border: 1px solid transparent; /* MODIFIED: Transparent border */
-      color: #63FFDA; /* MODIFIED: Keep text turquoise */
-      box-shadow: 0 0 8px #63FFDA; /* MODIFIED: Turquoise shadow */
-    }
-    /* END ADDITION */
+
+    /* === LAYOUT & CONTAINERS === */
     .chart-container {
       position: relative;
       height: 300px;
       margin-top: 12px;
     }
+
     .hours-chart-container {
-        position: relative;
-        height: 150px; /* Updated height for hours chart */
-        margin-top: 12px;
-    }
-    /* New style for two-column widget layout */
-    .widget-row {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr); /* Two equal columns */
-        gap: 24px; /* Gap between columns */
-        align-items: start; /* Align items to the top, preventing vertical stretching */
-    }
-    /* Ensure cards within the row don't have extra bottom margin if they are the last */
-    .widget-row > .card {
-        margin-bottom: 0; /* Remove bottom margin from cards inside the row */
-    }
-    /* Style for the new calendar widget container */
-    .calendar-container {
-        position: relative; /* Make container relative for absolute positioning of legend */
-        height: 480px; /* Restored fixed height */
-        margin-top: 12px;
-        overflow: hidden; /* Add overflow hidden to prevent content spillover */
+      position: relative;
+      height: 150px;
+      margin-top: 12px;
     }
 
-    /* Styles for the new activity squares */
+    .widget-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+
+    .widget-row > .card {
+      margin-bottom: 0;
+    }    .calendar-container {
+      position: relative;
+      height: 560px;
+      margin-top: 12px;
+      overflow: hidden;
+    }.difficulty-chart-container,
+    .priority-difficulty-chart-container {
+      height: 250px;
+      margin-top: 8px;
+      position: relative;
+    }
+
+    .card:has(.difficulty-toggle),
+    .card:has(#priorityDifficultyChart) {
+      height: 360px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* === ACTIVITY CALENDAR SQUARES === */
     .activity-squares-container {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center; /* MODIFIED: Center items horizontally */
-      gap: 2px; /* Add gap for year view too */
+      justify-content: center;
+      gap: 2px;
       grid-template-columns: none;
       align-content: normal;
-      padding: 5px; /* Consistent padding */
-      height: auto; /* Allow height to be determined by content in year view */
+      padding: 5px;
+      height: auto;
     }
 
-    /* NEW/MODIFIED: Styles for Month View Grid */
     .calendar-view-month .activity-squares-container {
-        display: grid; /* Use grid for month view */
-        grid-template-columns: repeat(7, 1fr); /* 7 equal columns */
-        justify-content: stretch; /* Stretch items to fill grid cells */
-        align-content: start; /* Align rows to the top */
-        gap: 2px; /* Keep the gap */
-        padding: 5px; /* Keep padding */
-        height: 100%; /* Ensure it tries to fill the container height */
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      justify-content: stretch;
+      align-content: start;
+      gap: 2px;
+      padding: 5px;
+      height: 100%;
+    }    .activity-square {
+      width: 25px;
+      height: 25px;
+      background-color: #211D30;
+      border-radius: 2px;
     }
 
-    /* Base style for activity squares (used in year view) */
-    .activity-square {
-      width: 26px; /* Adjusted fixed width for year view */
-      height: 26px; /* Adjusted fixed height for year view */
-      background-color: #211D30; /* Darker empty color */
-      border-radius: 2px; /* Slightly rounded corners */
-    }
-
-    /* NEW/MODIFIED: Adjust square size for month view grid */
     .calendar-view-month .activity-square {
-        width: auto;
-        height: auto;
-        aspect-ratio: 1 / 1;
+      width: auto;
+      height: auto;
+      aspect-ratio: 1 / 1;
     }
-    /* Highlight Fridays with red outline without breaking grid */
+
     .calendar-view-month .activity-square.friday {
-        box-sizing: border-box;
-        border: 1px solid #FF0000;
+      box-sizing: border-box;
+      border: 1px solid #FF0000;
     }
 
-    /* NEW: Style for padding squares in month view */
     .padding-square {
-        background-color: transparent !important; /* Make padding invisible */
-        pointer-events: none; /* Ignore hover events */
-        border: none !important; /* Remove any borders */
-        box-shadow: none !important; /* Remove any shadows */
-    }
-
-    .activity-square.heatmap-level-0 { background-color: #211D30; } /* 0 tasks */
-    .activity-square.heatmap-level-1 { background-color: rgba(99, 255, 218, 0.3); } /* 1-2 tasks (Cyan 30%) */
-    .activity-square.heatmap-level-2 { background-color: rgba(99, 255, 218, 0.6); } /* 3-4 tasks (Cyan 60%) */
-    .activity-square.heatmap-level-3 { background-color: #63FFDA; } /* 5+ tasks (Cyan 100%) */
-
-    /* strip box around pencil/trash icons */
-    .edit-btn,
-    .delete-btn {
-      background: none !important;
+      background-color: transparent !important;
+      pointer-events: none;
       border: none !important;
-      padding: 0 !important;
-      margin: 0 8px !important;
-      line-height: 1;
-      font-size: 16px; /* adjust icon size if needed */
+      box-shadow: none !important;
     }
 
-    /* restyle icons to match grey/red theme */
-    .edit-btn {
-      color: #A0A0A0;        /* Secondary Text grey pencil */
-    }
-    .delete-btn {
-      color: #FF6B6B;  /* Accent Red trashcan */
-    }
+    .activity-square.heatmap-level-0 { background-color: #211D30; }
+    .activity-square.heatmap-level-1 { background-color: rgba(99, 255, 218, 0.3); }
+    .activity-square.heatmap-level-2 { background-color: rgba(99, 255, 218, 0.6); }
+    .activity-square.heatmap-level-3 { background-color: #63FFDA; }
 
-    /* icon sizing: pencil stays 16x16, trash slightly larger */
-    .edit-btn svg { width: 16px; height: 16px; }
-    .delete-btn svg { width: 18px; height: 18px; }
-
-    /* icon sizing & colors */
-    .edit-btn svg, .delete-btn svg {
-      vertical-align: middle;
-    }
-    .edit-btn .pencil-icon { fill: #A0A0A0; }                     /* Secondary Text grey pencil */
-    .delete-btn .trash-icon { fill: #FF6B6B; }   /* Accent Red trashcan */
-
-    /* color the delta arrow/percent green on increase, red on decrease */
+    /* === DELTA INDICATORS === */
     .delta-indicator {
-      padding: 5px 10px; /* Increased padding for a larger bubble */
-      border-radius: 16px; /* Adjusted border-radius for a larger bubble */
-      font-size: 1em;    /* Increased font size */
-      font-weight: 600;  /* Made font bolder */
-      display: inline-flex; /* To align icon and text */
+      padding: 5px 10px;
+      border-radius: 16px;
+      font-size: 1em;
+      font-weight: 600;
+      display: inline-flex;
       align-items: center;
     }
+
     .delta-indicator.increase {
-      background-color: rgba(99, 255, 218, 0.12) !important; /* Lighter turquoise/green bubble */
-      color: #39FF14 !important; /* Neon Green text */
+      background-color: rgba(99, 255, 218, 0.12) !important;
+      color: #39FF14 !important;
     }
+
     .delta-indicator.decrease {
-      background-color: rgba(255, 107, 107, 0.12) !important; /* Lighter red bubble */
-      color: #FF073A !important; /* Neon Red text */
+      background-color: rgba(255, 107, 107, 0.12) !important;
+      color: #FF073A !important;
     }
 
-    /* Style for the new placeholder widget */
-    .new-widget-placeholder {
-        height: 260px; /* Adjusted height */
-        width: 50%; /* Half width of the parent container (the column wrapper div) */
-        display: flex; /* Example content alignment */
-        align-items: center;
-        justify-content: center;
-        font-style: italic;
-        color: #666;
-    }
-    /* Style for the new difficulty chart container */
-    .difficulty-chart-container {
-        height: 180px; /* Reduced height for the chart canvas area */
-        margin-top: 8px; /* Space below toggle */
-        position: relative;
-    }
-    /* Specific height for the difficulty chart card */
-    .card:has(.difficulty-toggle) { /* Target the card containing the difficulty toggle */
-        height: 260px;
-        display: flex; /* Use flexbox for internal alignment */
-        flex-direction: column; /* Stack toggle and chart vertically */
-    }
-    /* Style for the new priority/difficulty chart */
-    .priority-difficulty-chart-container {
-        height: 180px; /* Match difficulty chart canvas area height */
-        margin-top: 8px; /* Space below toggle */
-        position: relative;
-    }
-    /* Specific height for the priority/difficulty chart card */
-    .card:has(#priorityDifficultyChart) { /* Target the card containing the new chart */
-        height: 260px; /* Match the other small card height */
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Remove placeholder styles if they conflict */
-    .new-widget-placeholder {
-        /* Keep general styles if needed, but height/content might be overridden */
-        /* height: 260px; */ /* Now controlled by card:has() */
-        /* width: 50%; */ /* Width is handled by the grid/flex layout */
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-style: italic;
-        color: #666;
-    }
-    /* Ensure the specific card for the new chart doesn't act like a placeholder */
-    .card:has(#priorityDifficultyChart).new-widget-placeholder {
-        font-style: normal;
-        color: inherit;
-        /* Override other placeholder styles if necessary */
-    }
-
-    /* NEW: Sidebar styles */
+    /* === SIDEBAR === */
     .sidebar {
       position: fixed;
       top: 0;
@@ -665,65 +570,20 @@
       align-items: center;
       padding-top: 20px;
     }
+
     .sidebar a {
       color: #63FFDA;
       font-size: 24px;
       margin: 16px 0;
       text-decoration: none;
     }
+
     .sidebar a svg {
       width: 24px;
       height: 24px;
       fill: none;
       stroke: #63FFDA;
       stroke-width: 2;
-    }
-
-    /* Prevent horizontal overflow while dragging */
-    html, body, .app-container, .dashboard, .widget-row {
-      overflow-x: hidden;
-    }
-    /* Keep drag clones out of layout flow and preserve dimensions */
-    .sortable-fallback, .sortable-ghost {
-      position: fixed !important;
-      pointer-events: none;
-      z-index: 10000;
-    }
-
-    /* --- Unified Button Visual Style for Options, Add Task, and Timeframe Buttons --- */
-    .task-input button, /* Add Task */
-    .task-dropdown summary.options-btn, /* Options */
-    .timeframe-toggle button, /* All timeframe buttons */
-    .landing-timeframe-controls button /* For any landing page timeframe controls */
-    {
-      background: none;
-      border: 1px solid transparent; /* Ensure consistent base for border */
-      color: #63FFDA;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s; /* Corrected transition */
-      outline: none;
-      box-shadow: none;
-    }
-    .task-input button.active,
-    .task-dropdown summary.options-btn.active,
-    .timeframe-toggle button.active, /* This will now use the new active style */
-    .landing-timeframe-controls button.active {
-      background-color: #0D0B14; /* Black box */
-      color: #63FFDA; /* Turquoise text */
-      border: 1px solid #63FFDA; /* Turquoise outline */
-      box-shadow: none; /* Remove hover shadow when active */
-    }
-    .task-input button:not(.active):hover,
-    .task-dropdown summary.options-btn:hover,
-    .timeframe-toggle button:not(.active):hover, /* This will now use the new hover style */
-    .landing-timeframe-controls button:not(.active):hover {
-      background-color: transparent; /* Ensure no background on hover */
-      color: #63FFDA; /* Keep text turquoise */
-      border-color: transparent; /* Keep border transparent */
-      box-shadow: 0 0 8px #63FFDA; /* Turquoise shadow */
     }
   </style>
 </head>

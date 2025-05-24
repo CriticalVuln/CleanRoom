@@ -5,87 +5,103 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Personal Finance Tracker</title>
 
-  <!-- Your original inline styles -->
-  <style>
-    /* Copied from Productivity Tracker */
+  <!-- Your original inline styles -->  <style>
+    /* Global Reset and Base Styles */
     * { box-sizing: border-box; }
     body {
-      background: #0D0B14; /* Darker background */
-      color: #E0E0E0; /* Lighter default text */
+      background: #0D0B14;
+      color: #E0E0E0;
       font-family: "Poppins", sans-serif;
       margin: 0;
       padding: 40px;
       display: flex;
-      flex-direction: column; /* Stack nav button and content */
-      align-items: center; /* Center content horizontally */
+      flex-direction: column;
+      align-items: center;
     }
-    .app-container {
-      width: 100%;
-      max-width: 1000px; /* Adjust max-width as needed */
-      background: #1A1625; /* Darker card background */
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      margin-top: 70px; /* Add space below the fixed nav button */
-    }
-    /* Copied from Productivity Tracker */
-    .card {
-      background: #1A1625; /* Darker card background */
+    
+    /* Reusable Card Component */
+    .card, .app-container {
+      background: #1A1625;
       border-radius: 12px;
       padding: 20px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      margin-bottom: 24px; /* Add margin between cards */
+      margin-bottom: 24px;
     }
-    /* Container for the chart to control its height */
-    .chart-container {
-      position: relative;
-      /* height: 300px; */ /* Removed - height will be managed by inner container or content */
-      /* margin-top: 12px; */ /* Removed - spacing managed by card padding and flex gap */
-    }
-    /* --- End Copied/Adapted Styles --- */
-
-    h1 {
-        color: #FFF; /* White heading */
-        font-weight: 600;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    #csvPicker {
-        display: block; /* Make it a block element */
-        margin: 0 auto 20px auto; /* Center it and add bottom margin */
-        padding: 10px;
-        border: 1px solid #4F4B68; /* Darker border */
-        border-radius: 4px;
-        background: #211D30; /* Darker input background */
-        color: #E0E0E0; /* Lighter text */
-        cursor: pointer;
-    }
-    /* Style the file input button text */
-    #csvPicker::file-selector-button {
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px;
-        background: #63FFDA; /* Accent Cyan/Turquoise */
-        color: #0D0B14; /* Dark text for contrast */
-        font-weight: 600;
-        cursor: pointer;
-        margin-right: 10px;
-    }
-    #total {
-        text-align: center;
-        font-size: 1.1em;
-        color: #FFF; /* White text for total */
-    }
-    /* Copied from Productivity Tracker */
+    .app-container {
+      width: 100%;
+      max-width: 1000px;
+      padding: 25px;
+      margin-top: 70px;
+    }    /* Content Layout */
     .content {
       width: 100%;
-      max-width: 1400px; /* Match Productivity Tracker app-container width */
-      margin-top: 70px; /* Add space below the fixed nav button */
-      /* Center the content container itself */
+      max-width: 1400px;
+      margin-top: 70px;
       margin-left: auto;
       margin-right: auto;
     }
-    /* Sidebar styles (copied from Landing Page) */
+    
+    /* Chart Containers */
+    .chart-container, .category-chart-container, .net-worth-container, .recent-transactions-container {
+      position: relative;
+    }
+    .chart-container > h2, .category-chart-container h2, .net-worth-container h2, .recent-transactions-container h2 {
+      text-align: center;
+      color: #63FFDA;
+      font-weight: 600;
+      margin-bottom: 15px;
+      font-size: 1.2em;
+    }
+    .category-chart-inner-container, .net-worth-chart-inner-container, .charges-payments-chart-inner-container {
+      position: relative;
+      height: 300px;
+    }
+    .net-worth-chart-inner-container {
+      height: 250px;
+    }
+    .charges-payments-chart-inner-container {
+      height: 350px;
+    }    /* Page Elements */
+    h1 {
+      color: #FFF;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    
+    #total {
+      text-align: center;
+      font-size: 1.1em;
+      color: #FFF;
+    }
+    
+    /* Form Elements */
+    #csvPicker, #categoryMonthSelector {
+      display: block;
+      margin: 0 auto 20px auto;
+      padding: 10px;
+      border: 1px solid #4F4B68;
+      border-radius: 4px;
+      background: #211D30;
+      color: #E0E0E0;
+      cursor: pointer;
+    }
+    #csvPicker::file-selector-button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      background: #63FFDA;
+      color: #0D0B14;
+      font-weight: 600;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    #categoryMonthSelector {
+      margin: 15px auto 10px auto;
+      padding: 8px;
+    }
+
+    /* Sidebar Navigation */
     .sidebar {
       position: fixed;
       top: 0;
@@ -100,7 +116,7 @@
     }
     .sidebar a {
       color: #63FFDA;
-      font-size: 24px;
+            font-size: 24px;
       margin: 16px 0;
       text-decoration: none;
     }
@@ -111,11 +127,11 @@
       stroke: #63FFDA;
       stroke-width: 2;
     }
-    /* --- New: File History Tab Styles --- */
-    .file-history-tab {
+    
+    /* Tab Components - Consolidated styling for File History and Banks tabs */
+    .file-history-tab, .banks-tab {
       position: absolute;
       top: 18px;
-      left: 70px; /* Original position for File History */
       background: #211D30;
       color: #63FFDA;
       border: none;
@@ -129,10 +145,18 @@
       box-shadow: 0 2px 8px rgba(0,0,0,0.25);
       transition: background 0.15s, color 0.15s;
     }
-    .file-history-tab.active {
+    .file-history-tab {
+      left: 70px;
+    }
+    .banks-tab {
+      left: 200px;
+    }
+    .file-history-tab.active, .banks-tab.active {
       background: #63FFDA;
       color: #0D0B14;
     }
+    
+    /* Panel Components - Consolidated styling for both panels */
     .file-history-panel {
       position: absolute;
       top: 54px;
@@ -152,32 +176,7 @@
       font-size: 1.1em;
       color: #63FFDA;
       font-weight: 600;
-    }
-
-    /* --- New: Banks Tab Styles (Basic) --- */
-    .banks-tab {
-      position: absolute;
-      top: 18px;
-      left: 200px; /* Position to the right of File History, adjust as needed */
-      background: #211D30;
-      color: #63FFDA;
-      border: none;
-      border-radius: 8px 8px 0 0;
-      padding: 8px 22px 8px 18px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 15px;
-      font-weight: 600;
-      cursor: pointer;
-      z-index: 1100; /* Same as file history */
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-      transition: background 0.15s, color 0.15s;
-    }
-    .banks-tab.active { /* Style for active state if needed later */
-      background: #63FFDA;
-      color: #0D0B14;
-    }
-    /* --- End Banks Tab Styles --- */
-
+    }    /* List Components */
     .file-history-list {
       list-style: none;
       padding: 0;
@@ -193,7 +192,9 @@
       border-bottom: 1px solid #29223a;
       font-size: 14px;
     }
-    .file-history-list li:last-child { border-bottom: none; }
+    .file-history-list li:last-child { 
+      border-bottom: none; 
+    }
     .file-history-list .filename {
       flex: 1;
       color: #E0E0E0;
@@ -214,127 +215,56 @@
     }
     .file-history-list .delete-btn:hover {
       background: #2a263a;
-    }
-    /* --- New: Category Chart Styles --- */
-    /* .category-chart-container is now primarily styled by .card and .charts-row-container */
-    /* Specific styles for h2, selector, and inner container remain if needed */
-    .category-chart-container h2 {
-      color: #FFF;
-      font-weight: 600;
-      margin-bottom: 15px;
-      text-align: center;
-      font-size: 1.2em;
-    }
-    .category-chart-inner-container {
-      position: relative;
-      height: 300px; /* Adjust as needed */
-    }
-    #categoryMonthSelector {
-      display: block;
-      margin: 15px auto 10px auto; /* Added bottom margin */
-      padding: 8px;
-      border: 1px solid #4F4B68;
-      border-radius: 4px;
-      background: #211D30;
-      color: #E0E0E0;
-      cursor: pointer;
-    }
-
-    /* --- New: Net Worth Chart Styles --- */
-    .net-worth-container {
-      /* Styles inherited from .card */
-      margin-bottom: 24px; /* Space below this top widget */
-    }
-    .net-worth-container h2 {
-      color: #63FFDA; /* Turquoise */
-      font-weight: 600;
-      margin-bottom: 15px;
-      text-align: center;
-      font-size: 1.2em;
-    }
-    .net-worth-chart-inner-container {
-      position: relative;
-      height: 250px; /* Adjust as needed, slightly smaller for a top widget */
-    }
-
-    /* --- Timeframe Controls --- */
+    }    /* Timeframe Controls - Consolidated */
     .timeframe-controls {
       text-align: center;
       margin-bottom: 15px;
-      display: flex; /* Added to center buttons */
-      justify-content: center; /* Added to center buttons */
-      gap: 12px; /* Added from landing page for consistency */
+      display: flex;
+      justify-content: center;
+      gap: 12px;
     }
     .timeframe-controls button {
       background: none;
-      border: 1px solid transparent; /* Base transparent border for layout stability */
-      color: #63FFDA; /* Turquoise */
+      border: 1px solid transparent;
+      color: #63FFDA;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
-      padding: 5px 12px; /* Original padding */
+      padding: 5px 12px;
       border-radius: 6px;
       cursor: pointer;
-      /* margin: 0 5px; */ /* Removed, gap is used now */
       font-size: 0.9em;
-      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s; /* Updated transitions */
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
     }
     .timeframe-controls button.active {
-      background-color: #0D0B14; /* Black box */
-      color: #63FFDA; /* Turquoise text */
-      border-color: #63FFDA; /* Turquoise outline */
-      box-shadow: none; /* Remove any hover shadow when active */
+      background-color: #0D0B14;
+      color: #63FFDA;
+      border-color: #63FFDA;
+      box-shadow: none;
     }
     .timeframe-controls button:hover:not(.active) {
-      background-color: transparent; /* Ensure no background on hover for non-active */
-      color: #63FFDA; /* Ensure text remains turquoise */
-      border-color: transparent; /* Ensure border remains transparent */
-      box-shadow: 0 0 8px #63FFDA; /* Turquoise shadow */
-    }
-
-    /* --- Rule for Expenses title --- */
-    .chart-container > h2 {
-      text-align: center;
-      color: #63FFDA; /* Turquoise */
-      font-weight: 600;
-      margin-bottom: 15px;
-      font-size: 1.2em;
-    }
-
-    /* --- New: Row container for side-by-side charts --- */
+      background-color: transparent;
+      color: #63FFDA;
+      border-color: transparent;
+      box-shadow: 0 0 8px #63FFDA;
+    }    /* Layout Components */
     .charts-row-container {
       display: flex;
       justify-content: space-between;
-      flex-wrap: wrap; /* Allow wrapping on smaller screens */
-      gap: 24px; /* Space between cards in the row */
-      margin-bottom: 24px; /* Add margin below the row */
+      flex-wrap: wrap;
+      gap: 24px;
+      margin-bottom: 24px;
     }
     .charts-row-container > .card {
-      flex: 1 1 calc(50% - 12px); /* Grow, shrink, basis with gap adjustment */
-      min-width: 300px; /* Minimum width before wrapping or shrinking too much */
-      margin-bottom: 0; /* Remove bottom margin as gap handles spacing */
+      flex: 1 1 calc(50% - 12px);
+      min-width: 300px;
+      margin-bottom: 0;
     }
-    /* --- New: Inner container for Charges vs Payments chart --- */
-    .charges-payments-chart-inner-container {
-      position: relative;
-      height: 350px; /* Adjusted from 325px */
-    }
-
-    /* --- New: Recent Transactions Widget --- */
-    .recent-transactions-container {
-      /* Styles inherited from .card */
-      margin-top: 24px; /* Space above this widget */
-    }
-    .recent-transactions-container h2 {
-      color: #63FFDA; /* Turquoise */
-      font-weight: 600;
-      margin-bottom: 15px;
-      text-align: center;
-      font-size: 1.2em;
-    }
+    
+    /* Recent Transactions Table */
     .recent-transactions-table-container {
-      max-height: 300px; /* Consistent height with other chart containers */
+      max-height: 300px;
       overflow-y: auto;
-      border: 1px solid #29223a; /* Subtle border */
+      border: 1px solid #29223a;
       border-radius: 8px;
     }
     .recent-transactions-table {
@@ -348,92 +278,87 @@
       border-bottom: 1px solid #29223a;
     }
     .recent-transactions-table th {
-      background-color: #211D30; /* Darker header background */
+      background-color: #211D30;
       color: #E0E0E0;
       font-weight: 600;
-      position: sticky; /* Keep headers visible on scroll */
+      position: sticky;
       top: 0;
       z-index: 1;
     }
     .recent-transactions-table td {
-      color: #C0C0C0; /* Slightly lighter than default for data */
+      color: #C0C0C0;
     }
     .recent-transactions-table tr:last-child td {
       border-bottom: none;
     }
     .recent-transactions-table .amount-income {
-      color: #63FFDA; /* Green for income/payments */
+      color: #63FFDA;
       font-weight: 500;
     }
     .recent-transactions-table .amount-expense {
-      color: #FF6B6B; /* Red for charges/expenses */
+      color: #FF6B6B;
       font-weight: 500;
-    }
-    /* Light mode styles for recent transactions */
+    }    /* Light Mode Overrides */
     body.light-mode .recent-transactions-container h2 {
-        color: #00796b; /* Darker teal for light mode */
+      color: #00796b;
     }
     body.light-mode .recent-transactions-table-container {
-        border: 1px solid #D0D0D0;
+      border: 1px solid #D0D0D0;
     }
     body.light-mode .recent-transactions-table th {
-        background-color: #E8E8E8;
-        color: #333;
-        border-bottom: 1px solid #C0C0C0;
+      background-color: #E8E8E8;
+      color: #333;
+      border-bottom: 1px solid #C0C0C0;
     }
     body.light-mode .recent-transactions-table td {
-        color: #555;
-        border-bottom: 1px solid #D0D0D0;
+      color: #555;
+      border-bottom: 1px solid #D0D0D0;
     }
     body.light-mode .recent-transactions-table .amount-income {
-        color: #00796b; /* Consistent green */
+      color: #00796b;
     }
     body.light-mode .recent-transactions-table .amount-expense {
-        color: #d32f2f; /* Consistent red */
+      color: #d32f2f;
     }
-
-    /* --- New: PDF Upload Modal Styles --- */
+    
+    /* Modal Components - Consolidated */
     .upload-modal {
-      display: none; /* Hidden by default */
+      display: none;
       position: fixed;
-      z-index: 1500; /* Higher than file history panel */
+      z-index: 1500;
       left: 0;
       top: 0;
       width: 100%;
       height: 100%;
       overflow: auto;
-      background-color: rgba(0,0,0,0.6); /* Dim background */
-      align-items: center; /* Vertical center */
-      justify-content: center; /* Horizontal center */
+      background-color: rgba(0,0,0,0.6);
+      align-items: center;
+      justify-content: center;
     }
-
     .upload-modal-content {
-      background-color: #1A1625; /* Dark card background */
+      background-color: #1A1625;
       margin: auto;
       padding: 25px;
       border-radius: 12px;
       box-shadow: 0 8px 25px rgba(0,0,0,0.7);
       width: 90%;
-      max-width: 550px; /* Max width for the modal */
+      max-width: 550px;
       display: flex;
       flex-direction: column;
-      gap: 20px; /* Space between elements */
+      gap: 20px;
     }
-
     .upload-modal-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
       padding-bottom: 15px;
-      border-bottom: 1px solid #4F4B68; /* Separator line */
+      border-bottom: 1px solid #4F4B68;
     }
-
     .upload-modal-header h2 {
       color: #E0E0E0;
       font-size: 1.4em;
       margin: 0;
     }
-
     .upload-modal-close-btn {
       color: #A0A0A0;
       font-size: 28px;
@@ -445,15 +370,14 @@
     .upload-modal-close-btn:hover,
     .upload-modal-close-btn:focus {
       color: #FFF;
-    }
-
+    }    /* Upload Area Components */
     .upload-area {
-      border: 2px dashed #4F4B68; /* Dashed border */
+      border: 2px dashed #4F4B68;
       border-radius: 8px;
-      padding: 40px 20px; /* More padding */
+      padding: 40px 20px;
       text-align: center;
       cursor: pointer;
-      background-color: #0D0B14; /* Slightly darker than modal content */
+      background-color: #0D0B14;
       transition: background-color 0.2s, border-color 0.2s;
     }
     .upload-area:hover {
@@ -461,8 +385,8 @@
       border-color: #63FFDA;
     }
     .upload-area-icon {
-      font-size: 40px; /* Larger icon */
-      color: #63FFDA; /* Turquoise icon */
+      font-size: 40px;
+      color: #63FFDA;
       margin-bottom: 15px;
     }
     .upload-area-text {
@@ -475,7 +399,7 @@
       font-size: 0.9em;
     }
     #modalPdfInput {
-      display: none; /* Hide the actual input */
+      display: none;
     }
     #selectedFilesList {
       margin-top: 15px;
@@ -487,15 +411,13 @@
     #selectedFilesList div {
       padding: 3px 0;
     }
-
     .upload-modal-footer {
       display: flex;
       justify-content: flex-end;
       gap: 10px;
       padding-top: 15px;
-      border-top: 1px solid #4F4B68; /* Separator line */
-    }
-
+      border-top: 1px solid #4F4B68;
+    }    /* Universal Button Styling - Consolidated */
     .upload-modal-btn {
       padding: 10px 20px;
       border: none;
@@ -507,44 +429,34 @@
       transition: background-color 0.2s, color 0.2s;
     }
     .upload-modal-btn.primary {
-      /* background-color: #63FFDA; */ /* Turquoise */
-      /* color: #0D0B14; */ /* Dark text */
-      /* Styles removed to inherit from .upload-modal-btn and unified button styles */
+      background: #63FFDA;
+      color: #0D0B14;
     }
-    /* .upload-modal-btn.primary:hover { */
-      /* background-color: #82ffe5; */
-    /* } */
     .upload-modal-btn.secondary {
-      /* background-color: #4F4B68; */ /* Darker grey */
-      /* color: #E0E0E0; */
-      /* Styles removed to inherit from .upload-modal-btn and unified button styles */
+      background: #4F4B68;
+      color: #E0E0E0;
     }
-    /* .upload-modal-btn.secondary:hover { */
-      /* background-color: #5f5a7a; */
-    /* } */
-
-    /* --- New: Progress Bar Styles --- */
+    
+    /* Progress Bar Component */
     #progressBarContainer {
-      position: fixed; /* Make it fixed to the viewport */
+      position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      background-color: #0D0B14; /* Match body background for a seamless top bar */
-      padding: 8px 0; /* Add some vertical padding */
-      box-shadow: 0 2px 8px rgba(0,0,0,0.7); /* Add a shadow for depth */
-      display: none; /* Hidden by default */
-      z-index: 9999; /* Ensure it's on top of all other content */
-      /* margin-top and margin-bottom are removed as they are not effective with fixed positioning */
+      background-color: #0D0B14;
+      padding: 8px 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+      display: none;
+      z-index: 9999;
     }
-
     #progressBar {
-      width: 80%; /* Bar itself doesn't span full width */
-      margin: 0 auto; /* Center the bar within the container */
-      height: 20px; /* Adjusted height */
-      background-color: #63FFDA; /* Accent Cyan/Turquoise */
+      width: 80%;
+      margin: 0 auto;
+      height: 20px;
+      background-color: #63FFDA;
       background-image: linear-gradient(
         45deg,
-        rgba(13, 11, 20, 0.25) 25%, /* Darker stripes for contrast */
+        rgba(13, 11, 20, 0.25) 25%,
         transparent 25%,
         transparent 50%,
         rgba(13, 11, 20, 0.25) 50%,
@@ -552,35 +464,28 @@
         transparent 75%,
         transparent
       );
-      background-size: 40px 40px; /* Size of the stripes */
+      background-size: 40px 40px;
       border-radius: 5px;
       text-align: center;
-      line-height: 20px; /* Match adjusted height */
-      color: #0D0B14; /* Dark text for contrast on turquoise */
+      line-height: 20px;
+      color: #0D0B14;
       font-weight: bold;
       animation: progressBarAnimation 2s linear infinite;
-      transition: width 0.3s ease-in-out; /* Smooth width changes if you implement actual progress updates */
+      transition: width 0.3s ease-in-out;
     }
-
     @keyframes progressBarAnimation {
-      0% {
-        background-position: 40px 0;
-      }
-      100% {
-        background-position: 0 0;
-      }
-    }
-
-    /* --- New: Top Right Controls --- */
+      0% { background-position: 40px 0; }
+      100% { background-position: 0 0; }
+    }    /* Top Controls */
     .top-right-controls {
       position: fixed;
       top: 20px;
       right: 20px;
-      z-index: 1000; /* Ensure it's above other content */
+      z-index: 1000;
     }
     #agent-action-button {
-      background-color: #63FFDA; /* Accent Cyan/Turquoise */
-      color: #0D0B14; /* Dark text for contrast */
+      background-color: #63FFDA;
+      color: #0D0B14;
       border: none;
       padding: 10px 15px;
       border-radius: 5px;
@@ -591,89 +496,71 @@
     #agent-action-button:hover {
       background-color: #52D9C3;
     }
-    /* --- End Top Right Controls --- */
-
-    /* --- Unified Button Visual Style --- */
-    /* This section replaces the previous "Button Visual Style Update" */
-
-    /* General style for all relevant buttons */
-    button, /* Covers generic buttons, like the assumed "Import" in Banks menu */
-    .upload-modal-btn, /* Covers Save/Cancel in Banks Import Modal and PDF Upload Modal */
-    .file-history-tab,
-    .banks-tab,
-    #agent-action-button {
-      background: transparent; /* Default: transparent background */
-      border: 1px solid transparent; /* Default: transparent border for layout consistency */
-      color: #63FFDA; /* Default: Turquoise text */
+    
+    /* Consolidated Button States */
+    button, .upload-modal-btn, .file-history-tab, .banks-tab, #agent-action-button {
+      background: transparent;
+      border: 1px solid transparent;
+      color: #63FFDA;
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
-      /* Default padding - specific elements below will override if they have their own padding */
       padding: 8px 15px;
       border-radius: 6px;
       cursor: pointer;
       transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
       outline: none;
       box-shadow: none;
-      text-decoration: none; /* For <a> tags styled as buttons */
-      display: inline-block; /* For <a> tags styled as buttons */
+      text-decoration: none;
+      display: inline-block;
       text-align: center;
-      vertical-align: middle; /* Align text and icons nicely if any */
+      vertical-align: middle;
     }
-
-    /* Specific paddings should be maintained or adjusted as needed. */
-    /* These rules will override the padding from the general rule above due to specificity or order. */
-    /* Note: .timeframe-controls button padding (5px 12px) is defined earlier and is more specific, so it will be preserved. */
     .file-history-tab, .banks-tab {
-        padding: 8px 22px 8px 18px;
+      padding: 8px 22px 8px 18px;
     }
     #agent-action-button {
-        padding: 10px 15px;
+      padding: 10px 15px;
     }
-    .upload-modal-btn { /* Applies to Save/Cancel in Banks Import Modal */
-        padding: 10px 20px;
+    .upload-modal-btn {
+      padding: 10px 20px;
     }
-    /* If the "Import" button in the Banks menu (if it's not a generic .upload-modal-btn) */
-    /* needs specific padding, it would be defined here. For now, it uses default or <button> padding. */
-    /* e.g. #banksPanelOpenImportModalButton { padding: 10px 15px; } */
-
-
-    /* Hover state (not active/selected, not disabled) */
+    
+    /* Button Hover States */
     button:not(.active):not(:disabled):hover,
     .upload-modal-btn:not(.active):not(:disabled):hover,
     .file-history-tab:not(.active):not(:disabled):hover,
     .banks-tab:not(.active):not(:disabled):hover,
     #agent-action-button:not(.active):not(:disabled):hover {
-      background-color: transparent; /* Hover: transparent background */
-      color: #63FFDA; /* Hover: Turquoise text */
-      border-color: transparent; /* Hover: transparent border */
-      box-shadow: 0 0 8px #63FFDA; /* Hover: Turquoise shadow */
+      background-color: transparent;
+      color: #63FFDA;
+      border-color: transparent;
+      box-shadow: 0 0 8px #63FFDA;
     }
-
-    /* Active/Selected state (also applies to :active pseudo-class for click feedback) */
+    
+    /* Button Active States */
     button.active, button:active,
     .upload-modal-btn.active, .upload-modal-btn:active,
     .file-history-tab.active, .file-history-tab:active,
     .banks-tab.active, .banks-tab:active,
     #agent-action-button.active, #agent-action-button:active {
-      background-color: #0D0B14; /* Active: Black background */
-      color: #63FFDA; /* Active: Turquoise text */
-      border: 1px solid #63FFDA; /* Active: Turquoise outline */
-      box-shadow: none; /* Remove any hover shadow */
+      background-color: #0D0B14;
+      color: #63FFDA;
+      border: 1px solid #63FFDA;
+      box-shadow: none;
     }
-
-    /* Disabled state */
+    
+    /* Button Disabled States */
     button:disabled,
     .upload-modal-btn:disabled,
     .file-history-tab:disabled,
     .banks-tab:disabled,
     #agent-action-button:disabled {
-      color: #4F4B68; /* Muted text */
-      background-color: #211D30; /* Muted background */
-      border-color: #4F4B68; /* Muted border */
+      color: #4F4B68;
+      background-color: #211D30;
+      border-color: #4F4B68;
       cursor: not-allowed;
       box-shadow: none;
     }
-    /* --- End Unified Button Visual Style --- */
   </style>
 
   <!-- Poppins font -->
@@ -835,8 +722,6 @@
         };
         const monthPattern = '(January|Jan|February|Feb|March|Mar|April|Apr|May|June|Jun|July|Jul|August|Aug|September|Sep|Oct|October|November|Nov|December|Dec)';
 
-        // Try to match "Month YYYY" (e.g., "March 2025")
-        // User stated format: "Month Year Bank Statement"
         const textualMatchMonthYear = trimmedName.match(new RegExp(monthPattern + '\\s+(\\d{4})', 'i'));
 
         if (textualMatchMonthYear && textualMatchMonthYear[1] && textualMatchMonthYear[2]) {
@@ -872,21 +757,15 @@
         return null;
       }
       let chart = null;
-      // Global aggregates - moving to daily structure
-      // let monthlyNet = {}; // Old
-      // let monthlyCharges = {}; // Old
-      // let monthlyPayments = {}; // Old
-      // let monthlyDCIncome = {}; // Old
-      // let totalCharges = 0; // Old - will be derived if needed
-      // let totalPayments = 0; // Old - will be derived
-
+      
       let dailyActivity = {}; // New: {"YYYY-MM-DD": {charges: 0, payments: 0, dcIncome: 0, categories: {"Groceries": 0,...}}}
       let globalAllTransactions = []; // New: To store all individual transactions
 
-      // --- New: Category Spending Globals ---
-      // let monthlyCategorizedSpending = {}; // Old - merged into dailyActivity
       let categoryChart = null;
       const CATEGORIES = ["Groceries", "Food Delivery/Restaurant", "Gas", "Misc", "Other"];
+
+      // --- New: N8N Webhook URL ---
+      const N8N_WEBHOOK_URL = "https://criticalvuln.app.n8n.cloud/webhook-test/f597b035-7b41-496a-8e8e-f3102a67508a"; // <<< REPLACE WITH YOUR ACTUAL N8N WEBHOOK URL
 
       // --- New: Net Worth (Income) Chart Global ---
       let netWorthChartInstance = null;
@@ -897,26 +776,16 @@
 
       // --- File History State ---
       let fileHistory = JSON.parse(localStorage.getItem('financeFileHistory') || '[]');
-      // --- File-to-Month Mapping for Robust Deletion ---
-      // let fileMonthMap = JSON.parse(localStorage.getItem('financeFileMonthMap') || '{}'); // Old
+  
       let fileDataKeysMap = JSON.parse(localStorage.getItem('financeFileDataKeysMap') || '{}'); // New: {"filename": ["YYYY-MM-DD", ...]}
       let globalAllTransactionsStorageKey = 'financeGlobalAllTransactions'; // New
-
-      // --- Progress Bar Logic ---
-      // Call showProcessingBar() when your file processing starts.
-      // Call hideProcessingBar() when your file processing ends (in a finally block if applicable).
-      // If you have an existing element that shows a text message (e.g., <div id="status"></div>),
-      // replace 'yourStatusMessageElementId' with its actual ID to hide it when the bar is shown.
-      // If you don't have one, you can remove the lines related to 'originalStatusElement'.
 
       const progressBarContainer = document.getElementById('progressBarContainer');
       const progressBar = document.getElementById('progressBar');
       // const originalStatusElement = document.getElementById('yourStatusMessageElementId'); // Optional: Replace ID
 
       function showProcessingBar(message = "Processing file...") {
-        // if (originalStatusElement) {
-        //   originalStatusElement.style.display = 'none'; // Hide the old text message
-        // }
+   
         if (progressBarContainer && progressBar) {
           progressBar.textContent = message;
           progressBarContainer.style.display = 'block';
@@ -927,14 +796,9 @@
         if (progressBarContainer) {
           progressBarContainer.style.display = 'none';
         }
-        // if (originalStatusElement) {
-        //   originalStatusElement.style.display = 'block'; // Or whatever the default state should be
-        //   originalStatusElement.textContent = ''; // Clear it or set to a success/failure message
-        // }
+       
       }
-      // --- End Progress Bar Logic ---
-
-      // --- New: Synchronized Timeframe Controls Setup ---
+    
       function setupTimeframeControls() {
         const timeframeButtons = document.querySelectorAll('.timeframe-controls button[data-range]');
 
@@ -1156,9 +1020,6 @@
         document.getElementById('total').innerHTML = '';
 
         renderSpendChart(sharedChartTimeframe); // Use shared timeframe
-
-        // localStorage.setItem('financeData', JSON.stringify({ monthlyCharges, monthlyPayments, monthlyDCIncome, totalCharges, totalPayments })); // Old
-        // localStorage.setItem('financeCategorizedData', JSON.stringify(monthlyCategorizedSpending)); // Old
 
         localStorage.setItem('financeDailyActivity', JSON.stringify(dailyActivity)); // New: Save all daily activity
         localStorage.setItem(globalAllTransactionsStorageKey, JSON.stringify(globalAllTransactions)); // New: Save all transactions
@@ -1743,8 +1604,6 @@
         }, false);
       }
 
-      // --- Event Listener for File Picker (supports multiple) ---
-      // Ensure originalPdfPicker exists before adding event listener
       if (originalPdfPicker) {
         originalPdfPicker.addEventListener('change', async e => { 
           const files = Array.from(e.target.files); // These are the files confirmed from the modal
@@ -1875,8 +1734,7 @@
 
         } catch (error) {
           console.error(`Error in handlePdfFile for ${fileName}:`, error);
-          // If an error occurred after removing old transactions, 
-          // ensure dailyActivity is rebuilt for those old keys based on the (now filtered) globalAllTransactions
+
           if (oldKeysForThisFile.size > 0) {
              rebuildDailyActivityForDates(Array.from(oldKeysForThisFile));
           }
@@ -1890,6 +1748,7 @@
             throw new Error("Gemini API key is not loaded. Please check config.js.");
         }
         const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+
 
         let systemInstructionText = `You are a data extraction AI. You will receive a PDF bank statement. Your task is to:
 1. Identify all individual financial transaction lines. Focus on itemized entries, not summary totals unless they are the only source for a specific transaction type.
@@ -2129,6 +1988,7 @@ The response MUST be only the valid JSON object, with no extra text, explanation
       const banksImportModal = document.getElementById('banksImportModal');
       const importBanksBtn = document.getElementById('importBanksBtn');
       if (importBanksBtn && banksImportModal) {
+        banksImportModal.style.display = 'none'; // Ensure it's hidden by default
         importBanksBtn.onclick = () => {
           banksImportModal.style.display = 'flex';
           document.getElementById('bankNameInput').value = '';
@@ -2169,9 +2029,248 @@ The response MUST be only the valid JSON object, with no extra text, explanation
         };
       }
 
-      // Assuming initial calls are made here, like updateDisplay()
-      // For example, if updateDisplay() is called at the end:
-      // updateDisplay(); // This should already be there if it's part of the initial load
+      // --- New: Presentation Generation Logic ---
+      async function generatePresentationData() {
+        const presentationData = {};
+        const today = new Date();
+        const formattedToday = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}`;
+
+        // Slide 1: Title Slide
+        presentationData.slide1 = {
+          title: "Personal Finance Overview",
+          subtitle: `Generated on: ${formattedToday}`
+        };
+
+        // Helper to get overall financial summary
+        function getOverallSummary() {
+          let totalIncome = 0;
+          let totalExpenses = 0;
+          let firstDate = null;
+          let lastDate = null;
+
+          const dates = Object.keys(dailyActivity).sort();
+          if (dates.length > 0) {
+            firstDate = dates[0];
+            lastDate = dates[dates.length - 1];
+          }
+
+          Object.values(dailyActivity).forEach(day => {
+            totalIncome += day.dcIncome || 0;
+            totalExpenses += day.charges || 0;
+          });
+
+          return {
+            totalIncome: totalIncome.toFixed(2),
+            totalExpenses: totalExpenses.toFixed(2),
+            net: (totalIncome - totalExpenses).toFixed(2),
+            periodCovered: firstDate && lastDate ? `Data from ${firstDate} to ${lastDate}` : "No data available"
+          };
+        }
+        presentationData.slide2 = getOverallSummary();
+
+        // Helper to get monthly aggregates
+        function getMonthlyAggregates(dataType) { // dataType can be 'dcIncome' or 'charges'
+          const monthly = {};
+          Object.entries(dailyActivity).forEach(([dateKey, data]) => {
+            const monthKey = dateKey.substring(0, 7); // YYYY-MM
+            monthly[monthKey] = (monthly[monthKey] || 0) + (data[dataType] || 0);
+          });
+          return monthly;
+        }
+
+        // Slide 3: Income Highlights
+        const monthlyIncome = getMonthlyAggregates('dcIncome');
+        let totalIncomeThisMonth = 0;
+        let highestIncomeMonthAmount = 0;
+        let highestIncomeMonth = "N/A";
+        const currentMonthKey = `${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}`;
+
+        if (monthlyIncome[currentMonthKey]) {
+          totalIncomeThisMonth = monthlyIncome[currentMonthKey];
+        }
+        for (const [month, amount] of Object.entries(monthlyIncome)) {
+          if (amount > highestIncomeMonthAmount) {
+            highestIncomeMonthAmount = amount;
+            highestIncomeMonth = month;
+          }
+        }
+        presentationData.slide3 = {
+          title: "Income Highlights",
+          totalIncomeThisMonth: totalIncomeThisMonth.toFixed(2),
+          highestIncomeMonth: `${highestIncomeMonth} (${highestIncomeMonthAmount.toFixed(2)})`,
+          // You could add more insights here, e.g., average monthly income
+        };
+
+        // Slide 4: Expense Highlights
+        const monthlyExpenses = getMonthlyAggregates('charges');
+        let totalExpensesThisMonth = 0;
+        let highestExpenseMonthAmount = 0;
+        let highestExpenseMonth = "N/A";
+
+        if (monthlyExpenses[currentMonthKey]) {
+          totalExpensesThisMonth = monthlyExpenses[currentMonthKey];
+        }
+        for (const [month, amount] of Object.entries(monthlyExpenses)) {
+          if (amount > highestExpenseMonthAmount) {
+            highestExpenseMonthAmount = amount;
+            highestExpenseMonth = month;
+          }
+        }
+        presentationData.slide4 = {
+          title: "Expense Highlights",
+          totalExpensesThisMonth: totalExpensesThisMonth.toFixed(2),
+          highestExpenseMonth: `${highestExpenseMonth} (${highestExpenseMonthAmount.toFixed(2)})`,
+          // You could add more insights here, e.g., average monthly expenses
+        };
+        
+        // Slide 5: Top Expense Categories (for the most recent month with data)
+        function getTopExpenseCategories() {
+            const availableMonths = new Set();
+            Object.keys(dailyActivity).forEach(dateKey_YYYY_MM_DD => {
+                if (dailyActivity[dateKey_YYYY_MM_DD] && Object.keys(dailyActivity[dateKey_YYYY_MM_DD].categories).length > 0) {
+                    availableMonths.add(dateKey_YYYY_MM_DD.substring(0, 7)); // YYYY-MM
+                }
+            });
+            const sortedMonths = Array.from(availableMonths).sort().reverse();
+            let topCategories = "No category data available for recent months.";
+
+            if (sortedMonths.length > 0) {
+                const latestMonthKey = sortedMonths[0];
+                const aggregatedCategories = {};
+                CATEGORIES.forEach(cat => aggregatedCategories[cat] = 0);
+
+                Object.keys(dailyActivity).forEach(dateKey_YYYY_MM_DD => {
+                    if (dateKey_YYYY_MM_DD.startsWith(latestMonthKey)) {
+                        const dayData = dailyActivity[dateKey_YYYY_MM_DD];
+                        if (dayData && dayData.categories) {
+                            CATEGORIES.forEach(cat => {
+                                if (dayData.categories[cat]) {
+                                    aggregatedCategories[cat] += dayData.categories[cat];
+                                }
+                            });
+                        }
+                    }
+                });
+                
+                const sortedTopCategories = Object.entries(aggregatedCategories)
+                    .filter(([_, amount]) => amount > 0)
+                    .sort(([, a], [, b]) => b - a)
+                    .slice(0, 5); // Top 5 categories
+
+                if (sortedTopCategories.length > 0) {
+                    topCategories = sortedTopCategories.map(([name, amount]) => `${name}: ${amount.toFixed(2)}`).join(', ');
+                } else {
+                    topCategories = `No expenses recorded in categories for ${latestMonthKey}.`;
+                }
+                return {
+                    title: `Top Expense Categories for ${latestMonthKey}`,
+                    categories: topCategories
+                };
+            }
+            return {
+                title: "Top Expense Categories",
+                categories: topCategories
+            };
+        }
+        presentationData.slide5 = getTopExpenseCategories();
+
+        // Slide 6: Recent Transactions Summary (last 7 days)
+        function getRecentTransactionsSummary() {
+          const sevenDaysAgo = new Date(today);
+          sevenDaysAgo.setDate(today.getDate() - 7);
+          
+          let recentTxCount = 0;
+          let totalSpentLast7Days = 0;
+          const recentSample = [];
+
+          const sortedTransactions = [...globalAllTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+          sortedTransactions.forEach(tx => {
+            const txDate = new Date(tx.date + "T00:00:00"); // Ensure correct date parsing
+            if (txDate >= sevenDaysAgo) {
+              recentTxCount++;
+              if (tx.amount > 0) { // Expense
+                totalSpentLast7Days += tx.amount;
+              }
+              if (recentSample.length < 3) { // Get last 3 transactions
+                  recentSample.push(`${tx.date}: ${tx.description} (${tx.amount.toFixed(2)})`);
+              }
+            }
+          });
+          return {
+            title: "Recent Transactions (Last 7 Days)",
+            count: recentTxCount,
+            totalSpent: totalSpentLast7Days.toFixed(2),
+            sampleTransactions: recentSample.length > 0 ? recentSample.join('; ') : "No transactions in the last 7 days."
+          };
+        }
+        presentationData.slide6 = getRecentTransactionsSummary();
+
+        // Slide 7: Actionable Next Steps
+        presentationData.slide7 = {
+          title: "Actionable Next Steps",
+          steps: [
+            "Review spending patterns against budget goals.",
+            "Identify top expense categories for potential savings.",
+            "Monitor upcoming bills and payments.",
+            "Consider setting new financial goals based on this overview."
+            // These are generic; n8n agent could potentially generate more specific ones.
+          ]
+        };
+
+        // Slide 8: Concluding Slide
+        presentationData.slide8 = {
+          title: "Thank You",
+          message: "This financial overview was generated based on the available data."
+        };
+        
+        return presentationData;
+      }
+
+      async function sendToN8N(data) {
+        if (N8N_WEBHOOK_URL === "YOUR_N8N_WEBHOOK_URL_HERE" || !N8N_WEBHOOK_URL) {
+          alert("N8N Webhook URL is not configured. Please update it in the script.");
+          console.error("N8N Webhook URL is not configured.");
+          return;
+        }
+        try {
+          showProcessingBar("Generating presentation data...");
+          const response = await fetch(N8N_WEBHOOK_URL, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+          hideProcessingBar();
+          if (response.ok) {
+            alert('Presentation data sent to N8N successfully!');
+            console.log('Data sent to N8N:', data);
+          } else {
+            const errorText = await response.text();
+            alert(`Failed to send data to N8N. Status: ${response.status}. Details: ${errorText}`);
+            console.error('Failed to send data to N8N:', response.status, errorText);
+          }
+        } catch (error) {
+          hideProcessingBar();
+          alert('Error sending data to N8N: ' + error.message);
+          console.error('Error sending data to N8N:', error);
+        }
+      }
+
+      const agentButton = document.getElementById('agent-action-button');
+      if (agentButton) {
+        agentButton.addEventListener('click', async () => {
+          if (Object.keys(dailyActivity).length === 0 && globalAllTransactions.length === 0) {
+            alert("No data available to generate a presentation. Please upload some files first.");
+            return;
+          }
+          const dataForN8N = await generatePresentationData();
+          await sendToN8N(dataForN8N);
+        });
+      }
+      // --- End Presentation Generation Logic ---
+
       setupTimeframeControls(); // Call to initialize the new synchronized controls
     </script>
 </body>
