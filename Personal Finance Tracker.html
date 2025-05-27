@@ -107,16 +107,16 @@
     }
     
     /* Chart Containers */
-    .chart-container, .category-chart-container, .net-worth-container, .recent-transactions-container {
+    .chart-container, .category-chart-container, .recent-transactions-container {
       position: relative;
     }
-    .chart-container > h2, .category-chart-container h2, .net-worth-container h2, .recent-transactions-container h2 {
+    .chart-container > h2, .category-chart-container h2, .recent-transactions-container h2 {
       text-align: center;
       color: var(--text-accent);
       font-weight: 600;
       margin-bottom: 15px;
       font-size: 1.2em;
-    }    .category-chart-inner-container, .net-worth-chart-inner-container, .charges-payments-chart-inner-container {
+    }    .category-chart-inner-container, .charges-payments-chart-inner-container {
       position: relative;
       height: 300px;
     }
@@ -129,15 +129,10 @@
       justify-content: center;
       margin-top: 10px;
       padding: 15px 0;
-    }
-    .category-chart-inner-container canvas {
+    }    .category-chart-inner-container canvas {
       max-width: 100%;
       max-height: 100%;
-    }
-    .net-worth-chart-inner-container {
-      height: 250px;
-    }
-    .charges-payments-chart-inner-container {
+    }    .charges-payments-chart-inner-container {
       height: 350px;
     }/* Page Elements */
     h1 {
@@ -794,6 +789,480 @@
       border-color: var(--text-accent);
       box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
     }
+
+    /* Budget Widget Styling */
+    .budget-widget-container {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .budget-widget-header {
+      padding: 20px;
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(139, 92, 246, 0.1) 100%);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .budget-widget-header:hover {
+      background: linear-gradient(135deg, var(--bg-secondary) 0%, rgba(139, 92, 246, 0.15) 100%);
+    }
+
+    .budget-widget-header h2 {
+      margin: 0;
+      color: var(--text-accent);
+      font-weight: 600;
+      font-size: 1.3em;
+    }
+
+    .budget-total-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .budget-total-label {
+      color: var(--text-muted);
+      font-size: 0.9em;
+      font-weight: 500;
+    }
+
+    .budget-total-amount {
+      color: var(--text-accent);
+      font-size: 1.5em;
+      font-weight: 700;
+    }
+
+    .budget-remaining {
+      color: var(--text-muted);
+      font-size: 0.85em;
+    }
+
+    .budget-remaining.positive {
+      color: #10b981;
+    }
+
+    .budget-remaining.negative {
+      color: #ef4444;
+    }
+
+    .budget-toggle-btn {
+      background: none;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .budget-toggle-btn:hover {
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .budget-chevron {
+      width: 24px;
+      height: 24px;
+      stroke: var(--text-muted);
+      fill: none;
+      stroke-width: 2;
+      transition: transform 0.3s ease;
+    }
+
+    .budget-widget-container.collapsed .budget-chevron {
+      transform: rotate(180deg);
+    }
+
+    .budget-widget-content {
+      padding: 20px;
+      max-height: 1000px;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+
+    .budget-widget-container.collapsed .budget-widget-content {
+      max-height: 0;
+      padding: 0 20px;
+    }
+
+    .budget-month-selector-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+    }
+
+    .budget-month-selector-container label {
+      color: var(--text-primary);
+      font-weight: 500;
+      font-size: 0.95em;
+    }
+
+    #budgetMonthSelector {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 0.9em;
+      min-width: 160px;
+      transition: all 0.3s ease;
+    }
+
+    #budgetMonthSelector:focus {
+      outline: none;
+      border-color: var(--text-accent);
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    .budget-categories-container {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .budget-categories-header {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+      gap: 16px;
+      padding: 16px;
+      background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(139, 92, 246, 0.05) 100%);
+      border-bottom: 1px solid var(--border-color);
+      font-weight: 600;
+      color: var(--text-accent);
+      font-size: 0.9em;
+    }
+
+    .budget-categories-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .budget-category-item {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+      gap: 16px;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background 0.2s ease;
+      align-items: center;
+    }
+
+    .budget-category-item:hover {
+      background: rgba(139, 92, 246, 0.05);
+    }
+
+    .budget-category-item:last-child {
+      border-bottom: none;
+    }
+
+    .budget-category-name {
+      color: var(--text-primary);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .budget-amount {
+      color: var(--text-muted);
+      font-family: 'Courier New', monospace;
+    }
+
+    .budget-amount.spent {
+      color: #ef4444;
+    }
+
+    .budget-amount.remaining.positive {
+      color: #10b981;
+    }
+
+    .budget-amount.remaining.negative {
+      color: #ef4444;
+    }
+
+    .budget-progress-container {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .budget-progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-primary);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .budget-progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    }
+
+    .budget-progress-fill.over-budget {
+      background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .budget-progress-text {
+      font-size: 0.8em;
+      color: var(--text-muted);
+      text-align: center;
+    }    .budget-actions {
+      padding: 20px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .budget-action-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-accent);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      padding: 8px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
+      outline: none;
+      box-shadow: none;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 0.9em;
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+    }
+
+    .budget-action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        var(--button-hover-gradient-center) 0%,
+        var(--button-hover-gradient-mid) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: inherit;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .budget-action-btn:hover::before {
+      opacity: 1;
+    }
+
+    .budget-action-btn span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .budget-action-btn:not(.active):not(:disabled):hover {
+      background-color: transparent;
+      color: var(--text-accent);
+      border-color: transparent;
+      box-shadow: 0 0 8px var(--text-accent);
+    }
+
+    .budget-category-delete-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      font-size: 1.1em;
+    }
+
+    .budget-category-delete-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .budget-input {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 6px 8px;
+      color: var(--text-primary);
+      font-size: 0.9em;
+      width: 100%;
+      transition: all 0.3s ease;
+    }    .budget-input:focus {
+      outline: none;
+      border-color: var(--text-accent);
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    /* Budget Category Rows */
+    .budget-category-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr 2fr auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+      border-bottom: 1px solid var(--border-color);
+      transition: background-color 0.2s ease;
+    }
+
+    .budget-category-row:hover {
+      background-color: var(--bg-secondary);
+    }
+
+    .budget-category-name {
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .budget-category-budget {
+      display: flex;
+      align-items: center;
+    }
+
+    .budget-category-spent,
+    .budget-category-remaining {
+      font-family: 'Courier New', monospace;
+      font-weight: 500;
+    }
+
+    .budget-category-spent {
+      color: var(--text-muted);
+    }
+
+    .budget-category-remaining.positive {
+      color: #10b981;
+    }
+
+    .budget-category-remaining.negative {
+      color: #ef4444;
+    }
+
+    .budget-category-progress {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .budget-progress-bar {
+      width: 100%;
+      height: 8px;
+      background: var(--bg-primary);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    .budget-progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease;
+    }
+
+    .budget-progress-fill.progress-low {
+      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+    }
+
+    .budget-progress-fill.progress-medium {
+      background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .budget-progress-fill.progress-high {
+      background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .budget-progress-fill.progress-over {
+      background: linear-gradient(90deg, #7c2d12 0%, #991b1b 100%);
+    }
+
+    .budget-progress-text {
+      font-size: 0.75em;
+      color: var(--text-muted);
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .budget-delete-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      font-size: 1.2em;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .budget-delete-btn:hover {
+      background: rgba(239, 68, 68, 0.1);
+      transform: scale(1.1);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .budget-widget-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+      }
+
+      .budget-total-display {
+        align-items: flex-start;
+      }
+
+      .budget-categories-header,
+      .budget-category-item {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        text-align: left;
+      }
+
+      .budget-categories-header > span {
+        font-size: 0.8em;
+        padding: 4px 0;
+        border-bottom: 1px solid var(--border-color);
+      }
+
+      .budget-category-item > div {
+        padding: 4px 0;
+      }
+
+      .budget-actions {
+        flex-direction: column;
+      }
+
+      .budget-action-btn {
+        width: 100%;
+      }
+    }
+
+    /* --- Existing styles continue here --- */
   </style>
 
   <!-- Poppins font -->
@@ -882,20 +1351,46 @@
         </div>
       </div>
     </div>
-    <!-- End New PDF Upload Modal -->
-
-
-    <!-- New Net Worth (Monthly Income) Widget -->
-    <div class="net-worth-container card">
-      <h2>Net Worth</h2>
-      <div class="timeframe-controls">
-        <button data-chart="netWorth" data-range="day">Day</button>
-        <button data-chart="netWorth" data-range="week">Week</button>
-        <button data-chart="netWorth" data-range="month" class="active">Month</button>
-        <button data-chart="netWorth" data-range="year">Year</button>
+    <!-- End New PDF Upload Modal -->    <!-- Budgeting Tool Widget -->
+    <div class="budget-widget-container card">
+      <div class="budget-widget-header" id="budgetWidgetHeader">
+        <h2>Monthly Budget Tracker</h2>
+        <div class="budget-total-display">
+          <span class="budget-total-label">Total Budget:</span>
+          <span class="budget-total-amount" id="totalBudgetAmount">$0</span>
+          <span class="budget-remaining" id="budgetRemaining">($0 remaining)</span>
+        </div>
+        <button class="budget-toggle-btn" id="budgetToggleBtn" title="Expand/Collapse Budget Details">
+          <svg viewBox="0 0 24 24" class="budget-chevron">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
       </div>
-      <div class="net-worth-chart-inner-container">
-        <canvas id="netWorthChartCanvas"></canvas>
+      
+      <div class="budget-widget-content" id="budgetWidgetContent">
+        <div class="budget-month-selector-container">
+          <label for="budgetMonthSelector">Budget for:</label>
+          <select id="budgetMonthSelector"></select>
+        </div>
+        
+        <div class="budget-categories-container">
+          <div class="budget-categories-header">
+            <span>Category</span>
+            <span>Budget</span>
+            <span>Spent</span>
+            <span>Remaining</span>
+            <span>Progress</span>
+          </div>
+          
+          <div id="budgetCategoriesList" class="budget-categories-list">
+            <!-- Category budget items will be dynamically inserted here -->
+          </div>
+            <div class="budget-actions">
+            <button id="addCategoryBudgetBtn" class="budget-action-btn"><span>Add Category</span></button>
+            <button id="resetBudgetBtn" class="budget-action-btn"><span>Reset Budget</span></button>
+            <button id="saveBudgetBtn" class="budget-action-btn"><span>Save Budget</span></button>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1008,14 +1503,10 @@
       let globalAllTransactions = []; // New: To store all individual transactions
 
       let categoryChart = null;
-      const CATEGORIES = ["Groceries", "Food Delivery/Restaurant", "Gas", "Misc", "Other"];
-
-      // --- New: N8N Webhook URL ---
+      const CATEGORIES = ["Groceries", "Food Delivery/Restaurant", "Gas", "Misc", "Other"];      // --- New: N8N Webhook URL ---
       const N8N_WEBHOOK_URL = "https://criticalvuln.app.n8n.cloud/webhook-test/f597b035-7b41-496a-8e8e-f3102a67508a"; // <<< REPLACE WITH YOUR ACTUAL N8N WEBHOOK URL
 
-      // --- New: Net Worth (Income) Chart Global ---
-      let netWorthChartInstance = null;
-      let sharedChartTimeframe = 'month'; // New: Shared timeframe for Expenses and Net Worth charts
+      let sharedChartTimeframe = 'month'; // Shared timeframe for charts
 
       // API Key will now be loaded from config.js
       const GEMINI_API_KEY = window.APP_CONFIG && window.APP_CONFIG.GEMINI_API_KEY;
@@ -1065,14 +1556,9 @@
               if (btn.dataset.range === newTimeframe) {
                 btn.classList.add('active');
               }
-            });
-
-            // Re-render both charts with the new timeframe
+            });            // Re-render charts with the new timeframe
             if (typeof renderSpendChart === 'function') {
               renderSpendChart(sharedChartTimeframe);
-            }
-            if (typeof renderNetWorthChart === 'function') {
-              renderNetWorthChart(sharedChartTimeframe);
             }
           });
         });
@@ -1258,9 +1744,7 @@
 
       // --- On load, render file history ---
       renderFileHistory();
-      showFileHistory(false);
-
-      // Update totals display and chart
+      showFileHistory(false);      // Update totals display and chart
       function updateDisplay() {
         // Clear numeric summary
         document.getElementById('total').innerHTML = '';
@@ -1272,13 +1756,12 @@
 
         // Update and render category chart
         populateCategoryMonthSelector();
-        const selectedMonthForCategory = document.getElementById('categoryMonthSelector').value;
-        renderCategoriesChart(selectedMonthForCategory);
-
-        // Update and render Net Worth (Income) chart
-        renderNetWorthChart(sharedChartTimeframe); // Use shared timeframe
+        const selectedMonthForCategory = document.getElementById('categoryMonthSelector').value;        renderCategoriesChart(selectedMonthForCategory);
 
         renderRecentTransactions(); // New: Render recent transactions
+        
+        // Update budget widget
+        updateBudgetOnDataChange();
       }
 
       // --- New: Update and Save all data ---
@@ -1486,88 +1969,7 @@
                 }
             }
         });
-      }
-
-
-      // --- New: Net Worth (Monthly Income) Chart Function ---
-      function renderNetWorthChart(timeframe = 'month') {
-        const canvas = document.getElementById('netWorthChartCanvas');
-        if (!canvas) return; // Ensure canvas exists
-        const ctx = canvas.getContext('2d');
-        
-        if (netWorthChartInstance) {
-            netWorthChartInstance.destroy();
-        }
-
-        const { labels: incomeDays, data: incomeData } = aggregateDataForChart(dailyActivity, timeframe, 'dcIncome');
-
-        const container = document.querySelector('.net-worth-chart-inner-container');
-        if (incomeDays.length === 0) {
-            // Clear previous chart content and display a message
-            container.innerHTML = '<canvas id="netWorthChartCanvas"></canvas>'; // Re-add canvas
-            const newCtx = document.getElementById('netWorthChartCanvas').getContext('2d');
-            newCtx.font = "16px Poppins";
-            newCtx.fillStyle = "#A0A0A0";
-            newCtx.textAlign = "center";
-            newCtx.fillText("Net Worth data from 'DC' files will appear here.", container.offsetWidth / 2, container.offsetHeight / 2);
-            return;
-        }
-        
-        // Create gradient for the line chart fill
-        const gradientGreen = ctx.createLinearGradient(0, 0, 0, container.offsetHeight); // Adjust gradient height if needed
-        gradientGreen.addColorStop(0, 'rgba(76, 255, 76, 0.4)'); // Green with 40% opacity
-        gradientGreen.addColorStop(1, 'rgba(76, 255, 76, 0)');   // Green with 0% opacity
-
-        netWorthChartInstance = new Chart(ctx, {
-          type: 'line', 
-          data: {
-            labels: incomeDays.map(dateKey => { // Format YYYY-MM-DD to Month Day
-                const [year, monthNum, dayNum] = dateKey.split('-');
-                // return new Date(year, parseInt(monthNum) - 1, parseInt(dayNum)).toLocaleDateString('default', { month: 'short', day: 'numeric' });
-                return `${monthNum.padStart(2, '0')}/${dayNum.padStart(2, '0')}`; // MM/DD format
-            }),
-            datasets: [
-              {
-                label: 'Net Worth (Income from DC files)', // Updated label
-                data: incomeData,
-                backgroundColor: gradientGreen, // Apply gradient fill
-                borderColor: '#4CFF4C', // Green line
-                borderWidth: 2, // Line thickness
-                fill: true, // Enable fill
-                tension: 0.4, // Smooth curve
-                pointRadius: 4, // Size of the points                pointBackgroundColor: '#4CFF4C', // Green points
-                pointBorderColor: 'var(--bg-secondary)', // Match card background for point border
-                pointHoverRadius: 7, // Size of points on hover
-                pointHoverBackgroundColor: '#4CFF4C',
-                pointHoverBorderColor: 'var(--bg-primary)'
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,            scales: {
-              x: { 
-                grid: { color: 'var(--border-color)' }, 
-                ticks: { 
-                    color: 'var(--text-secondary)',
-                    // autoSkip: true, // May be useful for many data points
-                    // maxTicksLimit: 20 // Adjust as needed
-                } 
-              },
-              y: { grid: { color: 'var(--border-color)' }, ticks: { color: 'var(--text-secondary)' }, beginAtZero: true }
-            },            plugins: {
-              legend: { display: true, labels: { color: 'var(--text-primary)' } },
-              title: {
-                display: false, // Main title is in H2
-                // text: 'Monthly Income Over Time', // Already have H2
-                color: 'var(--text-primary)'
-              }
-            }
-          }
-        });
-      }
-
-      // --- New: Aggregate data for charts based on timeframe ---
+      }      // --- New: Aggregate data for charts based on timeframe ---
       function aggregateDataForChart(sourceData, timeframe, dataType) {
         const now = new Date();
         let labels = [];
@@ -1577,9 +1979,8 @@
         const allSortedDates = Object.keys(sourceData).sort();
 
         allSortedDates.forEach(dateKey => {
-          const entry = sourceData[dateKey];
-          const value = entry ? (entry[dataType] || 0) : 0;
-          if (value === 0 && dataType === 'dcIncome') return; // For net worth, skip if no income
+          const entry = sourceData[dateKey];          const value = entry ? (entry[dataType] || 0) : 0;
+          if (value === 0 && dataType === 'dcIncome') return; // Skip if no income
 
           const date = new Date(dateKey + 'T00:00:00'); // Ensure local timezone interpretation
 
@@ -1710,14 +2111,9 @@
           // Remove active class from all buttons in this group
           button.parentElement.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
           // Add active class to the clicked button
-          button.classList.add('active');
-
-          if (chartName === 'expenses') {
+          button.classList.add('active');          if (chartName === 'expenses') {
             expensesChartTimeframe = range;
             renderSpendChart(expensesChartTimeframe);
-          } else if (chartName === 'netWorth') {
-            netWorthChartTimeframe = range;
-            renderNetWorthChart(netWorthChartTimeframe);
           }
         });      });      // === ANIMATED GRADIENT EFFECT FOR BUTTONS ===
       function setupAnimatedButtons() {
@@ -2269,6 +2665,8 @@ The response MUST be only the valid JSON object, with no extra text, explanation
       // Show/hide logic for the modal
       const banksImportModal = document.getElementById('banksImportModal');
       const importBanksBtn = document.getElementById('importBanksBtn');
+      const closeBanksImportModalBtn = document.getElementById('closeBanksImportModalBtn');
+      const cancelBanksImportBtn = document.getElementById('cancelBanksImportBtn');
       if (importBanksBtn && banksImportModal) {
         banksImportModal.style.display = 'none'; // Ensure it's hidden by default
         importBanksBtn.onclick = () => {
@@ -2277,8 +2675,6 @@ The response MUST be only the valid JSON object, with no extra text, explanation
           document.getElementById('bankUrlInput').value = '';
         };
       }
-      const closeBanksImportModalBtn = document.getElementById('closeBanksImportModalBtn');
-      const cancelBanksImportBtn = document.getElementById('cancelBanksImportBtn');
       if (closeBanksImportModalBtn) closeBanksImportModalBtn.onclick = () => { banksImportModal.style.display = 'none'; };
       if (cancelBanksImportBtn) cancelBanksImportBtn.onclick = () => { banksImportModal.style.display = 'none'; };
       // Close modal if user clicks outside of it
@@ -2549,9 +2945,343 @@ The response MUST be only the valid JSON object, with no extra text, explanation
           }
           const dataForN8N = await generatePresentationData();
           await sendToN8N(dataForN8N);
+        });      }
+      // --- End Presentation Generation Logic ---
+
+      // --- Budget Widget Implementation ---
+      
+      let budgetData = {};
+      const budgetStorageKey = 'financeBudgetData';
+      
+      // Load budget data from localStorage
+      function loadBudgetData() {
+        const stored = localStorage.getItem(budgetStorageKey);
+        if (stored) {
+          try {
+            budgetData = JSON.parse(stored);
+          } catch (e) {
+            console.error('Error loading budget data:', e);
+            budgetData = {};
+          }
+        }
+      }
+      
+      // Save budget data to localStorage
+      function saveBudgetData() {
+        try {
+          localStorage.setItem(budgetStorageKey, JSON.stringify(budgetData));
+        } catch (e) {
+          console.error('Error saving budget data:', e);
+          alert('Error saving budget data. Please try again.');
+        }
+      }
+      
+      // Initialize budget widget
+      function initializeBudgetWidget() {
+        loadBudgetData();
+        setupBudgetEventListeners();
+        populateBudgetMonthSelector();
+        renderBudgetCategories();
+        updateBudgetTotals();
+      }
+      
+      // Setup event listeners for budget widget
+      function setupBudgetEventListeners() {
+        // Toggle widget collapse/expand
+        const toggleBtn = document.getElementById('budgetToggleBtn');
+        const widgetContainer = document.querySelector('.budget-widget-container');
+        
+        if (toggleBtn) {
+          toggleBtn.addEventListener('click', () => {
+            widgetContainer.classList.toggle('collapsed');
+          });
+        }
+        
+        // Month selector change
+        const monthSelector = document.getElementById('budgetMonthSelector');
+        if (monthSelector) {
+          monthSelector.addEventListener('change', () => {
+            renderBudgetCategories();
+            updateBudgetTotals();
+          });
+        }
+          // Action buttons
+        const addCategoryBtn = document.getElementById('addCategoryBudgetBtn');
+        const resetBudgetBtn = document.getElementById('resetBudgetBtn');
+        const saveBudgetBtn = document.getElementById('saveBudgetBtn');
+        
+        // Add mouse tracking for gradient effects
+        const budgetActionBtns = [addCategoryBtn, resetBudgetBtn, saveBudgetBtn];
+        budgetActionBtns.forEach(btn => {
+          if (btn) {
+            btn.addEventListener('mousemove', (e) => {
+              const rect = btn.getBoundingClientRect();
+              const x = ((e.clientX - rect.left) / rect.width) * 100;
+              const y = ((e.clientY - rect.top) / rect.height) * 100;
+              btn.style.setProperty('--mouse-x', `${x}%`);
+              btn.style.setProperty('--mouse-y', `${y}%`);
+            });
+          }
+        });
+        
+        if (addCategoryBtn) {
+          addCategoryBtn.addEventListener('click', () => {
+            showAddCategoryDialog();
+          });
+        }
+        
+        if (resetBudgetBtn) {
+          resetBudgetBtn.addEventListener('click', () => {
+            resetCurrentMonthBudget();
+          });
+        }
+        
+        if (saveBudgetBtn) {
+          saveBudgetBtn.addEventListener('click', () => {
+            saveBudgetData();
+            alert('Budget saved successfully!');
+          });
+        }
+      }
+      
+      // Populate month selector with available months
+      function populateBudgetMonthSelector() {
+        const selector = document.getElementById('budgetMonthSelector');
+        if (!selector) return;
+        
+        selector.innerHTML = '';
+        
+        // Get current month as default
+        const today = new Date();
+        const currentMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+        
+        // Get months from existing data
+        const availableMonths = new Set();
+        availableMonths.add(currentMonth); // Always include current month
+        
+        // Add months from daily activity data
+        Object.keys(dailyActivity).forEach(dateKey => {
+          const month = dateKey.substring(0, 7); // Extract YYYY-MM
+          availableMonths.add(month);
+        });
+        
+        // Sort months (newest first)
+        const sortedMonths = Array.from(availableMonths).sort().reverse();
+        
+        sortedMonths.forEach(month => {
+          const option = document.createElement('option');
+          option.value = month;
+          const [year, monthNum] = month.split('-');
+          const monthName = new Date(year, monthNum - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+          option.textContent = monthName;
+          selector.appendChild(option);
+        });
+        
+        // Set current month as selected
+        selector.value = currentMonth;
+      }
+      
+      // Render budget categories for selected month
+      function renderBudgetCategories() {
+        const container = document.getElementById('budgetCategoriesList');
+        const monthSelector = document.getElementById('budgetMonthSelector');
+        
+        if (!container || !monthSelector) return;
+        
+        const selectedMonth = monthSelector.value;
+        container.innerHTML = '';
+        
+        // Ensure budget data exists for this month
+        if (!budgetData[selectedMonth]) {
+          budgetData[selectedMonth] = {};
+        }
+        
+        // Calculate spending for each category in the selected month
+        const monthlySpending = calculateMonthlySpending(selectedMonth);
+        
+        // Get all categories (predefined + custom budget categories)
+        const allCategories = new Set([...CATEGORIES]);
+        Object.keys(budgetData[selectedMonth]).forEach(cat => allCategories.add(cat));
+        
+        const sortedCategories = Array.from(allCategories).sort();
+        
+        sortedCategories.forEach(category => {
+          const budgetAmount = budgetData[selectedMonth][category] || 0;
+          const spentAmount = monthlySpending[category] || 0;
+          const remaining = budgetAmount - spentAmount;
+          const progressPercent = budgetAmount > 0 ? Math.min((spentAmount / budgetAmount) * 100, 100) : 0;
+          
+          const categoryRow = document.createElement('div');
+          categoryRow.className = 'budget-category-row';
+          categoryRow.innerHTML = `
+            <div class="budget-category-name">${category}</div>
+            <div class="budget-category-budget">
+              <input type="number" 
+                     class="budget-input" 
+                     value="${budgetAmount}" 
+                     min="0" 
+                     step="0.01"
+                     data-category="${category}">
+            </div>
+            <div class="budget-category-spent">$${spentAmount.toFixed(2)}</div>
+            <div class="budget-category-remaining ${remaining >= 0 ? 'positive' : 'negative'}">
+              $${remaining.toFixed(2)}
+            </div>
+            <div class="budget-category-progress">
+              <div class="budget-progress-bar">
+                <div class="budget-progress-fill ${getProgressBarClass(progressPercent)}" 
+                     style="width: ${progressPercent}%"></div>
+              </div>
+              <span class="budget-progress-text">${progressPercent.toFixed(1)}%</span>
+            </div>
+            <button class="budget-delete-btn" data-category="${category}" title="Remove Category">×</button>
+          `;
+          
+          container.appendChild(categoryRow);
+        });
+        
+        // Add event listeners for budget inputs
+        container.querySelectorAll('.budget-input').forEach(input => {
+          input.addEventListener('change', (e) => {
+            const category = e.target.dataset.category;
+            const amount = parseFloat(e.target.value) || 0;
+            budgetData[selectedMonth][category] = amount;
+            renderBudgetCategories(); // Re-render to update calculations
+            updateBudgetTotals();
+          });
+        });
+        
+        // Add event listeners for delete buttons
+        container.querySelectorAll('.budget-delete-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const category = e.target.dataset.category;
+            if (confirm(`Remove budget for "${category}"?`)) {
+              delete budgetData[selectedMonth][category];
+              renderBudgetCategories();
+              updateBudgetTotals();
+            }
+          });
         });
       }
-      // --- End Presentation Generation Logic ---      setupTimeframeControls(); // Call to initialize the new synchronized controls
+      
+      // Calculate monthly spending by category
+      function calculateMonthlySpending(monthKey) {
+        const spending = {};
+        
+        // Initialize all categories with 0
+        CATEGORIES.forEach(cat => spending[cat] = 0);
+        
+        // Sum spending for the selected month
+        Object.keys(dailyActivity).forEach(dateKey => {
+          if (dateKey.startsWith(monthKey)) {
+            const dayData = dailyActivity[dateKey];
+            if (dayData && dayData.categories) {
+              Object.keys(dayData.categories).forEach(category => {
+                if (!spending[category]) spending[category] = 0;
+                spending[category] += dayData.categories[category] || 0;
+              });
+            }
+          }
+        });
+        
+        return spending;
+      }
+      
+      // Get CSS class for progress bar based on percentage
+      function getProgressBarClass(percent) {
+        if (percent <= 50) return 'progress-low';
+        if (percent <= 80) return 'progress-medium';
+        if (percent <= 100) return 'progress-high';
+        return 'progress-over';
+      }
+      
+      // Update budget totals display
+      function updateBudgetTotals() {
+        const monthSelector = document.getElementById('budgetMonthSelector');
+        const totalAmountEl = document.getElementById('totalBudgetAmount');
+        const remainingEl = document.getElementById('budgetRemaining');
+        
+        if (!monthSelector || !totalAmountEl || !remainingEl) return;
+        
+        const selectedMonth = monthSelector.value;
+        const monthBudget = budgetData[selectedMonth] || {};
+        const monthlySpending = calculateMonthlySpending(selectedMonth);
+        
+        let totalBudget = 0;
+        let totalSpent = 0;
+        
+        Object.keys(monthBudget).forEach(category => {
+          totalBudget += monthBudget[category] || 0;
+        });
+        
+        Object.keys(monthlySpending).forEach(category => {
+          if (monthBudget[category] > 0) { // Only count spending for budgeted categories
+            totalSpent += monthlySpending[category] || 0;
+          }
+        });
+        
+        const remaining = totalBudget - totalSpent;
+        
+        totalAmountEl.textContent = `$${totalBudget.toFixed(2)}`;
+        remainingEl.textContent = `($${Math.abs(remaining).toFixed(2)} ${remaining >= 0 ? 'remaining' : 'over'})`;
+        remainingEl.className = `budget-remaining ${remaining >= 0 ? 'positive' : 'negative'}`;
+      }
+      
+      // Show dialog to add new category budget
+      function showAddCategoryDialog() {
+        const categoryName = prompt('Enter category name:');
+        if (!categoryName || categoryName.trim() === '') return;
+        
+        const budgetAmount = prompt('Enter budget amount:', '0');
+        const amount = parseFloat(budgetAmount) || 0;
+        
+        const monthSelector = document.getElementById('budgetMonthSelector');
+        const selectedMonth = monthSelector.value;
+        
+        if (!budgetData[selectedMonth]) {
+          budgetData[selectedMonth] = {};
+        }
+        
+        budgetData[selectedMonth][categoryName.trim()] = amount;
+        renderBudgetCategories();
+        updateBudgetTotals();
+      }
+      
+      // Reset budget for current month
+      function resetCurrentMonthBudget() {
+        const monthSelector = document.getElementById('budgetMonthSelector');
+        const selectedMonth = monthSelector.value;
+        
+        if (confirm(`Reset all budget data for ${selectedMonth}?`)) {
+          budgetData[selectedMonth] = {};
+          renderBudgetCategories();
+          updateBudgetTotals();
+        }
+      }
+      
+      // Update budget widget when data changes
+      function updateBudgetOnDataChange() {
+        if (document.getElementById('budgetMonthSelector')) {
+          populateBudgetMonthSelector();
+          renderBudgetCategories();
+          updateBudgetTotals();
+        }
+      }
+        // Initialize budget widget when page loads
+      document.addEventListener('DOMContentLoaded', () => {
+        initializeBudgetWidget();
+      });
+      
+      // Initialize budget widget immediately if DOM is already loaded
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeBudgetWidget);
+      } else {
+        initializeBudgetWidget();
+      }
+      
+      // --- End Budget Widget Implementation ---
+
+      setupTimeframeControls(); // Call to initialize the new synchronized controls
     </script>
 </body>
 </html>

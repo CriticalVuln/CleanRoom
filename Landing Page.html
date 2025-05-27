@@ -673,18 +673,12 @@
           <button class="timeframe-btn" data-timeframe="year"><span>Year</span></button>
         </div>
         <div style="flex:1; min-height:220px;">
-          <canvas id="landingOverallPerformanceChart" style="width:100%;height:220px;"></canvas>
-        </div>
+          <canvas id="landingOverallPerformanceChart" style="width:100%;height:220px;"></canvas>        </div>
       </div>
 
-      <!-- Net Worth Placeholder Widget -->
-      <div class="widget-card" style="flex:1;">        <h2 class="widget-title">Net Worth</h2>        <div class="timeframe-controls landing-timeframe-controls">
-          <button class="networth-timeframe-btn active" data-timeframe="day"><span>Day</span></button>
-          <button class="networth-timeframe-btn" data-timeframe="week"><span>Week</span></button>
-          <button class="networth-timeframe-btn" data-timeframe="month"><span>Month</span></button>
-          <button class="networth-timeframe-btn" data-timeframe="year"><span>Year</span></button>
-        </div>
-        <div class="widget-placeholder">(Coming soon)</div>
+      <!-- Net Worth Widget Container (Content Removed) -->
+      <div class="widget-card" style="flex:1;">
+        <!-- Widget content will be replaced -->
       </div>
     </div>
   </div>
@@ -1039,7 +1033,7 @@
     }
     updateLandingOverallChart(landingChartRange);
 
-    // --- Timeframe toggle logic for UI (Net Worth only UI, no data logic) ---
+    // --- Timeframe toggle logic for Overall Performance ---
     // Overall Performance toggles
     const overallBtns = document.querySelectorAll('.landing-timeframe-controls .timeframe-btn');
     overallBtns.forEach(btn => {
@@ -1047,15 +1041,6 @@
         overallBtns.forEach(b => { b.classList.remove('active'); b.classList.remove('selected'); });
         btn.classList.add('active');
         updateLandingOverallChart(btn.dataset.timeframe);
-      });
-    });
-      // Net Worth toggles (UI only)
-    const networthBtns = document.querySelectorAll('.landing-timeframe-controls .networth-timeframe-btn');
-    networthBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        networthBtns.forEach(b => { b.classList.remove('active'); b.classList.remove('selected'); });
-        btn.classList.add('active');
-        // No data logic yet
       });    });
 
     // === ANIMATED GRADIENT EFFECT FOR TIMEFRAME BUTTONS ===
