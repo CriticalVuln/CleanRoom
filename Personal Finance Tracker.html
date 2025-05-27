@@ -212,42 +212,39 @@
       fill: none;
       stroke: var(--text-accent);
       stroke-width: 2;
-    }    /* Theme Toggle Button */
-    .theme-toggle {
-      width: 32px;
-      height: 32px;
+    }    /* Theme Toggle Button */    .theme-toggle {
       background: none;
       border: none;
-      cursor: pointer;
       color: var(--text-accent);
-      padding: 0;
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, filter 0.3s ease;
       margin: 10px;
-      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .theme-toggle:hover {
-      color: var(--text-accent);
-      transform: scale(1.1);
       filter: brightness(1.2);
     }
 
     .theme-toggle svg {
-      width: 100%;
-      height: 100%;
-      stroke: currentColor;
-      fill: none;
+      width: 24px;
+      height: 24px;
+      stroke: var(--text-accent);
       stroke-width: 2;
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      fill: none;
+      transition: stroke 0.3s ease;
     }
 
     .theme-toggle .sun-icon {
-      fill: currentColor;
-      stroke: none;
+      display: block;
     }
 
     .theme-toggle .moon-icon {
-      fill: currentColor;
-      stroke: none;
+      display: none;
     }
 
     [data-theme="dark"] .theme-toggle .sun-icon {
@@ -285,8 +282,7 @@
     .file-history-tab.active, .banks-tab.active, .upload-pdf-btn.active {
       background: var(--text-accent);
       color: var(--button-text-selected);
-    }
-      /* Panel Components - Consolidated styling for both panels */
+    }    /* Panel Components - Consolidated styling for both panels */
     .file-history-panel {
       position: absolute;
       top: 54px;
@@ -295,8 +291,8 @@
       color: var(--text-primary);
       border-radius: 0 0 12px 12px;
       box-shadow: 0 4px 16px var(--shadow-medium);
-      min-width: 320px;
-      max-width: 420px;
+      min-width: 380px;
+      max-width: 480px;
       padding: 18px 18px 10px 18px;
       z-index: 1100;
       display: none;
@@ -331,21 +327,145 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
-    }
-    .file-history-list .delete-btn {
-      background: none;
-      border: none;
+    }    /* Advanced Delete Button Styling - Matching Productivity Tracker */
+    .file-history-list .delete-btn, .delete-btn {
+      background: linear-gradient(145deg, var(--bg-secondary), var(--bg-tertiary));
+      border: 1px solid var(--border-color);
       color: var(--priority-high);
-      font-size: 15px;
-      cursor: pointer;
+      border-color: rgba(244, 67, 54, 0.2);
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.05), 
+        rgba(244, 67, 54, 0.02)
+      );
+      padding: 8px 12px;
       margin-left: 12px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      transition: background 0.15s;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      min-width: 32px;
+      box-shadow: 
+        0 2px 4px var(--shadow-light),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
-    .file-history-list .delete-btn:hover {
-      background: var(--bg-tertiary);
-    }    /* Timeframe Controls - Consolidated */
+
+    .file-history-list .delete-btn:hover, .delete-btn:hover {
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.15), 
+        rgba(244, 67, 54, 0.08)
+      );
+      border-color: rgba(244, 67, 54, 0.6);
+      box-shadow: 
+        0 4px 12px rgba(244, 67, 54, 0.25),
+        0 2px 4px var(--shadow-light),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px) scale(1.05);
+      color: var(--priority-high);
+    }
+
+    .file-history-list .delete-btn:active, .delete-btn:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 
+        0 1px 2px var(--shadow-light),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced animated gradient effects for delete buttons */
+    .file-history-list .delete-btn::before, .delete-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      border-radius: inherit;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .file-history-list .delete-btn:hover::before, .delete-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* Subtle inner glow effect for delete buttons */
+    .file-history-list .delete-btn::after, .delete-btn::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      right: 1px;
+      bottom: 1px;
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.1), 
+        transparent 50%
+      );
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .file-history-list .delete-btn:hover::after, .delete-btn:hover::after {
+      opacity: 1;
+    }
+
+    /* === DELETE BUTTON ANIMATED GRADIENT EFFECTS === */
+    .delete-btn {
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+    }
+    
+    .delete-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        rgba(244, 67, 54, 0.4) 0%,
+        rgba(244, 67, 54, 0.2) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: inherit;
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .delete-btn:hover::before {
+      opacity: 1;
+    }
+    
+    .delete-btn svg {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Timeframe Controls - Consolidated */
     .timeframe-controls {
       text-align: center;
       margin-bottom: 15px;
@@ -533,14 +653,14 @@
       cursor: pointer;
       font-size: 0.95em;
       transition: background-color 0.2s, color 0.2s;
-    }
-    .upload-modal-btn.primary {
-      background: var(--text-accent);
-      color: var(--button-text-selected);
-    }
-    .upload-modal-btn.secondary {
-      background: var(--border-color);
-      color: var(--text-primary);
+    }    .upload-modal-btn.primary {
+      background: transparent;
+      color: var(--text-accent);
+      border: 1px solid transparent;
+    }    .upload-modal-btn.secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid transparent;
     }
     
     /* Progress Bar Component */
@@ -626,9 +746,8 @@
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }    #agent-action-button:hover {
       background-color: var(--button-hover-bg);
-    }
-      /* Consolidated Button States */
-    button, .upload-modal-btn, .file-history-tab, .banks-tab, .control-btn, #agent-action-button {      background: transparent;
+    }      /* Consolidated Button States */
+    button:not(.delete-btn), .upload-modal-btn, .file-history-tab, .banks-tab, .control-btn, #agent-action-button {      background: transparent;
       border: 1px solid transparent;
       color: var(--text-accent);
       font-family: 'Poppins', sans-serif;
@@ -652,9 +771,8 @@
     }
     .upload-modal-btn {
       padding: 10px 20px;
-    }
-      /* Button Hover States */
-    button:not(.active):not(:disabled):hover,
+    }      /* Button Hover States */
+    button:not(.delete-btn):not(.active):not(:disabled):hover,
     .upload-modal-btn:not(.active):not(:disabled):hover,
     .file-history-tab:not(.active):not(:disabled):hover,
     .banks-tab:not(.active):not(:disabled):hover,
@@ -665,14 +783,14 @@
       border-color: transparent;
       box-shadow: 0 0 8px var(--text-accent);
     }      /* === ANIMATED GRADIENT EFFECTS === */
-    button, .upload-modal-btn, .file-history-tab, .banks-tab, .control-btn, #agent-action-button, .timeframe-controls button {
+    button:not(.delete-btn), .upload-modal-btn, .file-history-tab, .banks-tab, .control-btn, #agent-action-button, .timeframe-controls button {
       position: relative;
       overflow: hidden;
       --mouse-x: 50%;
       --mouse-y: 50%;
     }
     
-    button::before, .upload-modal-btn::before, .file-history-tab::before, .banks-tab::before, .control-btn::before, #agent-action-button::before, .timeframe-controls button::before {
+    button:not(.delete-btn)::before, .upload-modal-btn::before, .file-history-tab::before, .banks-tab::before, .control-btn::before, #agent-action-button::before, .timeframe-controls button::before {
       content: '';
       position: absolute;
       top: 0;
@@ -691,23 +809,23 @@
       z-index: 1;
       pointer-events: none;
     }
-      button:hover::before, .upload-modal-btn:hover::before, .file-history-tab:hover::before, .banks-tab:hover::before, .control-btn:hover::before, #agent-action-button:hover::before, .timeframe-controls button:hover::before {
+      button:not(.delete-btn):hover::before, .upload-modal-btn:hover::before, .file-history-tab:hover::before, .banks-tab:hover::before, .control-btn:hover::before, #agent-action-button:hover::before, .timeframe-controls button:hover::before {
       opacity: 1;
     }
     
-    button span, .upload-modal-btn span, .file-history-tab span, .banks-tab span, .control-btn span, #agent-action-button span, .timeframe-controls button span {
+    button:not(.delete-btn) span, .upload-modal-btn span, .file-history-tab span, .banks-tab span, .control-btn span, #agent-action-button span, .timeframe-controls button span {
       position: relative;
       z-index: 2;
     }
     
-    button.active, .upload-modal-btn.active, .file-history-tab.active, .banks-tab.active, .control-btn.active, #agent-action-button.active, .timeframe-controls button.active {
+    button:not(.delete-btn).active, .upload-modal-btn.active, .file-history-tab.active, .banks-tab.active, .control-btn.active, #agent-action-button.active, .timeframe-controls button.active {
       background: linear-gradient(135deg, var(--button-gradient-start), var(--button-gradient-end));
       color: var(--button-text-selected);
       border-color: var(--text-accent);
       box-shadow: 0 4px 15px var(--button-shadow);
     }
     
-    button.active::before, .upload-modal-btn.active::before, .file-history-tab.active::before, .banks-tab.active::before, .control-btn.active::before, #agent-action-button.active::before, .timeframe-controls button.active::before {
+    button:not(.delete-btn).active::before, .upload-modal-btn.active::before, .file-history-tab.active::before, .banks-tab.active::before, .control-btn.active::before, #agent-action-button.active::before, .timeframe-controls button.active::before {
       background: radial-gradient(
         circle at var(--mouse-x) var(--mouse-y),
         var(--button-active-gradient-center) 0%,
@@ -716,24 +834,45 @@
       );
       opacity: 0.7;
     }
-      button.active:hover::before, .upload-modal-btn.active:hover::before, .file-history-tab.active:hover::before, .banks-tab.active:hover::before, .control-btn.active:hover::before, #agent-action-button.active:hover::before, .timeframe-controls button.active:hover::before {
-      opacity: 1;
-    }
-      /* Button Active States */
-    button.active, button:active,
+      button:not(.delete-btn).active:hover::before, .upload-modal-btn.active:hover::before, .file-history-tab.active:hover::before, .banks-tab.active:hover::before, .control-btn.active:hover::before, #agent-action-button.active:hover::before, .timeframe-controls button.active:hover::before {
+      opacity: 1;    }      /* Button Active States */    button:not(.delete-btn).active, button:not(.delete-btn):active,
     .upload-modal-btn.active, .upload-modal-btn:active,
     .file-history-tab.active, .file-history-tab:active,
     .banks-tab.active, .banks-tab:active,
     .control-btn.active, .control-btn:active,
     #agent-action-button.active, #agent-action-button:active {
-      background-color: var(--bg-primary);
-      color: var(--text-accent);
-      border: 1px solid var(--text-accent);
-      box-shadow: none;
+      background: linear-gradient(135deg, var(--button-gradient-start), var(--button-gradient-end));
+      color: var(--button-text-selected);
+      border-color: var(--text-accent);
+      box-shadow: 0 4px 15px var(--button-shadow);
+    }    /* Text visibility fix for active/selected buttons during hover */
+    button:not(.delete-btn).active:hover,
+    button:not(.delete-btn):active:hover,
+    .upload-modal-btn.active:hover,
+    .upload-modal-btn:active:hover,
+    .file-history-tab.active:hover,
+    .file-history-tab:active:hover,
+    .banks-tab.active:hover,
+    .banks-tab:active:hover,
+    .control-btn.active:hover,
+    .control-btn:active:hover,
+    #agent-action-button.active:hover,
+    #agent-action-button:active:hover {
+      color: var(--button-text-selected) !important;
+      position: relative;
+      z-index: 2;
     }
-    
-    /* Button Disabled States */
-    button:disabled,
+
+    /* Text visibility fix for chart buttons with data attributes */
+    button[data-chart].active:hover,
+    button[data-range].active:hover,
+    .timeframe-controls button.active:hover {
+      color: var(--button-text-selected) !important;
+      position: relative;
+      z-index: 2;
+    }
+      /* Button Disabled States */
+    button:not(.delete-btn):disabled,
     .upload-modal-btn:disabled,
     .file-history-tab:disabled,
     .banks-tab:disabled,
@@ -776,6 +915,533 @@
       outline: none;
       border-color: var(--text-accent);
       box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    /* SVG icons for delete buttons */
+    .delete-btn svg {
+      width: 14px;
+      height: 14px;
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    .delete-btn .trash-icon {
+      fill: currentColor;
+    }
+
+    /* Budget Management Styles */
+    .budget-management-container {
+      margin-bottom: 24px;
+    }
+
+    .budget-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .budget-header h2 {
+      margin: 0;
+      color: var(--text-accent);
+      font-weight: 600;
+      font-size: 1.4em;
+    }
+
+    .budget-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    #budgetMonthSelector {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 0.9em;
+      min-width: 140px;
+      transition: all 0.3s ease;
+    }
+
+    #budgetMonthSelector:focus {
+      outline: none;
+      border-color: var(--text-accent);
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    .budget-action-btn {
+      background: var(--text-accent);
+      color: var(--button-text-selected);
+      border: none;
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.9em;
+    }
+
+    .budget-action-btn:hover {
+      background: var(--button-hover-bg);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--button-shadow);
+    }
+
+    .budget-action-btn.secondary {
+      background: transparent;
+      color: var(--text-accent);
+      border: 1px solid var(--text-accent);
+    }
+
+    .budget-action-btn.secondary:hover {
+      background: var(--text-accent);
+      color: var(--button-text-selected);
+    }
+
+    .budget-overview {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .budget-summary-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .budget-summary-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--shadow-medium);
+    }
+
+    .budget-summary-label {
+      font-size: 0.85em;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }    .budget-summary-amount {
+      font-size: 1.5em;
+      font-weight: 600;
+      color: var(--text-primary);
+    }    /* Editable budget input that looks like the original div */
+    .budget-summary-amount.editable-budget {
+      background: transparent;
+      border: none;
+      outline: none;
+      text-align: center;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .budget-summary-amount.editable-budget:hover {
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      padding: 4px 8px;
+      cursor: text;
+    }
+
+    .budget-summary-amount.editable-budget:focus {
+      background: var(--bg-primary);
+      border: 1px solid var(--text-accent);
+      border-radius: 4px;
+      padding: 4px 8px;
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+      cursor: text;
+    }    /* Add subtle visual hint that the field is editable */
+    .budget-summary-card:hover .budget-summary-amount.editable-budget {
+      position: relative;
+    }
+
+    .budget-summary-card:hover .budget-summary-amount.editable-budget::after {
+      content: "✎";
+      position: absolute;
+      top: -5px;
+      right: -15px;
+      font-size: 0.7em;
+      color: var(--text-accent);
+      opacity: 0.6;
+    }
+
+    /* Hide number input arrows */
+    .budget-summary-amount.editable-budget::-webkit-outer-spin-button,
+    .budget-summary-amount.editable-budget::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      appearance: none;
+      margin: 0;
+    }
+
+    .budget-summary-amount.editable-budget {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
+    .budget-summary-amount.over-budget {
+      color: var(--priority-high);
+    }
+
+    .budget-summary-amount.on-track {
+      color: var(--text-accent);
+    }
+
+    .budget-progress-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .budget-progress-bar {
+      flex: 1;
+      height: 8px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .budget-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--text-accent), var(--button-gradient-end));
+      border-radius: 4px;
+      transition: width 0.5s ease;
+      width: 0%;
+    }
+
+    .budget-progress-fill.over-budget {
+      background: linear-gradient(90deg, var(--priority-high), #ff4757);
+    }
+
+    .budget-progress-fill.warning {
+      background: linear-gradient(90deg, var(--priority-medium), #ffa726);
+    }
+
+    .budget-progress-text {
+      font-size: 0.85em;
+      font-weight: 600;
+      color: var(--text-secondary);
+      min-width: 35px;
+    }
+
+    .budget-categories {
+      display: grid;
+      gap: 16px;
+    }
+
+    .budget-category-card {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .budget-category-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px var(--shadow-medium);
+    }
+
+    .budget-category-card.over-budget {
+      border-color: var(--priority-high);
+      background: linear-gradient(135deg, var(--bg-tertiary), rgba(244, 67, 54, 0.05));
+    }
+
+    .budget-category-card.warning {
+      border-color: var(--priority-medium);
+      background: linear-gradient(135deg, var(--bg-tertiary), rgba(255, 193, 7, 0.05));
+    }
+
+    .budget-category-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .budget-category-name {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .budget-category-icon {
+      width: 20px;
+      height: 20px;
+      stroke: var(--text-accent);
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .budget-category-status {
+      font-size: 0.8em;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: 600;
+    }
+
+    .budget-category-status.on-track {
+      background: rgba(76, 175, 80, 0.1);
+      color: var(--priority-low);
+    }
+
+    .budget-category-status.warning {
+      background: rgba(255, 193, 7, 0.1);
+      color: var(--priority-medium);
+    }
+
+    .budget-category-status.over-budget {
+      background: rgba(244, 67, 54, 0.1);
+      color: var(--priority-high);
+    }
+
+    .budget-category-amounts {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .budget-amount-item {
+      text-align: center;
+    }
+
+    .budget-amount-label {
+      font-size: 0.75em;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .budget-amount-value {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .budget-amount-value.over-budget {
+      color: var(--priority-high);
+    }
+
+    .budget-category-progress {
+      margin-bottom: 12px;
+    }
+
+    .budget-category-progress .budget-progress-bar {
+      height: 10px;
+      margin-bottom: 8px;
+    }
+
+    .budget-insights {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85em;
+      color: var(--text-secondary);
+    }
+
+    .budget-trend {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .budget-trend-icon {
+      width: 14px;
+      height: 14px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .budget-trend.positive {
+      color: var(--priority-low);
+    }
+
+    .budget-trend.negative {
+      color: var(--priority-high);
+    }
+
+    /* Budget Modal Styles */
+    .budget-modal-content {
+      max-width: 600px;
+      width: 90%;
+    }
+
+    .budget-modal-body {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .budget-month-display {
+      text-align: center;
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--text-accent);
+      padding: 12px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+    }
+
+    .budget-inputs-container {
+      display: grid;
+      gap: 16px;
+    }
+
+    .budget-input-row {
+      display: grid;
+      grid-template-columns: 1fr 120px;
+      gap: 16px;
+      align-items: center;
+      padding: 12px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .budget-input-label {
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .budget-input-field {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 12px;
+      color: var(--text-primary);
+      font-size: 0.9em;
+      text-align: right;
+      transition: all 0.3s ease;
+    }
+
+    .budget-input-field:focus {
+      outline: none;
+      border-color: var(--text-accent);
+      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+    }
+
+    .budget-quick-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .budget-quick-btn {
+      background: var(--bg-tertiary);
+      color: var(--text-accent);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 16px;
+      font-size: 0.85em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .budget-quick-btn:hover {
+      background: var(--text-accent);
+      color: var(--button-text-selected);
+      transform: translateY(-1px);
+    }
+
+    .budget-quick-btn.secondary {
+      color: var(--text-secondary);
+    }
+
+    .budget-quick-btn.secondary:hover {
+      background: var(--priority-high);
+      color: white;
+      border-color: var(--priority-high);
+    }
+
+    @media (max-width: 768px) {
+      .budget-header {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .budget-controls {
+        justify-content: center;
+      }
+
+      .budget-overview {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      }
+
+      .budget-category-amounts {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .budget-input-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        text-align: center;
+      }
+    .budget-quick-actions {
+        flex-direction: column;
+      }
+    }
+
+    /* Collapsible Budget Tracker Styles */
+    .collapsible-header {
+      cursor: pointer;
+      user-select: none;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 20px;
+    }
+
+    .collapsible-header:hover {
+      color: var(--text-accent);
+    }
+
+    .collapse-arrow {
+      font-size: 16px;
+      font-weight: bold;
+      transition: transform 0.3s ease;
+      color: var(--text-accent);
+    }
+
+    .collapse-arrow.collapsed {
+      transform: rotate(-90deg);
+    }
+
+    .budget-content {
+      transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+      overflow: hidden;
+      max-height: 1000px;
+      opacity: 1;
+    }
+
+    .budget-content.collapsed {
+      max-height: 0;
+      opacity: 0;
+      margin: 0;
+      padding: 0;
     }
   </style>
 
@@ -859,26 +1525,53 @@
           <!-- Selected files will be listed here -->
         </div>
 
-        <div class="upload-modal-footer">
-          <button id="cancelUploadBtn" class="upload-modal-btn secondary">Cancel</button>
-          <button id="confirmUploadBtn" class="upload-modal-btn primary">Upload</button>
+        <div class="upload-modal-footer">          <button id="cancelUploadBtn" class="upload-modal-btn secondary"><span>Cancel</span></button>
+          <button id="confirmUploadBtn" class="upload-modal-btn primary"><span>Upload</span></button>
         </div>
       </div>
-    </div>
-    <!-- End New PDF Upload Modal -->
+    </div>    <!-- End New PDF Upload Modal -->
 
-
-    <!-- New Net Worth (Monthly Income) Widget -->
-    <div class="net-worth-container card">
-      <h2>Net Worth</h2>
-      <div class="timeframe-controls">
-        <button data-chart="netWorth" data-range="day">Day</button>
-        <button data-chart="netWorth" data-range="week">Week</button>
-        <button data-chart="netWorth" data-range="month" class="active">Month</button>
-        <button data-chart="netWorth" data-range="year">Year</button>
+    <!-- New Budget Management Section (Moved to top and made collapsible) -->
+    <div class="budget-management-container card">
+      <div class="budget-header collapsible-header" onclick="toggleBudgetCollapse()">
+        <h2>Monthly Budget Tracker</h2>
+        <span class="collapse-arrow" id="budgetCollapseArrow">▼</span>
+        <div class="budget-controls">
+          <select id="budgetMonthSelector">
+            <option value="">Select Month</option>
+          </select>
+          <button id="resetBudgetBtn" class="budget-action-btn secondary">Reset Month</button>
+        </div>
       </div>
-      <div class="net-worth-chart-inner-container">
-        <canvas id="netWorthChartCanvas"></canvas>
+      
+      <div class="budget-content" id="budgetContent">
+        <div class="budget-overview">        
+          <div class="budget-summary-card">
+            <div class="budget-summary-label">Total Budget</div>
+            <input type="number" class="budget-summary-amount editable-budget" id="totalBudgetAmount" value="0.00" min="0" step="0.01" placeholder="0.00">
+          </div>
+          <div class="budget-summary-card">
+            <div class="budget-summary-label">Total Spent</div>
+            <div class="budget-summary-amount" id="totalSpentAmount">$0.00</div>
+          </div>
+          <div class="budget-summary-card">
+            <div class="budget-summary-label">Remaining</div>
+            <div class="budget-summary-amount" id="totalRemainingAmount">$0.00</div>
+          </div>
+          <div class="budget-summary-card">
+            <div class="budget-summary-label">Progress</div>
+            <div class="budget-progress-wrapper">
+              <div class="budget-progress-bar">
+                <div class="budget-progress-fill" id="totalBudgetProgress"></div>
+              </div>
+              <span class="budget-progress-text" id="totalBudgetProgressText">0%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="budget-categories" id="budgetCategoriesContainer">
+          <!-- Categories will be populated here -->
+        </div>
       </div>
     </div>
 
@@ -920,6 +1613,33 @@
         </table>
       </div>    </div>
 
+    <!-- Budget Setting Modal -->
+    <div id="budgetModal" class="upload-modal">
+      <div class="upload-modal-content budget-modal-content">
+        <div class="upload-modal-header">
+          <h2>Set Monthly Budgets</h2>
+          <button id="closeBudgetModalBtn" class="upload-modal-close-btn">&times;</button>
+        </div>
+        <div class="budget-modal-body">
+          <div class="budget-month-display">
+            <span id="budgetModalMonth">Current Month</span>
+          </div>
+          <div class="budget-inputs-container" id="budgetInputsContainer">
+            <!-- Budget inputs will be populated here -->
+          </div>
+          <div class="budget-quick-actions">
+            <button id="setBudgetFromLastMonthBtn" class="budget-quick-btn">Copy from Last Month</button>
+            <button id="setBudgetFromAverageBtn" class="budget-quick-btn">Set from 3-Month Average</button>
+            <button id="clearAllBudgetsBtn" class="budget-quick-btn secondary">Clear All</button>
+          </div>
+        </div>
+        <div class="upload-modal-footer">
+          <button id="cancelBudgetBtn" class="upload-modal-btn secondary">Cancel</button>
+          <button id="saveBudgetBtn" class="upload-modal-btn primary">Save Budgets</button>
+        </div>
+      </div>
+    </div>
+
     <div id="fileHistoryPanel" class="file-history-panel">
       <h3>Uploaded Files</h3>
       <ul id="fileHistoryList" class="file-history-list"></ul>
@@ -930,15 +1650,31 @@
         <li style="color:var(--text-secondary);">No banks added yet.</li>
       </ul>
       <div style="text-align:right; margin-top:12px;">
-        <button id="importBanksBtn" class="upload-modal-btn primary">Import</button>
+        <button id="importBanksBtn" class="upload-modal-btn primary"><span>Import</span></button>
       </div>
     </div>
 
     <div id="progressBarContainer">
       <div id="progressBar">Processing...</div>
-    </div>
+    </div>    <script>
+      // Toggle Budget Collapse Function
+      function toggleBudgetCollapse() {
+        const budgetContent = document.getElementById('budgetContent');
+        const arrow = document.getElementById('budgetCollapseArrow');
+        
+        if (budgetContent && arrow) {
+          budgetContent.classList.toggle('collapsed');
+          arrow.classList.toggle('collapsed');
+          
+          // Update arrow text
+          if (budgetContent.classList.contains('collapsed')) {
+            arrow.textContent = '▶';
+          } else {
+            arrow.textContent = '▼';
+          }
+        }
+      }
 
-    <script>
       // Helper to extract month/year from filename
       function extractMonthYearFromName(name) {
         if (typeof name !== 'string') return null;
@@ -991,7 +1727,7 @@
       let globalAllTransactions = []; // New: To store all individual transactions
 
       let categoryChart = null;
-      const CATEGORIES = ["Groceries", "Food Delivery/Restaurant", "Gas", "Misc", "Other"];
+      const CATEGORIES = ["Groceries", "Food Delivery/Restaurant", "Gas", "Misc"];
 
       // --- New: N8N Webhook URL ---
       const N8N_WEBHOOK_URL = "https://criticalvuln.app.n8n.cloud/webhook-test/f597b035-7b41-496a-8e8e-f3102a67508a"; // <<< REPLACE WITH YOUR ACTUAL N8N WEBHOOK URL
@@ -1005,9 +1741,11 @@
 
       // --- File History State ---
       let fileHistory = JSON.parse(localStorage.getItem('financeFileHistory') || '[]');
-  
       let fileDataKeysMap = JSON.parse(localStorage.getItem('financeFileDataKeysMap') || '{}'); // New: {"filename": ["YYYY-MM-DD", ...]}
       let globalAllTransactionsStorageKey = 'financeGlobalAllTransactions'; // New
+
+      // --- Budget Management State ---
+      let budgetData = JSON.parse(localStorage.getItem('financeBudgetData') || '{}'); // Format: {"YYYY-MM": {"Groceries": 500, "Gas": 200, ...}}
 
       const progressBarContainer = document.getElementById('progressBarContainer');
       const progressBar = document.getElementById('progressBar');
@@ -1104,18 +1842,23 @@
           const li = document.createElement('li');
           const nameSpan = document.createElement('span');
           nameSpan.className = 'filename';
-          nameSpan.textContent = f.name;
-          const delBtn = document.createElement('button');
+          nameSpan.textContent = f.name;          const delBtn = document.createElement('button');
           delBtn.className = 'delete-btn';
-          delBtn.textContent = 'Delete';
+          delBtn.innerHTML = `
+            <svg viewBox="0 0 24 24" class="trash-icon">
+              <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-4.5l-1-1z"/>
+            </svg>`;
+          delBtn.title = 'Delete';
           delBtn.onclick = (event) => { // Add event parameter
             event.stopPropagation(); // Stop the click from bubbling to the document
             deleteFileHistory(f.name);
-          };
-          li.appendChild(nameSpan);
+          };          li.appendChild(nameSpan);
           li.appendChild(delBtn);
           fileHistoryList.appendChild(li);
         });
+        
+        // Setup animations for newly created delete buttons
+        setupDeleteButtonAnimations();
       }
 
       function showFileHistory(show) {
@@ -1191,11 +1934,10 @@
             if (isDCFile) {
               if (amount < 0) { // DC income is stored as negative by parser, dcIncome in dailyActivity is positive
                 dailyActivity[dateKey].dcIncome += Math.abs(amount);
-              }
-            } else { // Not a DC file
+              }            } else { // Not a DC file
               if (amount > 0) { // Charge
                 dailyActivity[dateKey].charges += amount;
-                let categoryToApply = "Other"; // Default category
+                let categoryToApply = "Misc"; // Default category
                 if (tx.category && CATEGORIES.includes(tx.category)) {
                   categoryToApply = tx.category;
                 }
@@ -1224,6 +1966,7 @@
       }
 
       function removeFileData(name) {
+       
         const dailyKeysAffectedByThisFile = fileDataKeysMap[name] || [];
 
         // Remove transactions from globalAllTransactions associated with this file
@@ -1234,8 +1977,7 @@
         if (dailyKeysAffectedByThisFile.length > 0) {
           rebuildDailyActivityForDates(dailyKeysAffectedByThisFile);
         }
-        
-        // fileDataKeysMap[name] will be deleted by deleteFileHistory function
+          // fileDataKeysMap[name] will be deleted by deleteFileHistory function
         // Totals are recalculated in updateDisplay based on remaining dailyActivity
       }
 
@@ -1262,1036 +2004,482 @@
         renderNetWorthChart(sharedChartTimeframe); // Use shared timeframe
 
         renderRecentTransactions(); // New: Render recent transactions
-      }
-
-      // --- New: Update and Save all data ---
-      function updateAndSaveData() {
-        updateDisplay(); // This now handles saving all primary data to localStorage
-        // fileMonthMap is saved by its own function saveFileMonthMap()
-      }
-
-
-      // --- New: Render Recent Transactions ---
-      function renderRecentTransactions() {
-        const tbody = document.getElementById('recentTransactionsBody');
-        tbody.innerHTML = ''; // Clear existing rows
-
-        if (globalAllTransactions.length === 0) {
-          const tr = tbody.insertRow();
-          const td = tr.insertCell();
-          td.colSpan = 5;
-          td.textContent = 'No transactions to display yet.';
-          td.style.textAlign = 'center';
-          td.style.color = '#A0A0A0';
-          return;
-        }
-
-        // Sort transactions by date, most recent first
-        const sortedTransactions = [...globalAllTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        const recentTransactions = sortedTransactions.slice(0, 10);
-
-        recentTransactions.forEach(tx => {
-          const tr = tbody.insertRow();
-          
-          const dateCell = tr.insertCell();
-          dateCell.textContent = tx.date;
-
-          const descCell = tr.insertCell();
-          descCell.textContent = tx.description;
-          
-          const categoryCell = tr.insertCell();
-          categoryCell.textContent = tx.category || 'N/A';
-
-          const amountCell = tr.insertCell();
-          amountCell.textContent = parseFloat(tx.amount).toFixed(2);
-          // Amounts from parser: positive for charges/expenses, negative for income/payments
-          if (tx.amount < 0) { // Income or Payment
-            amountCell.className = 'amount-income';
-            amountCell.textContent = Math.abs(parseFloat(tx.amount)).toFixed(2); // Display as positive
-          } else { // Charge or Expense
-            amountCell.className = 'amount-expense';
-          }
-          
-          const sourceCell = tr.insertCell();
-          sourceCell.textContent = tx.sourceFile;
-          sourceCell.style.fontSize = '0.85em';
-          sourceCell.style.color = '#888';
-        });
+        // Update budget display if budget management is initialized
+        if (typeof renderBudgetDisplay === 'function') {
+          populateBudgetMonthSelector();
+          renderBudgetDisplay();
+        }
       }
 
+      // --- Budget Management Functions ---
+      function initializeBudgetManagement() {
+        populateBudgetMonthSelector();
+        setupBudgetEventListeners();
+        renderBudgetDisplay();
+      }
 
-      // --- New: Category Chart Functions ---
-      function populateCategoryMonthSelector() {
-        const selector = document.getElementById('categoryMonthSelector');
-        const currentSelection = selector.value; // Expects YYYY-MM
-        selector.innerHTML = ''; // Clear existing options
+      function populateBudgetMonthSelector() {
+        const selector = document.getElementById('budgetMonthSelector');
+        const currentSelection = selector.value;
+        selector.innerHTML = '<option value="">Select Month</option>';
 
         const availableMonths = new Set();
-        Object.keys(dailyActivity).forEach(dateKey_YYYY_MM_DD => {
-            availableMonths.add(dateKey_YYYY_MM_DD.substring(0, 7)); // Extract YYYY-MM
-        });
         
-        const sortedMonths = Array.from(availableMonths).sort().reverse(); // Latest first
-
-        if (sortedMonths.length === 0) {
-            const option = document.createElement('option');
-            option.value = "";
-            option.textContent = "No category data";
-            selector.appendChild(option);
-            selector.disabled = true;
-            return;
-        }
-
-        selector.disabled = false;
-        sortedMonths.forEach(monthKey_YYYY_MM => { // monthKey is YYYY-MM
-            const option = document.createElement('option');
-            option.value = monthKey_YYYY_MM;
-            const [year, monthNum] = monthKey_YYYY_MM.split('-');
-            const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleString('default', { month: 'long' });
-            option.textContent = `${monthName} ${year}`;
-            selector.appendChild(option);
+        // Add months from transaction data
+        Object.keys(dailyActivity).forEach(dateKey => {
+          availableMonths.add(dateKey.substring(0, 7)); // YYYY-MM
         });
 
-        if (sortedMonths.includes(currentSelection)) {
-            selector.value = currentSelection;
-        } else if (sortedMonths.length > 0) {
-            selector.value = sortedMonths[0]; // Default to the latest month
-        }
-      }
-
-      document.getElementById('categoryMonthSelector').addEventListener('change', (event) => {
-        renderCategoriesChart(event.target.value); // Value is YYYY-MM
-      });
-
-      function renderCategoriesChart(monthKey_YYYY_MM) { // Expects YYYY-MM
-        const container = document.querySelector('.category-chart-inner-container');
-        container.innerHTML = '<canvas id="categorySpendChart"></canvas>'; // Ensure fresh canvas
-        const ctx = document.getElementById('categorySpendChart').getContext('2d');
-
-        if (categoryChart) {
-            categoryChart.destroy();
-        }
-
-        if (!monthKey_YYYY_MM || !/^\d{4}-\d{2}$/.test(monthKey_YYYY_MM)) { // Validate monthKey format
-            ctx.font = "16px Poppins";
-            ctx.fillStyle = "#A0A0A0";
-            ctx.textAlign = "center";
-            ctx.fillText(monthKey_YYYY_MM ? "Invalid period format" : "Select a period", container.offsetWidth / 2, container.offsetHeight / 2);
-            return;
-        }
-        
-        const aggregatedCategoriesForMonth = {};
-        CATEGORIES.forEach(cat => aggregatedCategoriesForMonth[cat] = 0); // Initialize all categories to 0
-
-        let foundDataForMonth = false;
-        Object.keys(dailyActivity).forEach(dateKey_YYYY_MM_DD => {
-            if (dateKey_YYYY_MM_DD.startsWith(monthKey_YYYY_MM)) { // Check if the date belongs to the selected month
-                const dayData = dailyActivity[dateKey_YYYY_MM_DD];
-                if (dayData && dayData.categories) {
-                    foundDataForMonth = true;
-                    CATEGORIES.forEach(cat => {
-                        if (dayData.categories[cat]) {
-                            aggregatedCategoriesForMonth[cat] += dayData.categories[cat];
-                        }
-                    });
-                }
-            }
-        });
-
-        if (!foundDataForMonth) {
-            ctx.font = "16px Poppins";
-            ctx.fillStyle = "#A0A0A0";
-            ctx.textAlign = "center";
-            ctx.fillText("No category data for selected period", container.offsetWidth / 2, container.offsetHeight / 2);
-            return;
-        }
-
-        const labels = CATEGORIES;
-        const rawData = labels.map(cat => aggregatedCategoriesForMonth[cat] || 0);
-
-        const filteredLabels = [];
-        const filteredData = [];
-        labels.forEach((label, index) => {
-            if (rawData[index] > 0) {
-                filteredLabels.push(label);
-                filteredData.push(rawData[index]);
-            }
-        });
-
-        if (filteredData.length === 0) {
-            ctx.font = "16px Poppins";
-            ctx.fillStyle = "#A0A0A0";
-            ctx.textAlign = "center";
-            ctx.fillText("No spending in categories for " + monthKey_YYYY_MM, container.offsetWidth / 2, container.offsetHeight / 2);
-            return;
-        }
-          categoryChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: filteredLabels,
-                datasets: [{
-                    label: 'Spending by Category',
-                    data: filteredData,                    backgroundColor: [
-                        '#FF6B6B', // Groceries - Red
-                        '#4CAF50', // Food Delivery/Restaurant - Green  
-                        '#FFC107', // Gas - Amber
-                        '#63FFDA', // Bills - Cyan
-                        '#8B5CF6', // Other - Purple
-                        '#FF9800'  // Extra color - Orange
-                    ],                    borderColor: [
-                        '#FF6B6B',
-                        '#4CAF50',
-                        '#FFC107',
-                        '#63FFDA',
-                        '#8B5CF6',
-                        '#FF9800'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,                plugins: {
-                    legend: {
-                        position: 'top',
-                        labels: { 
-                            color: '#A0A0A0',
-                            font: {
-                                size: 14
-                            },
-                            padding: 15
-                        }
-                    },
-                    title: {
-                        display: false
-                    }
-                }
-            }
-        });
-      }
-
-
-      // --- New: Net Worth (Monthly Income) Chart Function ---
-      function renderNetWorthChart(timeframe = 'month') {
-        const canvas = document.getElementById('netWorthChartCanvas');
-        if (!canvas) return; // Ensure canvas exists
-        const ctx = canvas.getContext('2d');
-        
-        if (netWorthChartInstance) {
-            netWorthChartInstance.destroy();
-        }
-
-        const { labels: incomeDays, data: incomeData } = aggregateDataForChart(dailyActivity, timeframe, 'dcIncome');
-
-        const container = document.querySelector('.net-worth-chart-inner-container');
-        if (incomeDays.length === 0) {
-            // Clear previous chart content and display a message
-            container.innerHTML = '<canvas id="netWorthChartCanvas"></canvas>'; // Re-add canvas
-            const newCtx = document.getElementById('netWorthChartCanvas').getContext('2d');
-            newCtx.font = "16px Poppins";
-            newCtx.fillStyle = "#A0A0A0";
-            newCtx.textAlign = "center";
-            newCtx.fillText("Net Worth data from 'DC' files will appear here.", container.offsetWidth / 2, container.offsetHeight / 2);
-            return;
-        }
-        
-        // Create gradient for the line chart fill
-        const gradientGreen = ctx.createLinearGradient(0, 0, 0, container.offsetHeight); // Adjust gradient height if needed
-        gradientGreen.addColorStop(0, 'rgba(76, 255, 76, 0.4)'); // Green with 40% opacity
-        gradientGreen.addColorStop(1, 'rgba(76, 255, 76, 0)');   // Green with 0% opacity
-
-        netWorthChartInstance = new Chart(ctx, {
-          type: 'line', 
-          data: {
-            labels: incomeDays.map(dateKey => { // Format YYYY-MM-DD to Month Day
-                const [year, monthNum, dayNum] = dateKey.split('-');
-                // return new Date(year, parseInt(monthNum) - 1, parseInt(dayNum)).toLocaleDateString('default', { month: 'short', day: 'numeric' });
-                return `${monthNum.padStart(2, '0')}/${dayNum.padStart(2, '0')}`; // MM/DD format
-            }),
-            datasets: [
-              {
-                label: 'Net Worth (Income from DC files)', // Updated label
-                data: incomeData,
-                backgroundColor: gradientGreen, // Apply gradient fill
-                borderColor: '#4CFF4C', // Green line
-                borderWidth: 2, // Line thickness
-                fill: true, // Enable fill
-                tension: 0.4, // Smooth curve
-                pointRadius: 4, // Size of the points                pointBackgroundColor: '#4CFF4C', // Green points
-                pointBorderColor: 'var(--bg-secondary)', // Match card background for point border
-                pointHoverRadius: 7, // Size of points on hover
-                pointHoverBackgroundColor: '#4CFF4C',
-                pointHoverBorderColor: 'var(--bg-primary)'
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,            scales: {
-              x: { 
-                grid: { color: 'var(--border-color)' }, 
-                ticks: { 
-                    color: 'var(--text-secondary)',
-                    // autoSkip: true, // May be useful for many data points
-                    // maxTicksLimit: 20 // Adjust as needed
-                } 
-              },
-              y: { grid: { color: 'var(--border-color)' }, ticks: { color: 'var(--text-secondary)' }, beginAtZero: true }
-            },            plugins: {
-              legend: { display: true, labels: { color: 'var(--text-primary)' } },
-              title: {
-                display: false, // Main title is in H2
-                // text: 'Monthly Income Over Time', // Already have H2
-                color: 'var(--text-primary)'
-              }
-            }
-          }
-        });
-      }
-
-      // --- New: Aggregate data for charts based on timeframe ---
-      function aggregateDataForChart(sourceData, timeframe, dataType) {
+        // Add current month if not present
         const now = new Date();
-        let labels = [];
-        let data = [];
-        const aggregated = {}; // Temp object to sum data for periods
+        const currentMonth = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}`;
+        availableMonths.add(currentMonth);
 
-        const allSortedDates = Object.keys(sourceData).sort();
+        // Add next month for planning
+        const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const nextMonthKey = `${nextMonth.getFullYear()}-${(nextMonth.getMonth() + 1).toString().padStart(2, '0')}`;
+        availableMonths.add(nextMonthKey);
 
-        allSortedDates.forEach(dateKey => {
-          const entry = sourceData[dateKey];
-          const value = entry ? (entry[dataType] || 0) : 0;
-          if (value === 0 && dataType === 'dcIncome') return; // For net worth, skip if no income
+        const sortedMonths = Array.from(availableMonths).sort().reverse();
 
-          const date = new Date(dateKey + 'T00:00:00'); // Ensure local timezone interpretation
-
-          let periodKey = '';
-
-          if (timeframe === 'day') {
-            periodKey = dateKey; // YYYY-MM-DD
-          } else if (timeframe === 'week') {
-            const weekStart = new Date(date);
-            weekStart.setDate(date.getDate() - date.getDay()); // Sunday
-            periodKey = `${weekStart.getFullYear()}-${(weekStart.getMonth() + 1).toString().padStart(2, '0')}-${weekStart.getDate().toString().padStart(2, '0')}`;
-          } else if (timeframe === 'month') {
-            periodKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-          } else if (timeframe === 'year') {
-            periodKey = date.getFullYear().toString();
-          }
-
-          if (periodKey) {
-            aggregated[periodKey] = (aggregated[periodKey] || 0) + value;
-          }
+        sortedMonths.forEach(monthKey => {
+          const option = document.createElement('option');
+          option.value = monthKey;
+          const [year, monthNum] = monthKey.split('-');
+          const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleString('default', { month: 'long' });
+          option.textContent = `${monthName} ${year}`;
+          selector.appendChild(option);
         });
 
-        labels = Object.keys(aggregated).sort();
-        data = labels.map(key => aggregated[key]);
-        
-        // Format labels for display
-        const formattedLabels = labels.map(label => {
-            if (timeframe === 'day') {
-                const [y, m, d] = label.split('-');
-                return `${m}/${d}`;
-            }
-            if (timeframe === 'week') {
-                 const [y, m, d] = label.split('-');
-                return `Wk ${m}/${d}`;
-            }
-            if (timeframe === 'month') {
-                const [y,m] = label.split('-');
-                return new Date(y, parseInt(m)-1, 1).toLocaleString('default', { month: 'short' });
-            }
-            if (timeframe === 'year') {
-                return label;
-            }
-            return label;
-        });
-
-        return { labels: formattedLabels, data };
-      }      // --- Modified: renderSpendChart to accept timeframe ---
-      function renderSpendChart(timeframe = 'month') {
-        const { labels: chartLabels, data: chargesData } = aggregateDataForChart(dailyActivity, timeframe, 'charges');
-        const { data: paymentsData } = aggregateDataForChart(dailyActivity, timeframe, 'payments'); // Labels will be the same
-
-        // Properly destroy existing chart and refresh canvas
-        if (chart) {
-          chart.destroy();
-          chart = null;
+        // Set default to current month
+        if (sortedMonths.includes(currentMonth)) {
+          selector.value = currentMonth;
+        } else if (sortedMonths.length > 0) {
+          selector.value = sortedMonths[0];
+        }        if (currentSelection && sortedMonths.includes(currentSelection)) {
+          selector.value = currentSelection;
         }
-        
-        // Get the chart container and refresh the canvas
-        const chartContainer = document.querySelector('.charges-payments-chart-inner-container');
-        if (chartContainer) {
-          chartContainer.innerHTML = '<canvas id="spendChart"></canvas>';
+      }
+
+      function setupBudgetEventListeners() {
+        const budgetMonthSelector = document.getElementById('budgetMonthSelector');
+        const resetBudgetBtn = document.getElementById('resetBudgetBtn');
+        const totalBudgetInput = document.getElementById('totalBudgetAmount');
+
+        if (budgetMonthSelector) {
+          budgetMonthSelector.addEventListener('change', renderBudgetDisplay);
         }
+
+        if (resetBudgetBtn) {
+          resetBudgetBtn.addEventListener('click', resetMonthBudget);
+        }        // Add event listener for the editable total budget input
+        if (totalBudgetInput) {
+          totalBudgetInput.addEventListener('change', handleTotalBudgetChange);
+          totalBudgetInput.addEventListener('blur', handleTotalBudgetChange);
+        }
+
+        // Budget Modal Event Listeners
+        setupBudgetModalEvents();
+      }
+
+      // Function to handle manual total budget input
+      function handleTotalBudgetChange() {
+        const selectedMonth = document.getElementById('budgetMonthSelector').value;
+        const totalBudgetInput = document.getElementById('totalBudgetAmount');
         
-        const canvas = document.getElementById('spendChart');
-        if (!canvas) {
-          console.error('Canvas element not found');
+        if (!selectedMonth) {
+          alert('Please select a month first.');
+          totalBudgetInput.value = '0.00';
           return;
         }
-          chart = new Chart(canvas, {
-          type: 'bar',
-          data: {
-            labels: chartLabels,
-            datasets: [
-              {
-                label: 'Charges',
-                data: chargesData,
-                backgroundColor: '#FF6B6B',
-                borderRadius: 6,
-                borderSkipped: false,
-                barPercentage: 0.6
-              },
-              {
-                label: 'Payments',
-                data: paymentsData,
-                backgroundColor: '#4CAF50',
-                borderRadius: 6,
-                borderSkipped: false,
-                barPercentage: 0.6
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            elements: { 
-              bar: { 
-                borderRadius: 8, 
-                borderSkipped: false 
-              } 
-            },            scales: {
-              x: {
-                grid: { color: '#A0A0A0' },
-                ticks: { color: '#A0A0A0' }
-              },
-              y: { 
-                grid: { color: '#A0A0A0' }, 
-                ticks: { color: '#A0A0A0' }, 
-                beginAtZero: true 
-              }
-            },            plugins: {
-              legend: { 
-                labels: { color: '#A0A0A0' }
-              },
-              title: { 
-                display: false
-              }
-            }
-          }
-        });
-      }
 
-      // --- Event Listeners for Timeframe Controls ---
-      document.querySelectorAll('.timeframe-controls button').forEach(button => {
-        button.addEventListener('click', () => {
-          const chartName = button.dataset.chart;
-          const range = button.dataset.range;
-
-          // Remove active class from all buttons in this group
-          button.parentElement.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
-          // Add active class to the clicked button
-          button.classList.add('active');
-
-          if (chartName === 'expenses') {
-            expensesChartTimeframe = range;
-            renderSpendChart(expensesChartTimeframe);
-          } else if (chartName === 'netWorth') {
-            netWorthChartTimeframe = range;
-            renderNetWorthChart(netWorthChartTimeframe);
-          }
-        });      });      // === ANIMATED GRADIENT EFFECT FOR BUTTONS ===
-      function setupAnimatedButtons() {
-        const buttons = document.querySelectorAll('button, .upload-modal-btn, .file-history-tab, .banks-tab, #agent-action-button, .timeframe-controls button');
+        const totalBudgetValue = parseFloat(totalBudgetInput.value) || 0;
         
-        buttons.forEach(button => {
-          button.addEventListener('mousemove', (e) => {
-            const rect = button.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            
-            button.style.setProperty('--mouse-x', `${x}%`);
-            button.style.setProperty('--mouse-y', `${y}%`);
-          });
+        // Initialize budget data for the month if it doesn't exist
+        if (!budgetData[selectedMonth]) {
+          budgetData[selectedMonth] = {};
+        }
+
+        // Distribute the total budget evenly across all categories that don't have budgets set
+        // or store it as a total budget limit
+        const currentBudgets = budgetData[selectedMonth];
+        const categoriesWithBudgets = CATEGORIES.filter(cat => currentBudgets[cat] > 0);
+        const categoriesWithoutBudgets = CATEGORIES.filter(cat => !currentBudgets[cat] || currentBudgets[cat] === 0);
+
+        if (categoriesWithoutBudgets.length > 0 && totalBudgetValue > 0) {
+          // Get current allocated budget for categories that already have budgets
+          const allocatedBudget = categoriesWithBudgets.reduce((sum, cat) => sum + (currentBudgets[cat] || 0), 0);
+          const remainingBudget = Math.max(0, totalBudgetValue - allocatedBudget);
           
-          button.addEventListener('mouseleave', () => {
-            // Reset to center when mouse leaves
-            button.style.setProperty('--mouse-x', '50%');
-            button.style.setProperty('--mouse-y', '50%');
-          });
-        });
-      }
-
-      // On load, restore saved data
-      document.addEventListener('DOMContentLoaded', () => {
-        const savedDailyActivity = localStorage.getItem('financeDailyActivity');
-        if (savedDailyActivity) {
-          dailyActivity = JSON.parse(savedDailyActivity);
-        } else {
-          dailyActivity = {}; // Initialize if nothing is saved
-        }
-
-        const savedGlobalTransactions = localStorage.getItem(globalAllTransactionsStorageKey);
-        if (savedGlobalTransactions) {
-          globalAllTransactions = JSON.parse(savedGlobalTransactions);
-        } else {
-          globalAllTransactions = [];
-        }
-
-        // fileHistory is already loaded at the top
-        const savedFileDataKeysMap = localStorage.getItem('financeFileDataKeysMap');
-        if (savedFileDataKeysMap) {
-          fileDataKeysMap = JSON.parse(savedFileDataKeysMap);
-        } else {
-          fileDataKeysMap = {}; // Initialize if nothing is saved
-        }        updateDisplay(); // Call once after all data is loaded
-        setupAnimatedButtons(); // Initialize animated gradient effects
-      });
-
-      // --- New: PDF Upload Modal Logic ---
-      const pdfUploadModal = document.getElementById('pdfUploadModal');
-      const openPdfUploadModalBtn = document.getElementById('openPdfUploadModalBtn');
-      const closeUploadModalBtn = document.getElementById('closeUploadModalBtn');
-      const modalPdfInput = document.getElementById('modalPdfInput');
-      const uploadAreaLabel = document.getElementById('uploadAreaLabel');
-      const selectedFilesList = document.getElementById('selectedFilesList');
-      const confirmUploadBtn = document.getElementById('confirmUploadBtn');
-      const cancelUploadBtn = document.getElementById('cancelUploadBtn');
-      const originalPdfPicker = document.getElementById('pdfPicker'); // The original, now hidden, input
-
-      let filesToUploadModal = []; // Renamed to avoid conflict
-
-      if (openPdfUploadModalBtn) {
-        openPdfUploadModalBtn.onclick = () => {
-          pdfUploadModal.style.display = 'flex';
-          filesToUploadModal = []; // Reset on open
-          updateSelectedFilesListModal(); // Renamed to avoid conflict
-        };
-      }
-
-      if (closeUploadModalBtn) {
-        closeUploadModalBtn.onclick = () => {
-          pdfUploadModal.style.display = 'none';
-        };
-      }
-
-      if (cancelUploadBtn) {
-        cancelUploadBtn.onclick = () => {
-          pdfUploadModal.style.display = 'none';
-        };
-      }
-
-      if (modalPdfInput) {
-        modalPdfInput.onchange = (e) => {
-          const newFiles = Array.from(e.target.files);
-          newFiles.forEach(file => {
-            if (file.type === "application/pdf" && !filesToUploadModal.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)) {
-              filesToUploadModal.push(file);
-            }
-          });
-          updateSelectedFilesListModal(); 
-          modalPdfInput.value = ''; // Clear input to allow re-selecting/re-adding the same file if needed
-        };
-      }
-
-      function updateSelectedFilesListModal() { // Renamed to avoid conflict
-        if (!selectedFilesList) return;
-        selectedFilesList.innerHTML = '';
-        if (filesToUploadModal.length === 0) {
-          selectedFilesList.innerHTML = '<div>No files selected.</div>';
-        } else {
-          filesToUploadModal.forEach(file => {
-            const fileDiv = document.createElement('div');
-            fileDiv.textContent = file.name;
-            selectedFilesList.appendChild(fileDiv);
-          });
-        }
-        if (confirmUploadBtn) confirmUploadBtn.disabled = filesToUploadModal.length === 0;
-      }
-
-      if (confirmUploadBtn) {
-        confirmUploadBtn.onclick = async () => {
-          if (filesToUploadModal.length > 0) {
-            showProcessingBar("Preparing to upload..."); // Show progress bar
-            pdfUploadModal.style.display = 'none';
-            const dataTransfer = new DataTransfer();
-            filesToUploadModal.forEach(file => dataTransfer.items.add(file));
-            if (originalPdfPicker) originalPdfPicker.files = dataTransfer.files;
-            
-            const event = new Event('change', { bubbles: true });
-            if (originalPdfPicker) originalPdfPicker.dispatchEvent(event);
-          }
-        };
-      }
-
-      // Close modal if user clicks outside of it
-      window.onclick = (event) => {
-        if (event.target == pdfUploadModal) {
-          pdfUploadModal.style.display = 'none';
-        }
-      };
-
-      // Drag and drop functionality for the upload area
-      if (uploadAreaLabel) {
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-          uploadAreaLabel.addEventListener(eventName, preventDefaultsModal, false); // Renamed to avoid conflict
-        });
-
-        function preventDefaultsModal(e) { // Renamed to avoid conflict
-          e.preventDefault();
-          e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-          uploadAreaLabel.addEventListener(eventName, () => uploadAreaLabel.classList.add('hover'), false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-          uploadAreaLabel.addEventListener(eventName, () => uploadAreaLabel.classList.remove('hover'), false);
-        });
-
-        uploadAreaLabel.addEventListener('drop', (e) => {
-          const dt = e.dataTransfer;
-          const droppedFiles = Array.from(dt.files).filter(file => file.type === "application/pdf");
+          // Distribute remaining budget evenly among categories without budgets
+          const budgetPerCategory = remainingBudget / categoriesWithoutBudgets.length;
           
-          if (droppedFiles.length > 0) {
-              droppedFiles.forEach(file => {
-                if (!filesToUploadModal.some(existingFile => existingFile.name === file.name && existingFile.size === file.size)) {
-                  filesToUploadModal.push(file);
-                }
-              });
-              updateSelectedFilesListModal(); 
-          } else if (dt.files.length > 0) {
-              alert("Please drop PDF files only.");
-          }
-          if (modalPdfInput) modalPdfInput.value = ''; 
-        }, false);
-      }
+          categoriesWithoutBudgets.forEach(category => {
+            currentBudgets[category] = budgetPerCategory;
+          });
+        } else if (categoriesWithBudgets.length === 0 && totalBudgetValue > 0) {
+          // No categories have budgets, distribute evenly across all
+          const budgetPerCategory = totalBudgetValue / CATEGORIES.length;
+          CATEGORIES.forEach(category => {
+            currentBudgets[category] = budgetPerCategory;
+          });
+        }
 
-      if (originalPdfPicker) {
-        originalPdfPicker.addEventListener('change', async e => { 
-          const files = Array.from(e.target.files); // These are the files confirmed from the modal
-          if (!files.length) {
-            hideProcessingBar(); // Hide if no files somehow
-            return;
-          }
-         
+        // Store as overall budget limit (for reference)
+        currentBudgets._totalBudgetLimit = totalBudgetValue;
 
-          if (!GEMINI_API_KEY || GEMINI_API_KEY.trim() === "") {
-            alert("Gemini API key is not set or is invalid. Please create config.js with your key (set GEMINI_API_KEY) and ensure it is loaded.");
-            e.target.value = null;
-            hideProcessingBar();
-            return;
-          }
-
-          // if (h1Title) h1Title.textContent = `Processing ${files.length} file(s)...`; // Replaced by progress bar
-          showProcessingBar(`Processing ${files.length} file(s)...`); // Show progress bar
-
-          try {
-            for (let i = 0; i < files.length; i++) {
-              const f = files[i];
-              const fileName = f.name;
-              const fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase();
-
-              // if (h1Title) h1Title.textContent = `Processing ${fileName} (${i + 1} of ${files.length})...`; // Replaced by progress bar
-              showProcessingBar(`Processing ${fileName} (${i + 1} of ${files.length})...`); // Update progress bar message
-
-              if (fileExtension === 'pdf') {
-                try {
-                  await handlePdfFile(f); 
-                } catch (error) {
-                  console.error(`Error processing ${fileName}:`, error);
-                  alert(`An error occurred while processing ${fileName}. Check the console for details.`);
-                  // Optionally, break or decide how to handle errors for multiple files
-                }
-              } else {
-                alert("Unsupported file type. Please upload a PDF file.");
-                e.target.value = null; 
-                // if (h1Title) h1Title.textContent = originalPageTitle; // No longer needed
-                break; 
-              }
-            }
-          } finally {
-            updateAndSaveData(); // <<< KEY FIX: Update display and save data after all files are processed
-            // if (h1Title) h1Title.textContent = originalPageTitle; // No longer needed
-            hideProcessingBar(); // Hide progress bar when all processing is done or an error broke the loop
-            e.target.value = null; // Clear the file input to allow re-uploading the same file(s)
-          }
-        });
-      }
-
-      // --- Function to process PDF files (placeholder for OpenAI API call) ---
-      async function handlePdfFile(file) {
-        const fileName = file.name;
-        console.log(`Attempting to process PDF: ${fileName}`);
-
-        // Store old keys this file affected, to ensure they are rebuilt correctly
-        const oldKeysForThisFile = fileDataKeysMap[fileName] ? new Set(fileDataKeysMap[fileName]) : new Set();
+        // Save to localStorage
+        localStorage.setItem('financeBudgetData', JSON.stringify(budgetData));
         
-        // First, remove any existing transactions from this file to prevent duplication if re-uploaded
-        globalAllTransactions = globalAllTransactions.filter(tx => tx.sourceFile !== fileName);
-        // Note: At this point, dailyActivity might be stale for oldKeysForThisFile until rebuild happens.
+        // Refresh the display
+        renderBudgetDisplay();
+      }
 
-        try {
+      function setupBudgetModalEvents() {
+        const budgetModal = document.getElementById('budgetModal');
+        const closeBudgetModalBtn = document.getElementById('closeBudgetModalBtn');
+        const cancelBudgetBtn = document.getElementById('cancelBudgetBtn');
+        const saveBudgetBtn = document.getElementById('saveBudgetBtn');
+        const setBudgetFromLastMonthBtn = document.getElementById('setBudgetFromLastMonthBtn');
+        const setBudgetFromAverageBtn = document.getElementById('setBudgetFromAverageBtn');
+        const clearAllBudgetsBtn = document.getElementById('clearAllBudgetsBtn');
 
-          const base64File = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result); 
-            reader.onerror = error => reject(error);
-            reader.readAsDataURL(file); 
+        if (closeBudgetModalBtn) {
+          closeBudgetModalBtn.addEventListener('click', () => {
+            budgetModal.style.display = 'none';
           });
-
-          const pureBase64 = base64File.substring(base64File.indexOf(',') + 1);
-          
-          const extractedData = await callGeminiPdfParser(pureBase64, fileName);
-
-          let newContributedDailyKeys = new Set();
-
-          if (!extractedData || !extractedData.transactions || !Array.isArray(extractedData.transactions)) {
-            console.error('No transactions found or invalid format from parser for file:', fileName);
-            addFileToHistory(fileName, []); // Update history with no keys for this file
-            // Rebuild any dates this file previously affected to clear its old contributions
-            if (oldKeysForThisFile.size > 0) {
-                rebuildDailyActivityForDates(Array.from(oldKeysForThisFile));
-            }
-            return; 
-          }
-
-          const isDCFile = fileName.toUpperCase().startsWith("DC"); // Determine once
-
-          if (extractedData.transactions.length === 0) {
-            console.log(`No transactions extracted from ${fileName}.`);
-            addFileToHistory(fileName, []); 
-          } else {
-            extractedData.transactions.forEach(transaction => {
-              const transactionDate = transaction.date; 
-              
-              if (!transactionDate || !/^\d{4}-\d{2}-\d{2}$/.test(transactionDate)) {
-                console.warn(`Skipping transaction in ${fileName} due to missing or invalid date:`, transaction);
-                return; 
-              }
-              
-              const amount = parseFloat(transaction.amount);
-              if (isNaN(amount)) {
-                console.warn(`Skipping transaction in ${fileName} due to invalid amount:`, transaction);
-                return; 
-              }
-              newContributedDailyKeys.add(transactionDate);
-
-              globalAllTransactions.push({
-                date: transactionDate,
-                description: transaction.description,
-                amount: amount, 
-                category: transaction.category || (isDCFile ? 'Income' : 'N/A'),
-                sourceFile: fileName
-              });
-            });
-            addFileToHistory(fileName, Array.from(newContributedDailyKeys));
-          }
-
-          // Combine old and new keys to ensure all affected dates are rebuilt
-          const allAffectedKeys = new Set([...oldKeysForThisFile, ...newContributedDailyKeys]);
-          if (allAffectedKeys.size > 0) {
-            rebuildDailyActivityForDates(Array.from(allAffectedKeys));
-          }
-
-        } catch (error) {
-          console.error(`Error in handlePdfFile for ${fileName}:`, error);
-
-          if (oldKeysForThisFile.size > 0) {
-             rebuildDailyActivityForDates(Array.from(oldKeysForThisFile));
-          }
-          throw error; 
-        }
-      }
-
-      async function callGeminiPdfParser(base64Pdf, fileNameForContext) {
-        console.log(`Sending ${fileNameForContext} to Google Gemini API for parsing...`);
-        if (!GEMINI_API_KEY) {
-            throw new Error("Gemini API key is not loaded. Please check config.js.");
-        }
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
-
-
-        let systemInstructionText = `You are a data extraction AI. You will receive a PDF bank statement. Your task is to:
-1. Identify all individual financial transaction lines. Focus on itemized entries, not summary totals unless they are the only source for a specific transaction type.
-2. For each transaction found, extract the date, description, and amount.
-3. For each transaction identified as an expense (typically a positive amount based on the rules below), categorize it into one of the following: 'Groceries', 'Food Delivery/Restaurant', 'Gas', 'Misc', 'Other'. If a transaction is a credit/payment (negative amount), the category field can be null or an empty string.
-
-Return a single JSON object: \`{ "transactions": [ { "date": "YYYY-MM-DD", "description": "...", "amount": number, "category": "string_or_null" }, ... ] }\`.
-
-CRITICAL RULES for 'amount':
-  - Charges/Debits/Purchases/Expenses/Withdrawals are POSITIVE numbers (e.g., 100.00).
-  - Payments/Credits/Deposits/Income are NEGATIVE numbers (e.g., -50.00).
-  - Examine transaction descriptions for keywords like 'Purchase', 'Fee', 'Withdrawal' (positive) or 'Payment', 'Deposit', 'Credit', 'Income' (negative).
-  - If the PDF text clearly shows 'Debit' and 'Credit' columns, amounts in a 'Debit' column are positive, and amounts in a 'Credit' column are negative.
-
-For 'date': Use 'YYYY-MM-DD'. If the full date isn't on the transaction line, infer the year and month from the overall statement period (often found in the filename or at the top/bottom of the PDF text). If day is missing, use '01'.
-For 'description': Capture the full transaction detail as presented on the statement.
-
-Category definitions for expenses:
-- 'Groceries': Purchases from supermarkets, grocery stores (e.g., Walmart, Kroger, Trader Joe's, ALDI, Whole Foods).
-- 'Food Delivery/Restaurant': Expenses at restaurants, cafes, fast food establishments, and food delivery services (e.g., Doordash, Uber Eats, Grubhub, Starbucks, McDonald's, local restaurants).
-- 'Gas': Fuel purchases from gas stations (e.g., Shell, Exxon, BP, Chevron, local gas stations).
-- 'Misc': This category is for all other expenses that do not clearly fall into 'Groceries', 'Food Delivery/Restaurant', or 'Gas'. This includes but is not limited to: utility payments (electricity, water, internet, phone), subscriptions (Netflix, Spotify, gym), shopping (clothing, electronics, household goods), entertainment (movies, concerts), travel costs (flights, hotels, not gas), medical co-pays, insurance premiums, rent/mortgage payments, loan repayments, childcare fees, property taxes. If an expense doesn't fit the specific categories above, it should be classified as 'Misc'.
-- 'Other': Use this category sparingly for expenses that are highly unusual or cannot be classified even under the broad 'Misc' category. For most unclassified expenses, 'Misc' is preferred. This could also be used if an item is clearly an expense but its nature is completely indeterminable.
-
-The response MUST be only the valid JSON object, with no extra text, explanations, or markdown formatting.`;
-
-        // Check if the filename starts with "DC"
-        if (fileNameForContext && fileNameForContext.toUpperCase().startsWith("DC")) {
-          // Modify system instruction for "DC" files to only extract income (payments/credits)
-          // and not categorize expenses.
-          systemInstructionText = `You are a data extraction AI. You will receive a PDF bank statement from a file named '${fileNameForContext}'.
-This file is specifically for income. Your task is to:
-1. Identify all individual financial transaction lines that represent INCOME or CREDITS to the account.
-2. For each such transaction found, extract the date, description, and amount.
-3. IGNORE ALL EXPENSES/CHARGES/DEBITS. Only process income/credits.
-
-Return a single JSON object: \`{ "transactions": [ { "date": "YYYY-MM-DD", "description": "...", "amount": number, "category": null }, ... ] }\`.
-
-CRITICAL RULES for 'amount':
-  - Payments/Credits/Deposits/Income are NEGATIVE numbers (e.g., -50.00).
-  - ALL OTHER TRANSACTION TYPES (CHARGES/DEBITS/EXPENSES) SHOULD BE IGNORED.
-
-For 'date': Use 'YYYY-MM-DD'. If the full date isn't on the transaction line, infer the year and month from the overall statement period. If day is missing, use '01'.
-For 'description': Capture the full transaction detail.
-The 'category' field should always be null for these income transactions.
-
-The response MUST be only the valid JSON object, with no extra text, explanations, or markdown formatting.`;
         }
 
-
-        const userPromptText = `Please analyze the attached PDF bank statement named '${fileNameForContext}' and extract all financial transactions according to the detailed system instructions. Pay utmost attention to correctly identifying and signing the 'amount' for each transaction (positive for charges, negative for payments/credits) and categorizing expenses.`;
-
-        const payload = {
-          contents: [
-            {
-              parts: [
-                { text: userPromptText },
-                {
-                  inline_data: {
-                    mime_type: "application/pdf",
-                    data: base64Pdf
-                  }
-                }
-              ]
-            }
-          ],
-          system_instruction: {
-            parts: [
-              { text: systemInstructionText }
-            ]
-          },
-          generationConfig: {
-            response_mime_type: "application/json",
-            temperature: 0.2 
-          }
-        };
-
-        try {
-          const response = await fetch(API_URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload)
+        if (cancelBudgetBtn) {
+          cancelBudgetBtn.addEventListener('click', () => {
+            budgetModal.style.display = 'none';
           });
-
-          if (!response.ok) {
-            const errorBody = await response.json().catch(() => response.text()); // Try to parse as JSON, fallback to text
-            console.error("Gemini API Error Response:", errorBody);
-            const errorMessage = errorBody.error && errorBody.error.message ? errorBody.error.message : JSON.stringify(errorBody);
-            throw new Error(`Gemini API request failed with status ${response.status}: ${response.statusText}. Details: ${errorMessage}`);
-          }
-
-          const data = await response.json();
-          console.log("Gemini API Raw Response:", data);
-
-          if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) {
-            const jsonString = data.candidates[0].content.parts[0].text;
-            console.log("Gemini API JSON String Content:", jsonString);
-            try {
-                return JSON.parse(jsonString);
-            } catch (parseError) {
-                console.error("Failed to parse JSON from Gemini response:", parseError, "Raw content:", jsonString);
-                // Check if it might already be an object (though API docs say it's a string with response_mime_type: "application/json")
-                if (typeof jsonString === 'object') return jsonString;
-                throw new Error("Failed to parse JSON from Gemini API response. Check console for raw output.");
-            }
-          } else {
-            console.error("Unexpected Gemini API response structure:", data);
-            throw new Error("Unexpected response structure from Gemini API. No valid content found.");
-          }
-        } catch (error) {
-          console.error("Error calling Gemini API:", error);
-          // Display a more user-friendly error message on the page
-          const errorDisplay = document.getElementById('apiErrorDisplay'); // Assuming you add such an element
-          if (errorDisplay) {
-            errorDisplay.textContent = `Error communicating with the AI: ${error.message}. Please check your API key and network connection.`;
-          }
-          return { transactions: [], summary: "Error during parsing." }; // Return empty on error
         }
-      }
 
-      // --- Banks Panel UI Logic ---
-      const banksTab = document.getElementById('banksTab');
-      let banksPanel = document.getElementById('banksPanel');
-      const banksList = document.getElementById('banksList');
-
-      // Helper: Get/Set banks links in localStorage
-      function getBankLinks() {
-        try {
-          return JSON.parse(localStorage.getItem('financeBanksLinks')) || [];
-        } catch (e) {
-          return [];
+        if (saveBudgetBtn) {
+          saveBudgetBtn.addEventListener('click', saveBudgetSettings);
         }
-      }
-      function setBankLinks(links) {
-        localStorage.setItem('financeBanksLinks', JSON.stringify(links));
+
+        if (setBudgetFromLastMonthBtn) {
+          setBudgetFromLastMonthBtn.addEventListener('click', setBudgetFromLastMonth);
+        }
+
+        if (setBudgetFromAverageBtn) {
+          setBudgetFromAverageBtn.addEventListener('click', setBudgetFromAverage);
+        }
+
+        if (clearAllBudgetsBtn) {
+          clearAllBudgetsBtn.addEventListener('click', clearAllBudgets);
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (event) => {
+          if (event.target === budgetModal) {
+            budgetModal.style.display = 'none';
+          }
+        });
       }
 
-      // Render the banks list in the popup
-      function renderBanksList() {
-        if (!banksList) return;
-        const links = getBankLinks();
-        banksList.innerHTML = '';
-        if (!links.length) {
-          const li = document.createElement('li');
-          li.style.color = '#A0A0A0';
-          li.textContent = 'No banks added yet.';
-          banksList.appendChild(li);
+      function renderBudgetDisplay() {
+        const selectedMonth = document.getElementById('budgetMonthSelector').value;
+        if (!selectedMonth) {
+          document.getElementById('budgetCategoriesContainer').innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 40px;">Please select a month to view budget information.</p>';
+          updateBudgetSummary(null, null);
           return;
         }
-        links.forEach(link => {
-          const li = document.createElement('li');
-          const a = document.createElement('a');
-          a.href = link.url;
-          a.textContent = link.name;
-          a.target = '_blank';
-          a.rel = 'noopener noreferrer';
-          a.style.color = '#7adfff';
-          a.style.textDecoration = 'underline';
-          li.appendChild(a);
-          // --- Add delete button next to each bank ---
-          const delBtn = document.createElement('button');
-          delBtn.className = 'delete-btn';
-          delBtn.textContent = 'Delete';
-          delBtn.onclick = (event) => {
-            event.stopPropagation();
-            // Remove this bank from storage and re-render
-            const links = getBankLinks();
-            const idx = links.findIndex(l => l.name === link.name && l.url === link.url);
-            if (idx !== -1) {
-              links.splice(idx, 1);
-              setBankLinks(links);
-              renderBanksList();
+
+        const monthBudgets = budgetData[selectedMonth] || {};
+        const monthSpending = getMonthSpending(selectedMonth);
+
+        updateBudgetSummary(monthBudgets, monthSpending);
+        renderBudgetCategories(selectedMonth, monthBudgets, monthSpending);
+      }
+
+      function getMonthSpending(monthKey) {
+        const spending = {};
+        CATEGORIES.forEach(cat => spending[cat] = 0);
+
+        Object.keys(dailyActivity).forEach(dateKey => {
+          if (dateKey.startsWith(monthKey)) {
+            const dayData = dailyActivity[dateKey];
+            if (dayData && dayData.categories) {
+              CATEGORIES.forEach(cat => {
+                spending[cat] += dayData.categories[cat] || 0;
+              });
             }
-          };
-          li.appendChild(delBtn);
-          banksList.appendChild(li);
+          }
         });
-      }
 
-      // Initial render on page load
-      renderBanksList();
+        return spending;
+      }      function updateBudgetSummary(budgets, spending) {
+        const totalBudgetEl = document.getElementById('totalBudgetAmount');
+        const totalSpentEl = document.getElementById('totalSpentAmount');
+        const totalRemainingEl = document.getElementById('totalRemainingAmount');
+        const totalProgressEl = document.getElementById('totalBudgetProgress');
+        const totalProgressTextEl = document.getElementById('totalBudgetProgressText');
 
-      function showBanksPanel(show) {
-        if (!banksPanel || !banksTab) return;
-        if (show) {
-          banksPanel.style.display = 'block';
-          banksTab.classList.add('active');
-          renderBanksList(); // Always update when shown
+        if (!budgets || !spending) {
+          totalBudgetEl.value = '0.00';
+          totalSpentEl.textContent = '$0.00';
+          totalRemainingEl.textContent = '$0.00';
+          totalProgressEl.style.width = '0%';
+          totalProgressTextEl.textContent = '0%';
+          totalBudgetEl.className = 'budget-summary-amount editable-budget';
+          totalSpentEl.className = 'budget-summary-amount';
+          totalRemainingEl.className = 'budget-summary-amount';
+          return;
+        }
+
+        const totalBudget = Object.values(budgets).reduce((sum, budget) => sum + (budget || 0), 0);
+        const totalSpent = Object.values(spending).reduce((sum, spent) => sum + (spent || 0), 0);
+        const totalRemaining = totalBudget - totalSpent;
+        const progressPercent = totalBudget > 0 ? Math.min((totalSpent / totalBudget) * 100, 100) : 0;
+
+        totalBudgetEl.value = totalBudget.toFixed(2);
+        totalSpentEl.textContent = `$${totalSpent.toFixed(2)}`;
+        totalRemainingEl.textContent = `$${totalRemaining.toFixed(2)}`;
+        totalProgressEl.style.width = `${progressPercent}%`;
+        totalProgressTextEl.textContent = `${Math.round(progressPercent)}%`;
+
+        // Apply status classes
+        totalBudgetEl.className = 'budget-summary-amount editable-budget';
+        totalSpentEl.className = 'budget-summary-amount';
+        totalRemainingEl.className = 'budget-summary-amount';
+
+        if (totalRemaining < 0) {
+          totalRemainingEl.classList.add('over-budget');
+          totalProgressEl.className = 'budget-progress-fill over-budget';
+        } else if (progressPercent > 80) {
+          totalProgressEl.className = 'budget-progress-fill warning';
         } else {
-          banksPanel.style.display = 'none';
-          banksTab.classList.remove('active');
+          totalRemainingEl.classList.add('on-track');
+          totalProgressEl.className = 'budget-progress-fill';
         }
       }
-      if (banksTab) {
-        banksTab.addEventListener('click', () => {
-          showBanksPanel(banksPanel.style.display !== 'block');
-        });
-      }
-      if (banksPanel) {
-        document.addEventListener('click', e => {
-          if (!banksPanel.contains(e.target) && e.target !== banksTab) {
-            showBanksPanel(false);
+
+      function renderBudgetCategories(monthKey, budgets, spending) {
+        const container = document.getElementById('budgetCategoriesContainer');
+        container.innerHTML = '';
+
+        CATEGORIES.forEach(category => {
+          const budget = budgets[category] || 0;
+          const spent = spending[category] || 0;
+          const remaining = budget - spent;
+          const progressPercent = budget > 0 ? Math.min((spent / budget) * 100, 100) : 0;
+
+          let statusClass = 'on-track';
+          let statusText = 'On Track';
+          
+          if (budget === 0) {
+            statusClass = 'no-budget';
+            statusText = 'No Budget Set';
+          } else if (remaining < 0) {
+            statusClass = 'over-budget';
+            statusText = 'Over Budget';
+          } else if (progressPercent > 80) {
+            statusClass = 'warning';
+            statusText = 'Warning';
           }
+
+          const categoryCard = document.createElement('div');
+          categoryCard.className = `budget-category-card ${statusClass}`;
+          
+          categoryCard.innerHTML = `
+            <div class="budget-category-header">
+              <div class="budget-category-name">
+                ${getCategoryIcon(category)}
+                ${category}
+              </div>
+              <div class="budget-category-status ${statusClass}">${statusText}</div>
+            </div>
+            <div class="budget-category-amounts">
+              <div class="budget-amount-item">
+                <div class="budget-amount-label">Budget</div>
+                <div class="budget-amount-value">$${budget.toFixed(2)}</div>
+              </div>
+              <div class="budget-amount-item">
+                <div class="budget-amount-label">Spent</div>
+                <div class="budget-amount-value ${statusClass === 'over-budget' ? 'over-budget' : ''}">$${spent.toFixed(2)}</div>
+              </div>
+              <div class="budget-amount-item">
+                <div class="budget-amount-label">Remaining</div>
+                <div class="budget-amount-value ${remaining < 0 ? 'over-budget' : ''}">$${remaining.toFixed(2)}</div>
+              </div>
+            </div>
+            <div class="budget-category-progress">
+              <div class="budget-progress-bar">
+                <div class="budget-progress-fill ${statusClass === 'over-budget' ? 'over-budget' : statusClass === 'warning' ? 'warning' : ''}" style="width: ${progressPercent}%"></div>
+              </div>
+              <div class="budget-insights">
+                <span>${budget > 0 ? Math.round(progressPercent) : 0}% of budget used</span>
+                ${getTrendIndicator(category, monthKey)}
+              </div>
+            </div>
+          `;
+
+          container.appendChild(categoryCard);
         });
-      }
-
-      // --- Banks Import Modal Logic ---
-      // Create the modal HTML and append to body (hidden by default)
-      (function createBanksImportModal() {
-        if (document.getElementById('banksImportModal')) return; // Prevent duplicate
-        const modal = document.createElement('div');
-        modal.id = 'banksImportModal';
-        modal.className = 'upload-modal';
-        modal.style.display = 'none';
-        modal.innerHTML = `
-          <div class="upload-modal-content">
-            <div class="upload-modal-header">
-              <h2>Add Bank Link</h2>
-              <button id="closeBanksImportModalBtn" class="upload-modal-close-btn">&times;</button>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:16px;">
-              <input id="bankNameInput" type="text" placeholder="Bank Name" style="padding:10px; border-radius:4px; border:1px solid #4F4B68; background:#211D30; color:#E0E0E0; font-size:1em;" />
-              <input id="bankUrlInput" type="text" placeholder="Bank URL (https://...)" style="padding:10px; border-radius:4px; border:1px solid #4F4B68; background:#211D30; color:#E0E0E0; font-size:1em;" />
-            </div>
-            <div class="upload-modal-footer">
-              <button id="cancelBanksImportBtn" class="upload-modal-btn secondary">Cancel</button>
-              <button id="saveBanksImportBtn" class="upload-modal-btn primary">Save</button>
-            </div>
-          </div>
-        `;
-        document.body.appendChild(modal);
-      })();
-
-      // Show/hide logic for the modal
-      const banksImportModal = document.getElementById('banksImportModal');
-      const importBanksBtn = document.getElementById('importBanksBtn');
-      if (importBanksBtn && banksImportModal) {
-        banksImportModal.style.display = 'none'; // Ensure it's hidden by default
-        importBanksBtn.onclick = () => {
-          banksImportModal.style.display = 'flex';
-          document.getElementById('bankNameInput').value = '';
-          document.getElementById('bankUrlInput').value = '';
+      }      function getCategoryIcon(category) {
+        const icons = {
+          'Groceries': '<svg class="budget-category-icon" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12L8.1 13h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1zm16 16c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>',
+          'Food Delivery/Restaurant': '<svg class="budget-category-icon" viewBox="0 0 24 24"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>',
+          'Gas': '<svg class="budget-category-icon" viewBox="0 0 24 24"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77z"/></svg>',
+          'Misc': '<svg class="budget-category-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>'
         };
+        return icons[category] || icons['Misc'];
       }
-      const closeBanksImportModalBtn = document.getElementById('closeBanksImportModalBtn');
-      const cancelBanksImportBtn = document.getElementById('cancelBanksImportBtn');
-      if (closeBanksImportModalBtn) closeBanksImportModalBtn.onclick = () => { banksImportModal.style.display = 'none'; };
-      if (cancelBanksImportBtn) cancelBanksImportBtn.onclick = () => { banksImportModal.style.display = 'none'; };
-      // Close modal if user clicks outside of it
-      window.addEventListener('click', function(event) {
-        if (event.target === banksImportModal) {
-          banksImportModal.style.display = 'none';
+
+      function getTrendIndicator(category, currentMonth) {
+        // Calculate trend compared to previous month
+        const [year, month] = currentMonth.split('-');
+        const prevMonth = new Date(year, month - 2, 1); // month - 2 because month is 1-indexed
+        const prevMonthKey = `${prevMonth.getFullYear()}-${(prevMonth.getMonth() + 1).toString().padStart(2, '0')}`;
+        
+        const currentSpending = getMonthSpending(currentMonth)[category] || 0;
+        const prevSpending = getMonthSpending(prevMonthKey)[category] || 0;
+        
+        if (prevSpending === 0) return '<span>No previous data</span>';
+        
+        const change = ((currentSpending - prevSpending) / prevSpending) * 100;
+        
+        if (Math.abs(change) < 5) {
+          return '<div class="budget-trend"><svg class="budget-trend-icon" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/></svg>Stable</div>';
+        } else if (change > 0) {
+          return `<div class="budget-trend negative"><svg class="budget-trend-icon" viewBox="0 0 24 24"><polyline points="18,15 12,9 6,15"/></svg>+${Math.round(change)}%</div>`;
+        } else {
+          return `<div class="budget-trend positive"><svg class="budget-trend-icon" viewBox="0 0 24 24"><polyline points="6,9 12,15 18,9"/></svg>${Math.round(change)}%</div>`;
         }
-      });
+      }
 
-      // --- Banks Import Modal Save Logic ---
-      const saveBanksImportBtn = document.getElementById('saveBanksImportBtn');
-      if (saveBanksImportBtn) {
-        saveBanksImportBtn.onclick = () => {
-          const name = document.getElementById('bankNameInput').value.trim();
-          const url = document.getElementById('bankUrlInput').value.trim();
-          if (!name || !url) {
-            alert('Please enter both a bank name and URL.');
-            return;
+      function openBudgetModal() {
+        const selectedMonth = document.getElementById('budgetMonthSelector').value;
+        if (!selectedMonth) {
+          alert('Please select a month first.');
+          return;
+        }
+
+        const modal = document.getElementById('budgetModal');
+        const monthDisplay = document.getElementById('budgetModalMonth');
+        const inputsContainer = document.getElementById('budgetInputsContainer');
+
+        const [year, monthNum] = selectedMonth.split('-');
+        const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleString('default', { month: 'long' });
+        monthDisplay.textContent = `${monthName} ${year}`;
+
+        // Populate input fields
+        inputsContainer.innerHTML = '';
+        const currentBudgets = budgetData[selectedMonth] || {};
+
+        CATEGORIES.forEach(category => {
+          const inputRow = document.createElement('div');
+          inputRow.className = 'budget-input-row';
+          inputRow.innerHTML = `
+            <div class="budget-input-label">
+              ${getCategoryIcon(category)}
+              ${category}
+            </div>
+            <input type="number" class="budget-input-field" data-category="${category}" 
+                   value="${currentBudgets[category] || ''}" placeholder="0.00" min="0" step="0.01">
+          `;
+          inputsContainer.appendChild(inputRow);
+        });
+
+        modal.style.display = 'flex';
+      }
+
+      function saveBudgetSettings() {
+        const selectedMonth = document.getElementById('budgetMonthSelector').value;
+        const inputs = document.querySelectorAll('.budget-input-field');
+
+        if (!budgetData[selectedMonth]) {
+          budgetData[selectedMonth] = {};
+        }
+
+        inputs.forEach(input => {
+          const category = input.dataset.category;
+          const value = parseFloat(input.value) || 0;
+          budgetData[selectedMonth][category] = value;
+        });
+
+        // Save to localStorage
+        localStorage.setItem('financeBudgetData', JSON.stringify(budgetData));
+
+        // Close modal and refresh display
+        document.getElementById('budgetModal').style.display = 'none';
+        renderBudgetDisplay();
+      }
+
+      function setBudgetFromLastMonth() {
+        const selectedMonth = document.getElementById('budgetMonthSelector').value;
+        const [year, month] = selectedMonth.split('-');
+        const prevMonth = new Date(year, month - 2, 1);
+        const prevMonthKey = `${prevMonth.getFullYear()}-${(prevMonth.getMonth() + 1).toString().padStart(2, '0')}`;
+
+        const prevBudgets = budgetData[prevMonthKey];
+        if (!prevBudgets) {
+          alert('No budget data found for previous month.');
+          return;
+        }
+
+        const inputs = document.querySelectorAll('.budget-input-field');
+        inputs.forEach(input => {
+          const category = input.dataset.category;
+          input.value = prevBudgets[category] || '';
+        });
+      }
+
+      function setBudgetFromAverage() {
+        const selectedMonth = document.getElementById('budgetMonthSelector').value;
+        const [year, month] = selectedMonth.split('-');
+        
+        // Calculate average from last 3 months
+        const averages = {};
+        CATEGORIES.forEach(cat => averages[cat] = []);
+
+        for (let i = 1; i <= 3; i++) {
+          const date = new Date(year, month - 1 - i, 1);
+          const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+          const spending = getMonthSpending(monthKey);
+          
+          CATEGORIES.forEach(cat => {
+            if (spending[cat] > 0) {
+              averages[cat].push(spending[cat]);
+            }
+          });
+        }
+
+        const inputs = document.querySelectorAll('.budget-input-field');
+        inputs.forEach(input => {
+          const category = input.dataset.category;
+          const values = averages[category];
+          if (values.length > 0) {
+            const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+            // Add 10% buffer to average
+            input.value = (average * 1.1).toFixed(2);
           }
-          // Basic URL validation
-          if (!/^https?:\/\//i.test(url)) {
-            alert('Please enter a valid URL starting with http:// or https://');
-            return;
-          }
-          const links = getBankLinks();
-          links.push({ name, url });
-          setBankLinks(links);
-          renderBanksList();
-          banksImportModal.style.display = 'none';
-        };
+        });
+      }
+
+      function clearAllBudgets() {
+        const inputs = document.querySelectorAll('.budget-input-field');
+        inputs.forEach(input => {
+          input.value = '';
+        });
+      }
+
+      function resetMonthBudget() {
+        const selectedMonth = document.getElementById('budgetMonthSelector').value;
+        if (!selectedMonth) {
+          alert('Please select a month first.');
+          return;
+        }
+
+        if (confirm('Are you sure you want to reset all budgets for this month? This action cannot be undone.')) {
+          delete budgetData[selectedMonth];
+          localStorage.setItem('financeBudgetData', JSON.stringify(budgetData));
+          renderBudgetDisplay();
+        }
       }
 
       // --- New: Presentation Generation Logic ---
@@ -2527,14 +2715,17 @@ The response MUST be only the valid JSON object, with no extra text, explanation
       if (agentButton) {
         agentButton.addEventListener('click', async () => {
           if (Object.keys(dailyActivity).length === 0 && globalAllTransactions.length === 0) {
-            alert("No data available to generate a presentation. Please upload some files first.");
-            return;
+            alert("No data available to generate a presentation. Please upload some files first.");            return;
           }
           const dataForN8N = await generatePresentationData();
           await sendToN8N(dataForN8N);
         });
       }
-      // --- End Presentation Generation Logic ---      setupTimeframeControls(); // Call to initialize the new synchronized controls
+      // --- End Presentation Generation Logic ---
+
+      // Initialize budget management and timeframe controls
+      setupTimeframeControls();
+      initializeBudgetManagement();
     </script>
 </body>
 </html>

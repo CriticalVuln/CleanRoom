@@ -173,22 +173,20 @@
       transform: scale(1.1);
       filter: brightness(1.2);
     }    .theme-toggle svg {
-      width: 100%;
-      height: 100%;
-      stroke: currentColor;
-      fill: none;
+      width: 24px;
+      height: 24px;
+      stroke: var(--text-accent);
       stroke-width: 2;
-      transition: opacity 0.3s ease, transform 0.3s ease;
+      fill: none;
+      transition: stroke 0.3s ease;
     }
 
     .theme-toggle .sun-icon {
-      fill: currentColor;
-      stroke: none;
+      display: block;
     }
 
     .theme-toggle .moon-icon {
-      fill: currentColor;
-      stroke: none;
+      display: none;
     }
 
     /* === TASK INPUT SYSTEM === */
@@ -1072,19 +1070,8 @@
           button.style.setProperty('--mouse-y', '50%');
         });
       });
-    }
-
-    // Initialize animated buttons
+    }    // Initialize animated buttons
     setupAnimatedTimeframeButtons();
-
-    // === THEME SYSTEM INITIALIZATION ===
-    // Ensure theme system is properly initialized after DOM is loaded
-    if (typeof initializeTheme === 'function') {
-      initializeTheme();
-    }
-    if (typeof setupThemeToggle === 'function') {
-      setupThemeToggle();
-    }
   </script>
 </body>
 </html>

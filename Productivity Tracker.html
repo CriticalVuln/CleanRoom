@@ -10,6 +10,73 @@
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
   <!-- Poppins font -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">  <style>
+    /* === CSS VARIABLES FOR THEMING === */
+    :root {
+      /* Light Mode Colors */
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8FAFC;
+      --bg-tertiary: #F1F5F9;
+      --text-primary: #1E293B;
+      --text-secondary: #64748B;
+      --text-muted: #94A3B8;
+      --border-color: #E2E8F0;
+      --accent-primary: #8B5CF6;
+      --accent-secondary: #06B6D4;
+      --success-color: #10B981;
+      --warning-color: #F59E0B;
+      --error-color: #EF4444;
+      --shadow-color: rgba(0, 0, 0, 0.1);
+      --overlay-bg: rgba(0, 0, 0, 0.5);      --button-disabled-text: #9CA3AF;
+      --priority-low: #10B981;
+      --priority-medium: #F59E0B;
+      --priority-high: #EF4444;
+      --button-gradient-start: #8B5CF6;
+      --button-gradient-end: #A855F7;
+      --button-shadow: rgba(139, 92, 246, 0.3);
+      --button-hover-glow: rgba(139, 92, 246, 0.6);
+      --button-text-selected: #FFFFFF;
+      --button-hover-border: rgba(139, 92, 246, 0.4);
+      --button-hover-gradient-center: rgba(139, 92, 246, 0.4);      --button-hover-gradient-mid: rgba(139, 92, 246, 0.2);
+      --button-active-gradient-center: rgba(255, 255, 255, 0.3);
+      --button-active-gradient-mid: rgba(255, 255, 255, 0.1);
+      --heatmap-level-1: rgba(139, 92, 246, 0.3);
+      --heatmap-level-2: rgba(139, 92, 246, 0.6);
+      --heatmap-level-3: #8B5CF6;
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] {
+      --bg-primary: #0D0B14;
+      --bg-secondary: #1A1625;
+      --bg-tertiary: #211D30;
+      --text-primary: #E0E0E0;
+      --text-secondary: #A0A0A0;
+      --text-muted: #6B7280;
+      --border-color: #4F4B68;
+      --accent-primary: #63FFDA;
+      --accent-secondary: #A076F9;
+      --success-color: #39FF14;
+      --warning-color: #FFC107;
+      --error-color: #FF6B6B;
+      --shadow-color: rgba(0, 0, 0, 0.5);
+      --overlay-bg: rgba(0, 0, 0, 0.7);      --button-disabled-text: #4B5563;
+      --priority-low: #4CAF50;
+      --priority-medium: #FFC107;
+      --priority-high: #F44336;
+      --button-gradient-start: #63FFDA;
+      --button-gradient-end: #63FFDA;
+      --button-shadow: rgba(99, 255, 218, 0.3);
+      --button-hover-glow: rgba(99, 255, 218, 1);
+      --button-text-selected: #000000;
+      --button-hover-border: rgba(99, 255, 218, 0.5);
+      --button-hover-gradient-center: rgba(99, 255, 218, 0.4);      --button-hover-gradient-mid: rgba(99, 255, 218, 0.2);
+      --button-active-gradient-center: rgba(0, 0, 0, 0.3);
+      --button-active-gradient-mid: rgba(0, 0, 0, 0.1);
+      --heatmap-level-1: rgba(99, 255, 218, 0.3);
+      --heatmap-level-2: rgba(99, 255, 218, 0.6);
+      --heatmap-level-3: #63FFDA;
+    }
+
     /* === GLOBAL RESET & BASE === */
     * { box-sizing: border-box; }
     
@@ -18,13 +85,14 @@
     }
     
     body {
-      background: #0D0B14;
-      color: #E0E0E0;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       font-family: "Poppins", sans-serif;
       margin: 0;
       padding: 40px;
       display: flex;
       justify-content: center;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
     
     .app-container {
@@ -40,20 +108,17 @@
       width: auto !important;
       max-width: 100% !important;
       height: auto !important;
-    }
-
-    /* === REUSABLE COMPONENTS === */
+    }    /* === REUSABLE COMPONENTS === */
     .card {
-      background: #1A1625;
+      background: var(--bg-secondary);
       border-radius: 12px;
       padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px var(--shadow-color);
       margin-bottom: 24px;
       position: relative;
       width: 100%;
-    }
-
-    .drag-handle {
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }    .drag-handle {
       position: absolute;
       top: 10px;
       right: 10px;
@@ -61,7 +126,13 @@
       height: 24px;
       cursor: grab;
       background: url('data:image/svg+xml;utf8,<svg width="24" height="24" fill="%23A0A0A0" xmlns="http://www.w3.org/2000/svg"><path d="M4 9h2V7H4v2zm4 0h2V7H8v2zm4 0h2V7h-2v2zm4 0h2V7h-2v2zM4 13h2v-2H4v2zm4 0h2v-2H8v2zm4 0h2v-2h-2v2zm4 0h2v-2h-2v2z"/></svg>') no-repeat center;
-    }    /* === TASK MANAGEMENT === */
+      opacity: 0.6;
+      transition: opacity 0.3s ease;
+    }
+
+    .drag-handle:hover {
+      opacity: 1;
+    }/* === TASK MANAGEMENT === */
     .task-input {
       display: flex;
       align-items: center;
@@ -72,30 +143,35 @@
       display: flex;
       gap: 8px;
       margin-right: 8px;
-    }
-
-    .priority-btn {
+    }    .priority-btn {
       width: 16px;
       height: 16px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       opacity: 0.6;
+      transition: opacity 0.2s ease;
     }
     .priority-btn.selected { opacity: 1; }
-    .priority-btn.low { background: #4CAF50; }
-    .priority-btn.med { background: #FFC107; }
-    .priority-btn.high { background: #F44336; }
+    .priority-btn.low { background: var(--priority-low); }
+    .priority-btn.med { background: var(--priority-medium); }
+    .priority-btn.high { background: var(--priority-high); }
 
     .task-input input {
       flex: 1;
       height: 36px;
       padding: 8px 12px;
-      border: none;
+      border: 1px solid var(--border-color);
       border-radius: 4px;
-      background: #211D30;
-      color: #FFF;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       font-size: 14px;
+      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .task-input input:focus {
+      outline: none;
+      border-color: var(--accent-primary);
     }
 
     .task-list {
@@ -105,40 +181,164 @@
       max-height: 300px;
       overflow-y: auto;
       padding-top: 24px;
-    }
-
-    .task-list li {
+    }    .task-list li {
       display: flex;
       align-items: center;
       padding: 8px 0;
-      border-bottom: 1px solid #4F4B68;
+      border-bottom: 1px solid var(--border-color);
       position: relative;
+      transition: border-color 0.3s ease;
     }
 
     .task-list label {
       margin-left: 8px;
       flex: 1;
-      color: #E0E0E0;
+      color: var(--text-primary);
       margin-right: 8px;
-    }
-
-    .edit-btn, .delete-btn {
-      background: none !important;
-      border: none !important;
-      padding: 0 !important;
-      margin: 0 8px !important;
-      line-height: 1;
-      font-size: 16px;
+      transition: color 0.3s ease;
+    }    .edit-btn, .delete-btn {
+      background: linear-gradient(145deg, var(--bg-secondary), var(--bg-tertiary));
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      margin: 0 6px;
+      border-radius: 8px;
       cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      min-width: 32px;
+      box-shadow: 
+        0 2px 4px var(--shadow-light),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+    
+    .edit-btn {
+      color: var(--accent-primary);
+      border-color: rgba(139, 92, 246, 0.2);
+      background: linear-gradient(145deg, 
+        rgba(139, 92, 246, 0.05), 
+        rgba(139, 92, 246, 0.02)
+      );
+    }
+    
+    .delete-btn {
+      color: var(--error-color);
+      border-color: rgba(244, 67, 54, 0.2);
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.05), 
+        rgba(244, 67, 54, 0.02)
+      );
     }
 
-    .edit-btn { color: #A0A0A0; }
-    .delete-btn { color: #FF6B6B; }
-    .edit-btn svg { width: 16px; height: 16px; }
-    .delete-btn svg { width: 18px; height: 18px; }
-    .edit-btn svg, .delete-btn svg { vertical-align: middle; }
-    .edit-btn .pencil-icon { fill: #A0A0A0; }
-    .delete-btn .trash-icon { fill: #FF6B6B; }
+    .edit-btn:hover {
+      background: linear-gradient(145deg, 
+        rgba(139, 92, 246, 0.15), 
+        rgba(139, 92, 246, 0.08)
+      );
+      border-color: rgba(139, 92, 246, 0.6);
+      box-shadow: 
+        0 4px 12px rgba(139, 92, 246, 0.25),
+        0 2px 4px var(--shadow-light),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px) scale(1.05);
+      color: var(--accent-primary);
+    }
+
+    .delete-btn:hover {
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.15), 
+        rgba(244, 67, 54, 0.08)
+      );
+      border-color: rgba(244, 67, 54, 0.6);
+      box-shadow: 
+        0 4px 12px rgba(244, 67, 54, 0.25),
+        0 2px 4px var(--shadow-light),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px) scale(1.05);
+      color: var(--error-color);
+    }
+
+    .edit-btn:active, .delete-btn:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 
+        0 1px 2px var(--shadow-light),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced animated gradient effects for edit/delete buttons */
+    .edit-btn::before, .delete-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      border-radius: inherit;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .edit-btn:hover::before, .delete-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* Subtle inner glow effect */
+    .edit-btn::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      right: 1px;
+      bottom: 1px;
+      background: linear-gradient(145deg, 
+        rgba(139, 92, 246, 0.1), 
+        transparent 50%
+      );
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .delete-btn::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      right: 1px;
+      bottom: 1px;
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.1), 
+        transparent 50%
+      );
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .edit-btn:hover::after, .delete-btn:hover::after {
+      opacity: 1;
+    }
 
     .edit-container {
       display: none;
@@ -148,13 +348,14 @@
     }    .edit-container input[type="number"] {
       width: 60px;
       padding: 4px 6px;
-      border: none;
+      border: 1px solid var(--border-color);
       border-radius: 4px;
-      background: #211D30;
-      color: #FFF;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       font-size: 12px;
       appearance: textfield;
       -moz-appearance: textfield;
+      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
     }
 
     .edit-container input[type="number"]::-webkit-outer-spin-button,
@@ -164,42 +365,41 @@
     }
 
     .task-list li.editing .edit-btn { display: none; }
-    .task-list li.editing .edit-container { display: flex; }
-
-    .tooltip {
+    .task-list li.editing .edit-container { display: flex; }    .tooltip {
       display: none;
       position: absolute;
       bottom: 100%;
       left: 8px;
-      background: #211D30;
-      color: #FFF;
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
       padding: 4px 8px;
       border-radius: 4px;
       font-size: 12px;
       white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      box-shadow: 0 2px 8px var(--shadow-color);
       z-index: 10;
+      border: 1px solid var(--border-color);
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
     .task-list li:hover .tooltip { display: block; }    /* === DROPDOWN & SWITCHES === */
     .task-dropdown {
       position: relative;
       margin-left: 8px;
-    }
-
-    .task-dropdown summary.options-btn {
+    }    .task-dropdown summary.options-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       height: 36px;
       padding: 0 16px;
-      border: none;
+      border: 1px solid var(--accent-primary);
       border-radius: 4px;
-      background: #63FFDA;
-      color: #0D0B14;
+      background: var(--bg-primary);
+      color: var(--accent-primary);
       font-weight: 600;
       font-size: 14px;
       cursor: pointer;
       line-height: normal;
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     }
 
     .task-dropdown summary.options-btn::-webkit-details-marker {
@@ -211,29 +411,33 @@
       top: calc(100% + 4px);
       left: 0;
       min-width: 150px;
-      background: #211D30;
+      background: var(--bg-secondary);
       padding: 8px;
       border-radius: 4px;
       z-index: 10;
       display: none;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px var(--shadow-color);
+      border: 1px solid var(--border-color);
+      transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
     .task-dropdown[open] .task-dropdown-content { display: block; }
     .task-dropdown-content label { 
       display: block; 
-      color: #E0E0E0; 
+      color: var(--text-primary); 
       margin-bottom: 4px; 
-      font-size: 14px; 
+      font-size: 14px;
+      transition: color 0.3s ease;
     }
     .task-dropdown-content input {
       width: 100%; 
       padding: 4px 8px; 
       margin-top: 2px;
-      border: none; 
+      border: 1px solid var(--border-color); 
       border-radius: 4px; 
-      background: #0D0B14; 
-      color: #FFF;
+      background: var(--bg-primary); 
+      color: var(--text-primary);
+      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
     }
 
     .switch {
@@ -245,13 +449,11 @@
       vertical-align: middle;
     }
 
-    .switch input { opacity: 0; width: 0; height: 0; }
-
-    .slider {
+    .switch input { opacity: 0; width: 0; height: 0; }    .slider {
       position: absolute;
       cursor: pointer;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: #4F4B68;
+      background: var(--border-color);
       border-radius: 34px;
       transition: .4s;
     }
@@ -263,13 +465,13 @@
       width: 16px;
       left: 2px;
       bottom: 2px;
-      background: #FFF;
+      background: var(--bg-primary);
       border-radius: 50%;
       transition: .4s;
     }
 
     .switch input:checked + .slider {
-      background: #A076F9;
+      background: var(--accent-primary);
     }
 
     .switch input:checked + .slider:before {
@@ -283,7 +485,7 @@
     .priority-difficulty-toggle button {
       background: none;
       border: 1px solid transparent;
-      color: #63FFDA;
+      color: var(--accent-primary);
       font-family: 'Poppins', sans-serif;
       font-weight: 600;
       border-radius: 6px;
@@ -295,10 +497,79 @@
       padding: 14px 18px;
       font-size: 14px;
       margin-left: 8px;
-      display: flex;
-      align-items: center;
+      display: flex;      align-items: center;
       justify-content: center;
       line-height: 1;
+    }
+
+    .task-input button:not(.active):hover,
+    .task-dropdown summary.options-btn:hover,
+    .timeframe-toggle button:not(.active):hover,
+    .landing-timeframe-controls button:not(.active):hover,
+    .difficulty-toggle button:not(.active):hover,
+    .priority-difficulty-toggle button:not(.active):hover,
+    .timeframe-toggle button:not(.selected):hover,
+    .landing-timeframe-controls button:not(.selected):hover {      background-color: transparent;
+      color: var(--accent-primary);
+      border-color: transparent;
+      box-shadow: 0 0 8px var(--accent-primary);
+    }
+
+    /* === ANIMATED GRADIENT EFFECTS === */
+    .task-input button,
+    .task-dropdown summary.options-btn,
+    .timeframe-toggle button,
+    .landing-timeframe-controls button,
+    .difficulty-toggle button,
+    .priority-difficulty-toggle button {
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+    }
+
+    .task-input button::before,
+    .task-dropdown summary.options-btn::before,
+    .timeframe-toggle button::before,
+    .landing-timeframe-controls button::before,
+    .difficulty-toggle button::before,
+    .priority-difficulty-toggle button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        var(--button-hover-gradient-center) 0%,
+        var(--button-hover-gradient-mid) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: inherit;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .task-input button:hover::before,
+    .task-dropdown summary.options-btn:hover::before,
+    .timeframe-toggle button:hover::before,
+    .landing-timeframe-controls button:hover::before,
+    .difficulty-toggle button:hover::before,
+    .priority-difficulty-toggle button:hover::before {
+      opacity: 1;
+    }
+
+    .task-input button span,
+    .task-dropdown summary.options-btn span,
+    .timeframe-toggle button span,
+    .landing-timeframe-controls button span,
+    .difficulty-toggle button span,
+    .priority-difficulty-toggle button span {
+      position: relative;
+      z-index: 2;
     }
 
     .task-input button.active,
@@ -309,24 +580,76 @@
     .priority-difficulty-toggle button.active,
     .timeframe-toggle button.selected,
     .landing-timeframe-controls button.selected {
-      background-color: #0D0B14;
-      color: #63FFDA;
-      border: 1px solid #63FFDA;
-      box-shadow: none;
+      background: linear-gradient(135deg, var(--button-gradient-start), var(--button-gradient-end));
+      color: var(--button-text-selected);
+      border-color: var(--accent-primary);
+      box-shadow: 0 4px 15px var(--button-shadow);
+    }    .task-input button.active::before,
+    .task-dropdown summary.options-btn.active::before,
+    .timeframe-toggle button.active::before,
+    .landing-timeframe-controls button.active::before,
+    .difficulty-toggle button.active::before,
+    .priority-difficulty-toggle button.active::before,
+    .timeframe-toggle button.selected::before,
+    .landing-timeframe-controls button.selected::before {
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        var(--button-active-gradient-center) 0%,
+        var(--button-active-gradient-mid) 30%,
+        transparent 60%
+      );
+      opacity: 0.3;
+    }    .task-input button.active:hover::before,
+    .task-dropdown summary.options-btn.active:hover::before,
+    .timeframe-toggle button.active:hover::before,
+    .landing-timeframe-controls button.active:hover::before,
+    .difficulty-toggle button.active:hover::before,
+    .priority-difficulty-toggle button.active:hover::before,
+    .timeframe-toggle button.selected:hover::before,
+    .landing-timeframe-controls button.selected:hover::before {
+      opacity: 0.6;
     }
 
-    .task-input button:not(.active):hover,
-    .task-dropdown summary.options-btn:hover,
-    .timeframe-toggle button:not(.active):hover,
-    .landing-timeframe-controls button:not(.active):hover,
-    .difficulty-toggle button:not(.active):hover,
-    .priority-difficulty-toggle button:not(.active):hover,
-    .timeframe-toggle button:not(.selected):hover,
-    .landing-timeframe-controls button:not(.selected):hover {
-      background-color: transparent;
-      color: #63FFDA;
-      border-color: transparent;
-      box-shadow: 0 0 8px #63FFDA;
+    /* === TEXT VISIBILITY FIX FOR SELECTED BUTTONS ON HOVER === */
+    .task-input button.active:hover,
+    .task-input button.selected:hover,
+    .task-dropdown summary.options-btn.active:hover,
+    .timeframe-toggle button.active:hover,
+    .timeframe-toggle button.selected:hover,
+    .landing-timeframe-controls button.active:hover,
+    .landing-timeframe-controls button.selected:hover,
+    .difficulty-toggle button.active:hover,
+    .difficulty-toggle button.selected:hover,
+    .priority-difficulty-toggle button.active:hover,
+    .priority-difficulty-toggle button.selected:hover {
+      color: var(--button-text-selected) !important;
+    }
+
+    .task-input button.active:hover span,
+    .task-input button.selected:hover span,
+    .task-dropdown summary.options-btn.active:hover span,
+    .timeframe-toggle button.active:hover span,
+    .timeframe-toggle button.selected:hover span,
+    .landing-timeframe-controls button.active:hover span,
+    .landing-timeframe-controls button.selected:hover span,
+    .difficulty-toggle button.active:hover span,
+    .difficulty-toggle button.selected:hover span,
+    .priority-difficulty-toggle button.active:hover span,
+    .priority-difficulty-toggle button.selected:hover span {
+      color: var(--button-text-selected) !important;
+      z-index: 3;
+    }
+
+    .task-input button:hover:not(.active):not(.selected),
+    .task-dropdown summary.options-btn:hover:not(.active):not(.selected),
+    .timeframe-toggle button:hover:not(.active):not(.selected),
+    .landing-timeframe-controls button:hover:not(.active):not(.selected),
+    .difficulty-toggle button:hover:not(.active):not(.selected),
+    .priority-difficulty-toggle button:hover:not(.active):not(.selected) {
+      color: var(--accent-primary);
+      border-color: var(--button-hover-border);
+      box-shadow: 0 0 12px var(--button-hover-glow);
+      transform: translateY(-1px);
     }
 
     /* === CHART HEADERS & CONTROLS === */
@@ -335,13 +658,12 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 8px;
-    }
-
-    .widget-title {
+    }    .widget-title {
       font-size: 1.3em;
       font-weight: 600;
-      color: #63FFDA;
+      color: var(--accent-primary);
       margin: 0;
+      transition: color 0.3s ease;
     }
 
     .timeframe-toggle,
@@ -366,12 +688,11 @@
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-
-    .calendar-view-toggle-container label {
+    }    .calendar-view-toggle-container label {
       font-size: 12px;
-      color: #A0A0A0;
-    }    /* === CALENDAR NAVIGATION === */
+      color: var(--text-secondary);
+      transition: color 0.3s ease;
+    }/* === CALENDAR NAVIGATION === */
     .calendar-view-year .calendar-title-month-nav,
     .calendar-view-month .calendar-title-year-nav {
       display: none;
@@ -518,8 +839,9 @@
     }    .activity-square {
       width: 24px;
       height: 24px;
-      background-color: #211D30;
+      background-color: var(--bg-tertiary);
       border-radius: 2px;
+      transition: background-color 0.3s ease;
     }
 
     .calendar-view-month .activity-square {
@@ -530,7 +852,7 @@
 
     .calendar-view-month .activity-square.friday {
       box-sizing: border-box;
-      border: 1px solid #FF0000;
+      border: 1px solid var(--error-color);
     }
 
     .padding-square {
@@ -538,14 +860,10 @@
       pointer-events: none;
       border: none !important;
       box-shadow: none !important;
-    }
-
-    .activity-square.heatmap-level-0 { background-color: #211D30; }
-    .activity-square.heatmap-level-1 { background-color: rgba(99, 255, 218, 0.3); }
-    .activity-square.heatmap-level-2 { background-color: rgba(99, 255, 218, 0.6); }
-    .activity-square.heatmap-level-3 { background-color: #63FFDA; }
-
-    /* === DELTA INDICATORS === */
+    }    .activity-square.heatmap-level-0 { background-color: var(--bg-tertiary); }
+    .activity-square.heatmap-level-1 { background-color: var(--heatmap-level-1); }
+    .activity-square.heatmap-level-2 { background-color: var(--heatmap-level-2); }
+    .activity-square.heatmap-level-3 { background-color: var(--heatmap-level-3); }/* === DELTA INDICATORS === */
     .delta-indicator {
       padding: 5px 10px;
       border-radius: 16px;
@@ -553,68 +871,163 @@
       font-weight: 600;
       display: inline-flex;
       align-items: center;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     .delta-indicator.increase {
-      background-color: rgba(99, 255, 218, 0.12) !important;
-      color: #39FF14 !important;
+      background-color: rgba(16, 185, 129, 0.12) !important;
+      color: var(--success-color) !important;
     }
 
     .delta-indicator.decrease {
-      background-color: rgba(255, 107, 107, 0.12) !important;
-      color: #FF073A !important;
-    }
-
-    /* === SIDEBAR === */
+      background-color: rgba(239, 68, 68, 0.12) !important;
+      color: var(--error-color) !important;
+    }    /* === SIDEBAR === */
     .sidebar {
       position: fixed;
       top: 0;
       left: 0;
       bottom: 0;
       width: 60px;
-      background: #1A1625;
+      background: var(--bg-secondary);
       display: flex;
       flex-direction: column;
       align-items: center;
       padding-top: 20px;
+      transition: background-color 0.3s ease;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
 
     .sidebar a {
-      color: #63FFDA;
+      color: var(--accent-primary);
       font-size: 24px;
       margin: 16px 0;
       text-decoration: none;
+      transition: color 0.3s ease, filter 0.3s ease;
+    }
+
+    .sidebar a:hover {
+      filter: brightness(1.2);
     }
 
     .sidebar a svg {
       width: 24px;
       height: 24px;
       fill: none;
-      stroke: #63FFDA;
+      stroke: var(--accent-primary);
       stroke-width: 2;
+      transition: stroke 0.3s ease;
+    }
+
+    .sidebar a:hover svg {
+      filter: brightness(1.2);
+    }
+
+    /* === THEME TOGGLE === */
+    .theme-toggle {
+      background: none;
+      border: none;
+      color: var(--accent-primary);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease, filter 0.3s ease;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .theme-toggle:hover {
+      filter: brightness(1.2);
+    }
+
+    .theme-toggle svg {
+      width: 24px;
+      height: 24px;
+      stroke: var(--accent-primary);
+      stroke-width: 2;
+      fill: none;
+      transition: stroke 0.3s ease;
+    }
+
+    .theme-toggle .sun-icon {
+      display: block;
+    }
+
+    .theme-toggle .moon-icon {
+      display: none;
+    }    [data-theme="dark"] .theme-toggle .sun-icon {
+      display: none;
+    }
+
+    [data-theme="dark"] .theme-toggle .moon-icon {
+      display: block;
+    }
+
+    /* SVG icons for edit/delete buttons */
+    .edit-btn svg, .delete-btn svg {
+      width: 14px;
+      height: 14px;
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    .edit-btn .pencil-icon {
+      fill: currentColor;
+    }
+    
+    .delete-btn .trash-icon {
+      fill: currentColor;
     }
   </style>
 </head>
 <body>
-
   <!-- NEW: Persistent Sidebar Navigation -->
   <nav class="sidebar">
-    <a href="Landing Page.html">
-      <svg viewBox="0 0 24 24">
-        <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
+    <div class="sidebar-nav">
+      <a href="Landing Page.html">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
+        </svg>
+      </a>
+      <a href="Personal Finance Tracker.html">
+        <svg viewBox="0 0 24 24">
+          <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+      <a href="Productivity Tracker.html">
+        <svg viewBox="0 0 24 24">
+          <circle cx="12" cy="12" r="9"/>
+          <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+    
+    <!-- Theme Toggle Button -->
+    <button id="themeToggle" title="Toggle Dark/Light Mode" class="theme-toggle">
+      <svg viewBox="0 0 24 24" class="sun-icon">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
       </svg>
-    </a>
-    <a href="Personal Finance Tracker.html">
-      <svg viewBox="0 0 24 24">
-        <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
+      <svg viewBox="0 0 24 24" class="moon-icon" style="display: none;">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
-    </a>
-    <a href="Productivity Tracker.html">
-      <svg viewBox="0 0 24 24">
-        <circle cx="12" cy="12" r="9"/>
-        <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </a>
+    </button>
   </nav>
   <!-- End NEW Sidebar Navigation -->
 
@@ -1745,11 +2158,11 @@
                 }
             });
             li.appendChild(deleteBtn); // Append delete button to the list item
-        }
-
-
-        taskListEl.appendChild(li);
+        }        taskListEl.appendChild(li);
       });
+      
+      // Setup animated gradient effects for newly created edit/delete buttons
+      setupAnimatedButtons();
     }
       function addTask() {
         const txt = newTaskIn.value.trim();
@@ -2083,9 +2496,33 @@
           ghostClass: 'sortable-ghost',
           fallbackClass: 'sortable-fallback'
         });
+      });    })();    */    // === ANIMATED GRADIENT EFFECT FOR BUTTONS ===
+    function setupAnimatedButtons() {
+      const buttons = document.querySelectorAll('.task-input button, .task-dropdown summary.options-btn, .timeframe-toggle button, .landing-timeframe-controls button, .difficulty-toggle button, .priority-difficulty-toggle button, .edit-btn, .delete-btn');
+      
+      buttons.forEach(button => {
+        // Skip if already has event listeners
+        if (button.hasAttribute('data-animated-setup')) return;
+        button.setAttribute('data-animated-setup', 'true');
+        
+        button.addEventListener('mousemove', (e) => {
+          const rect = button.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          
+          button.style.setProperty('--mouse-x', `${x}%`);
+          button.style.setProperty('--mouse-y', `${y}%`);
+        });
+        
+        button.addEventListener('mouseleave', () => {
+          // Reset to center when mouse leaves
+          button.style.setProperty('--mouse-x', '50%');
+          button.style.setProperty('--mouse-y', '50%');
+        });
       });
-    })();
-    */
+    }    // Initialize animated gradient effects
+    setupAnimatedButtons();
   </script>
+  <script src="theme.js"></script>
 </body>
 </html>

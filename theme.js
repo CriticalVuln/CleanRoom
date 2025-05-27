@@ -2,14 +2,19 @@
 // This file handles theme switching across all dashboard pages
 
 // Initialize theme immediately when script loads
-initializeTheme();
-
-// Setup theme toggle immediately, with fallback for DOM ready
-setupThemeToggle();
 document.addEventListener('DOMContentLoaded', function() {
-    // Try again in case the first attempt failed
+    initializeTheme();
     setupThemeToggle();
 });
+
+// Also try to initialize immediately in case DOMContentLoaded already fired
+if (document.readyState === 'loading') {
+    // DOM is still loading, wait for DOMContentLoaded
+} else {
+    // DOM is already loaded, initialize immediately
+    initializeTheme();
+    setupThemeToggle();
+}
 
 function initializeTheme() {
     // Check for saved theme preference, migrate old key if needed, or default to light mode
@@ -22,21 +27,34 @@ function initializeTheme() {
             currentTheme = oldTheme;
             localStorage.setItem('dashboard-theme', oldTheme);
             localStorage.removeItem('theme'); // Clean up old key
+            console.log(`Migrated theme from old key: ${oldTheme}`);
         } else {
             currentTheme = 'light'; // Default to light mode
+            console.log('No saved theme found, defaulting to light mode');
         }
+    } else {
+        console.log(`Found saved theme: ${currentTheme}`);
     }
     
     document.documentElement.setAttribute('data-theme', currentTheme);
+    console.log(`Theme initialized to: ${currentTheme}`);
     updateThemeIcon();
 }
 
 function setupThemeToggle() {
     const themeToggle = document.getElementById('themeToggle');
-    if (!themeToggle) return; // Exit if no theme toggle button found
+    if (!themeToggle) {
+        console.warn('Theme toggle button not found! Make sure element with id="themeToggle" exists.');
+        return; // Exit if no theme toggle button found
+    }
     
     const sunIcon = themeToggle.querySelector('.sun-icon');
     const moonIcon = themeToggle.querySelector('.moon-icon');
+    
+    if (!sunIcon || !moonIcon) {
+        console.warn('Theme toggle icons not found! Make sure .sun-icon and .moon-icon elements exist inside the theme toggle button.');
+        return; // Exit if icons not found
+    }
     
     // Remove any existing event listeners to avoid duplicates
     themeToggle.onclick = null;
@@ -46,22 +64,34 @@ function setupThemeToggle() {
         const currentTheme = document.documentElement.getAttribute('data-theme');
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         
+        console.log(`Switching theme from ${currentTheme} to ${newTheme}`);
+        
         document.documentElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('dashboard-theme', newTheme);
         updateThemeIcon();
     });
+    
+    console.log('Theme toggle setup completed successfully');
 }
 
 function updateThemeIcon() {
     const themeToggle = document.getElementById('themeToggle');
-    if (!themeToggle) return; // Exit if no theme toggle button found
+    if (!themeToggle) {
+        console.warn('Theme toggle button not found during icon update!');
+        return; // Exit if no theme toggle button found
+    }
     
     const sunIcon = themeToggle.querySelector('.sun-icon');
     const moonIcon = themeToggle.querySelector('.moon-icon');
     
-    if (!sunIcon || !moonIcon) return; // Exit if icons not found
+    if (!sunIcon || !moonIcon) {
+        console.warn('Theme icons not found during icon update!');
+        return; // Exit if icons not found
+    }
     
     const theme = document.documentElement.getAttribute('data-theme');
+    console.log(`Updating theme icon for theme: ${theme}`);
+    
     if (theme === 'dark') {
         sunIcon.style.display = 'none';
         moonIcon.style.display = 'block';
