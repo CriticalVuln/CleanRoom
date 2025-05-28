@@ -373,7 +373,9 @@
       color: var(--text-accent);
       border-color: transparent;
       box-shadow: 0 0 8px var(--button-hover-glow);
-    }/* Layout Components */
+    }
+    
+    /* Layout Components */
     .charts-row-container {
       display: flex;
       justify-content: space-between;
@@ -1019,29 +1021,116 @@
       color: var(--text-muted);
       text-align: center;
       font-weight: 500;
-    }
-
-    /* Budget Category Delete Button */
+    }    /* Budget Category Delete Button - Enhanced Styling from Productivity Tracker */
     .budget-delete-btn {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 18px;
+      background: linear-gradient(145deg, var(--bg-secondary), var(--bg-tertiary));
+      border: 1px solid rgba(244, 67, 54, 0.2);
+      color: var(--priority-high);
+      padding: 8px 12px;
+      border-radius: 8px;
       cursor: pointer;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      display: flex;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.2s ease;
-      font-weight: bold;
+      height: 32px;
+      min-width: 32px;
+      box-shadow: 
+        0 2px 4px var(--shadow-light),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.05), 
+        rgba(244, 67, 54, 0.02)
+      );
     }
 
     .budget-delete-btn:hover {
-      background-color: var(--priority-high);
-      color: white;
-      transform: scale(1.1);
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.15), 
+        rgba(244, 67, 54, 0.08)
+      );
+      border-color: rgba(244, 67, 54, 0.6);
+      box-shadow: 
+        0 4px 12px rgba(244, 67, 54, 0.25),
+        0 2px 4px var(--shadow-light),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px) scale(1.05);
+      color: var(--priority-high);
+    }
+
+    .budget-delete-btn:active {
+      transform: translateY(0) scale(0.98);
+      box-shadow: 
+        0 1px 2px var(--shadow-light),
+        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Enhanced animated gradient effects for delete button */
+    .budget-delete-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        rgba(255, 255, 255, 0.15) 0%,
+        rgba(255, 255, 255, 0.05) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      border-radius: inherit;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .budget-delete-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* Subtle inner glow effect */
+    .budget-delete-btn::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 1px;
+      right: 1px;
+      bottom: 1px;
+      background: linear-gradient(145deg, 
+        rgba(244, 67, 54, 0.1), 
+        transparent 50%
+      );
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .budget-delete-btn:hover::after {
+      opacity: 1;
+    }
+
+    /* SVG icon styling for delete button */
+    .budget-delete-btn svg {
+      width: 14px;
+      height: 14px;
+      position: relative;
+      z-index: 2;
+      pointer-events: none;
+    }
+    
+    .budget-delete-btn .trash-icon {
+      fill: currentColor;
     }
 
     /* Budget Modal Styles */
@@ -1207,7 +1296,77 @@
       font-weight: 500;
     }
 
-    /* --- Existing styles continue --- */
+    /* Budget Actions Container and Buttons */
+    .budget-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      padding: 20px 16px 16px 16px;
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border-color);
+      margin-top: 16px;
+    }
+
+    .budget-action-btn {
+      background: transparent;
+      border: 1px solid var(--text-accent);
+      color: var(--text-accent);
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      min-height: 44px;
+      min-width: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      --mouse-x: 50%;
+      --mouse-y: 50%;
+      box-shadow: 0 2px 8px var(--shadow-light);
+    }
+
+    .budget-action-btn:hover {
+      background: var(--text-accent);
+      color: var(--button-text-selected);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--button-shadow);
+    }
+
+    .budget-action-btn span {
+      position: relative;
+      z-index: 2;
+    }
+
+    .budget-action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(
+        circle at var(--mouse-x) var(--mouse-y),
+        var(--button-hover-gradient-center) 0%,
+        var(--button-hover-gradient-mid) 30%,
+        transparent 60%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: inherit;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .budget-action-btn:hover::before {
+      opacity: 1;
+    }
+
+    /* ...existing code... */
   </style>
 
   <!-- Poppins font -->
@@ -1714,9 +1873,8 @@
             }
 
             if (isDCFile) {
-              if (amount < 0) { // DC income is stored as negative by parser, dcIncome in dailyActivity is positive
+              if (amount < 0) // DC income is stored as negative by parser, dcIncome in dailyActivity is positive
                 dailyActivity[dateKey].dcIncome += Math.abs(amount);
-              }
             } else { // Not a DC file
               if (amount > 0) { // Charge
                 dailyActivity[dateKey].charges += amount;
@@ -2149,9 +2307,13 @@
           }
         });      });      // === ANIMATED GRADIENT EFFECT FOR BUTTONS ===
       function setupAnimatedButtons() {
-        const buttons = document.querySelectorAll('button, .upload-modal-btn, .file-history-tab, .banks-tab, #agent-action-button, .timeframe-controls button');
+        const buttons = document.querySelectorAll('button, .upload-modal-btn, .file-history-tab, .banks-tab, #agent-action-button, .timeframe-controls button, .budget-delete-btn');
         
         buttons.forEach(button => {
+          // Skip if already has event listeners
+          if (button.hasAttribute('data-animated-setup')) return;
+          button.setAttribute('data-animated-setup', 'true');
+          
           button.addEventListener('mousemove', (e) => {
             const rect = button.getBoundingClientRect();
             const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -3161,7 +3323,11 @@ The response MUST be only the valid JSON object, with no extra text, explanation
               </div>
               <span class="budget-progress-text">${progressPercent.toFixed(1)}%</span>
             </div>
-            <button class="budget-delete-btn" data-category="${category}" title="Remove Category">×</button>
+            <button class="budget-delete-btn" data-category="${category}" title="Remove Category">
+              <svg viewBox="0 0 24 24" class="trash-icon">
+                <path d="M16 9v10H8V9h8m-1.5-6h-5l-1 1H5v2h14V4h-4.5l-1-1z"/>
+              </svg>
+            </button>
           `;
           
           container.appendChild(categoryRow);
@@ -3176,8 +3342,7 @@ The response MUST be only the valid JSON object, with no extra text, explanation
             renderBudgetCategories(); // Re-render to update calculations
             updateBudgetTotals();
           });
-        });
-          // Add event listeners for delete buttons
+        });        // Add event listeners for delete buttons
         container.querySelectorAll('.budget-delete-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const category = e.target.dataset.category;
@@ -3192,6 +3357,9 @@ The response MUST be only the valid JSON object, with no extra text, explanation
             showBudgetModal('budgetDeleteCategoryModal');
           });
         });
+        
+        // Setup animated gradient effects for newly created delete buttons
+        setupAnimatedButtons();
       }
       
       // Calculate monthly spending by category

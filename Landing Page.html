@@ -582,6 +582,129 @@
       box-shadow: 0 0 12px var(--button-hover-glow);
       transform: translateY(-1px);
     }
+
+    /* === CIRCULAR BUDGET PROGRESS WIDGET === */
+    .budget-progress-widget {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      position: relative;
+    }
+
+    .circular-progress-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .circular-progress-svg {
+      transform: rotate(-90deg);
+      width: 100%;
+      height: 100%;
+    }
+
+    .progress-circle-bg {
+      fill: none;
+      stroke: var(--bg-tertiary);
+      stroke-width: 8;
+      transition: stroke 0.3s ease;
+    }
+
+    .progress-circle-fill {
+      fill: none;
+      stroke: var(--text-accent);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 0 628;
+      transition: stroke-dasharray 0.8s ease-in-out, stroke 0.3s ease;
+    }
+
+    .progress-circle-fill.over-budget {
+      stroke: var(--priority-high);
+    }
+
+    .circular-progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: var(--text-primary);
+    }
+
+    .progress-amount {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-accent);
+      margin-bottom: 4px;
+      transition: color 0.3s ease;
+    }
+
+    .progress-amount.over-budget {
+      color: var(--priority-high);
+    }
+
+    .progress-label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .budget-summary {
+      text-align: center;
+      width: 100%;
+    }
+
+    .budget-summary-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      padding: 0 20px;
+    }
+
+    .budget-summary-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .budget-summary-amount {
+      font-family: 'Courier New', monospace;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .budget-summary-amount.total {
+      color: var(--text-accent);
+    }
+
+    .budget-summary-amount.remaining {
+      color: #10b981;
+    }
+
+    .budget-summary-amount.remaining.negative {
+      color: var(--priority-high);
+    }
+
+    .budget-month-display {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 8px 16px;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+    }
+
   </style>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 </head>
@@ -674,11 +797,34 @@
         </div>
         <div style="flex:1; min-height:220px;">
           <canvas id="landingOverallPerformanceChart" style="width:100%;height:220px;"></canvas>        </div>
-      </div>
-
-      <!-- Net Worth Widget Container (Content Removed) -->
+      </div>      <!-- Budget Progress Widget -->
       <div class="widget-card" style="flex:1;">
-        <!-- Widget content will be replaced -->
+        <h2 class="widget-title">Monthly Budget</h2>
+        <div class="budget-month-display" id="budgetMonthDisplay">
+          May 2025
+        </div>
+        <div class="budget-progress-widget">
+          <div class="circular-progress-container">
+            <svg class="circular-progress-svg" viewBox="0 0 200 200">
+              <circle class="progress-circle-bg" cx="100" cy="100" r="90"></circle>
+              <circle class="progress-circle-fill" cx="100" cy="100" r="90" id="budgetProgressCircle"></circle>
+            </svg>
+            <div class="circular-progress-text">
+              <div class="progress-amount" id="budgetSpentAmount">$0</div>
+              <div class="progress-label">Spent</div>
+            </div>
+          </div>
+          <div class="budget-summary">
+            <div class="budget-summary-row">
+              <span class="budget-summary-label">Total Budget:</span>
+              <span class="budget-summary-amount total" id="budgetTotalAmount">$0</span>
+            </div>
+            <div class="budget-summary-row">
+              <span class="budget-summary-label">Remaining:</span>
+              <span class="budget-summary-amount remaining" id="budgetRemainingAmount">$0</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -1065,6 +1211,108 @@
       });
     }    // Initialize animated buttons
     setupAnimatedTimeframeButtons();
+
+    // === BUDGET PROGRESS WIDGET FUNCTIONALITY ===
+    function updateBudgetProgressWidget() {
+      const currentDate = new Date();
+      const currentMonth = currentDate.getMonth();
+      const currentYear = currentDate.getFullYear();
+      
+      // Update month display
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                         'July', 'August', 'September', 'October', 'November', 'December'];
+      document.getElementById('budgetMonthDisplay').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+      
+      // Get budget data from localStorage
+      const budgetData = JSON.parse(localStorage.getItem('financeTrackerBudgets') || '{}');
+      const monthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
+      const monthBudgets = budgetData[monthKey] || {};
+      
+      // Get transactions for current month
+      const transactions = JSON.parse(localStorage.getItem('financeTrackerTransactions') || '[]');
+      const currentMonthTransactions = transactions.filter(t => {
+        if (!t.date) return false;
+        const transactionDate = new Date(t.date);
+        return transactionDate.getFullYear() === currentYear && 
+               transactionDate.getMonth() === currentMonth;
+      });
+      
+      // Calculate totals
+      let totalBudget = 0;
+      let totalSpent = 0;
+      
+      // Sum up all budget categories
+      Object.values(monthBudgets).forEach(budget => {
+        if (typeof budget === 'number') {
+          totalBudget += budget;
+        }
+      });
+      
+      // Calculate spent amount for budget categories
+      const budgetCategories = Object.keys(monthBudgets);
+      budgetCategories.forEach(category => {
+        const categoryTransactions = currentMonthTransactions.filter(t => 
+          t.category && t.category.toLowerCase() === category.toLowerCase() && 
+          t.amount < 0 // Only expenses
+        );
+        const categorySpent = categoryTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
+        totalSpent += categorySpent;
+      });
+      
+      // Update display elements
+      document.getElementById('budgetTotalAmount').textContent = `$${totalBudget.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+      document.getElementById('budgetSpentAmount').textContent = `$${totalSpent.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+      
+      const remaining = totalBudget - totalSpent;
+      const remainingElement = document.getElementById('budgetRemainingAmount');
+      remainingElement.textContent = `$${Math.abs(remaining).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+      
+      // Update remaining amount styling
+      remainingElement.className = 'budget-summary-amount remaining';
+      if (remaining < 0) {
+        remainingElement.classList.add('negative');
+        remainingElement.textContent = `-$${Math.abs(remaining).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`;
+      }
+      
+      // Update circular progress
+      const progressCircle = document.getElementById('budgetProgressCircle');
+      const spentAmountElement = document.getElementById('budgetSpentAmount');
+      
+      if (totalBudget > 0) {
+        const percentage = Math.min((totalSpent / totalBudget) * 100, 100);
+        const circumference = 2 * Math.PI * 90; // radius = 90
+        const dashArray = (percentage / 100) * circumference;
+        
+        progressCircle.style.strokeDasharray = `${dashArray} ${circumference}`;
+        
+        // Change color if over budget
+        if (totalSpent > totalBudget) {
+          progressCircle.classList.add('over-budget');
+          spentAmountElement.classList.add('over-budget');
+        } else {
+          progressCircle.classList.remove('over-budget');
+          spentAmountElement.classList.remove('over-budget');
+        }
+      } else {
+        // No budget set
+        progressCircle.style.strokeDasharray = '0 628';
+        progressCircle.classList.remove('over-budget');
+        spentAmountElement.classList.remove('over-budget');
+      }
+    }
+
+    // Initialize budget widget
+    updateBudgetProgressWidget();
+
+    // Update budget widget when localStorage changes (for cross-tab sync)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'financeTrackerBudgets' || e.key === 'financeTrackerTransactions') {
+        updateBudgetProgressWidget();
+      }
+    });
+
+    // Update budget widget every minute to catch any changes
+    setInterval(updateBudgetProgressWidget, 60000);
   </script>
 </body>
 </html>
