@@ -931,11 +931,9 @@
       background: var(--bg-secondary);
       border-radius: 8px;
       overflow: hidden;
-    }
-
-    .budget-categories-header {
+    }    .budget-categories-header {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr 50px;
       gap: 16px;
       padding: 16px;
       background: linear-gradient(135deg, var(--bg-primary) 0%, rgba(139, 92, 246, 0.05) 100%);
@@ -952,7 +950,7 @@
 
     .budget-category-item {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+      grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr 50px;
       gap: 16px;
       padding: 16px;
       border-bottom: 1px solid var(--border-color);
@@ -1016,253 +1014,200 @@
 
     .budget-progress-fill.over-budget {
       background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-    }
-
-    .budget-progress-text {
-      font-size: 0.8em;
-      color: var(--text-muted);
-      text-align: center;
-    }    .budget-actions {
-      padding: 20px;
-      border-top: 1px solid var(--border-color);
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .budget-action-btn {
-      background: transparent;
-      border: 1px solid transparent;
-      color: var(--text-accent);
-      font-family: 'Poppins', sans-serif;
-      font-weight: 600;
-      padding: 8px 15px;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
-      outline: none;
-      box-shadow: none;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-      vertical-align: middle;
-      font-size: 0.9em;
-      position: relative;
-      overflow: hidden;
-      --mouse-x: 50%;
-      --mouse-y: 50%;
-    }
-
-    .budget-action-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: radial-gradient(
-        circle at var(--mouse-x) var(--mouse-y),
-        var(--button-hover-gradient-center) 0%,
-        var(--button-hover-gradient-mid) 30%,
-        transparent 60%
-      );
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      border-radius: inherit;
-      z-index: 1;
-      pointer-events: none;
-    }
-
-    .budget-action-btn:hover::before {
-      opacity: 1;
-    }
-
-    .budget-action-btn span {
-      position: relative;
-      z-index: 2;
-    }
-
-    .budget-action-btn:not(.active):not(:disabled):hover {
-      background-color: transparent;
-      color: var(--text-accent);
-      border-color: transparent;
-      box-shadow: 0 0 8px var(--text-accent);
-    }
-
-    .budget-category-delete-btn {
-      background: none;
-      border: none;
-      color: #ef4444;
-      cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
-      transition: all 0.2s ease;
-      font-size: 1.1em;
-    }
-
-    .budget-category-delete-btn:hover {
-      background: rgba(239, 68, 68, 0.1);
-    }
-
-    .budget-input {
-      background: var(--bg-primary);
-      border: 1px solid var(--border-color);
-      border-radius: 4px;
-      padding: 6px 8px;
-      color: var(--text-primary);
-      font-size: 0.9em;
-      width: 100%;
-      transition: all 0.3s ease;
-    }    .budget-input:focus {
-      outline: none;
-      border-color: var(--text-accent);
-      box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
-    }
-
-    /* Budget Category Rows */
-    .budget-category-row {
-      display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr 2fr auto;
-      gap: 12px;
-      align-items: center;
-      padding: 12px;
-      border-bottom: 1px solid var(--border-color);
-      transition: background-color 0.2s ease;
-    }
-
-    .budget-category-row:hover {
-      background-color: var(--bg-secondary);
-    }
-
-    .budget-category-name {
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .budget-category-budget {
-      display: flex;
-      align-items: center;
-    }
-
-    .budget-category-spent,
-    .budget-category-remaining {
-      font-family: 'Courier New', monospace;
-      font-weight: 500;
-    }
-
-    .budget-category-spent {
-      color: var(--text-muted);
-    }
-
-    .budget-category-remaining.positive {
-      color: #10b981;
-    }
-
-    .budget-category-remaining.negative {
-      color: #ef4444;
-    }
-
-    .budget-category-progress {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .budget-progress-bar {
-      width: 100%;
-      height: 8px;
-      background: var(--bg-primary);
-      border-radius: 4px;
-      overflow: hidden;
-      border: 1px solid var(--border-color);
-    }
-
-    .budget-progress-fill {
-      height: 100%;
-      border-radius: 3px;
-      transition: width 0.3s ease;
-    }
-
-    .budget-progress-fill.progress-low {
-      background: linear-gradient(90deg, #10b981 0%, #059669 100%);
-    }
-
-    .budget-progress-fill.progress-medium {
-      background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
-    }
-
-    .budget-progress-fill.progress-high {
-      background: linear-gradient(90deg, #ef4444 0%, #dc2626 100%);
-    }
-
-    .budget-progress-fill.progress-over {
-      background: linear-gradient(90deg, #7c2d12 0%, #991b1b 100%);
-    }
-
-    .budget-progress-text {
+    }    .budget-progress-text {
       font-size: 0.75em;
       color: var(--text-muted);
       text-align: center;
       font-weight: 500;
     }
 
+    /* Budget Category Delete Button */
     .budget-delete-btn {
       background: none;
       border: none;
-      color: #ef4444;
+      color: var(--text-muted);
+      font-size: 18px;
       cursor: pointer;
-      padding: 6px;
-      border-radius: 4px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       transition: all 0.2s ease;
-      font-size: 1.2em;
       font-weight: bold;
-      line-height: 1;
     }
 
     .budget-delete-btn:hover {
-      background: rgba(239, 68, 68, 0.1);
+      background-color: var(--priority-high);
+      color: white;
       transform: scale(1.1);
     }
 
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .budget-widget-header {
-        flex-direction: column;
-        gap: 12px;
-        align-items: flex-start;
-      }
-
-      .budget-total-display {
-        align-items: flex-start;
-      }
-
-      .budget-categories-header,
-      .budget-category-item {
-        grid-template-columns: 1fr;
-        gap: 8px;
-        text-align: left;
-      }
-
-      .budget-categories-header > span {
-        font-size: 0.8em;
-        padding: 4px 0;
-        border-bottom: 1px solid var(--border-color);
-      }
-
-      .budget-category-item > div {
-        padding: 4px 0;
-      }
-
-      .budget-actions {
-        flex-direction: column;
-      }
-
-      .budget-action-btn {
-        width: 100%;
-      }
+    /* Budget Modal Styles */
+    .budget-modal {
+      display: none;
+      position: fixed;
+      z-index: 1600;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      align-items: center;
+      justify-content: center;
     }
 
-    /* --- Existing styles continue here --- */
+    .budget-modal-content {
+      background-color: var(--bg-secondary);
+      margin: auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px var(--shadow-medium);
+      width: 90%;
+      max-width: 450px;
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+
+    .budget-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .budget-modal-header h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+
+    .budget-modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--text-muted);
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+
+    .budget-modal-close:hover {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+    }
+
+    .budget-modal-body {
+      margin-bottom: 20px;
+    }
+
+    .budget-modal-field {
+      margin-bottom: 15px;
+    }
+
+    .budget-modal-field label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .budget-modal-field input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-sizing: border-box;
+    }
+
+    .budget-modal-field input:focus {
+      outline: none;
+      border-color: var(--text-accent);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .budget-modal-message {
+      color: var(--text-primary);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .budget-modal-category-name {
+      color: var(--text-accent);
+      font-weight: 600;
+    }
+
+    .budget-modal-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .budget-modal-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      min-width: 80px;
+    }
+
+    .budget-modal-btn.primary {
+      background-color: var(--text-accent);
+      color: white;
+    }
+
+    .budget-modal-btn.primary:hover {
+      background-color: #7c3aed;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    .budget-modal-btn.secondary {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .budget-modal-btn.secondary:hover {
+      background-color: var(--bg-secondary);
+      border-color: var(--text-accent);
+    }
+
+    .budget-modal-btn.danger {
+      background-color: #ef4444;
+      color: white;
+    }
+
+    .budget-modal-btn.danger:hover {
+      background-color: #dc2626;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    .budget-success-message {
+      color: #10b981;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    /* --- Existing styles continue --- */
   </style>
 
   <!-- Poppins font -->
@@ -1277,21 +1222,19 @@
   <script src="theme.js"></script>
 </head>
 <body>  <div class="sidebar">
-    <div class="sidebar-nav">
-      <a href="Landing Page.html" title="Home">
+    <div class="sidebar-nav">      <a href="Landing Page.html" title="Home">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z"/>
+          <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </a>
-      <a href="Personal Finance Tracker.html" title="Finance Tracker">
+      </a>      <a href="Personal Finance Tracker.html" title="Finance Tracker">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polyline points="3 17 8 12 13 16 21 4" stroke-linecap="round" stroke-linejoin="round"/>
+          <polyline points="3 17 8 12 13 16 21 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </a>
       <a href="Productivity Tracker.html" title="Productivity Tracker">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="9"/>
-          <polyline points="12 7 12 12 15 15" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+          <polyline points="12 7 12 12 15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </a>
     </div>
@@ -1384,11 +1327,9 @@
           
           <div id="budgetCategoriesList" class="budget-categories-list">
             <!-- Category budget items will be dynamically inserted here -->
-          </div>
-            <div class="budget-actions">
+          </div>            <div class="budget-actions">
             <button id="addCategoryBudgetBtn" class="budget-action-btn"><span>Add Category</span></button>
             <button id="resetBudgetBtn" class="budget-action-btn"><span>Reset Budget</span></button>
-            <button id="saveBudgetBtn" class="budget-action-btn"><span>Save Budget</span></button>
           </div>
         </div>
       </div>
@@ -1448,6 +1389,87 @@
 
     <div id="progressBarContainer">
       <div id="progressBar">Processing...</div>
+    </div>
+
+    <!-- Budget Modals -->
+    <!-- Add Category Modal -->
+    <div id="budgetAddCategoryModal" class="budget-modal">
+      <div class="budget-modal-content">
+        <div class="budget-modal-header">
+          <h3>Add Budget Category</h3>
+          <span class="budget-modal-close" id="closeAddCategoryModal">&times;</span>
+        </div>
+        <div class="budget-modal-body">
+          <div class="budget-modal-field">
+            <label for="budgetCategoryNameInput">Category Name:</label>
+            <input type="text" id="budgetCategoryNameInput" placeholder="e.g., Groceries, Entertainment">
+          </div>
+          <div class="budget-modal-field">
+            <label for="budgetCategoryAmountInput">Budget Amount:</label>
+            <input type="number" id="budgetCategoryAmountInput" placeholder="0.00" step="0.01" min="0">
+          </div>
+        </div>
+        <div class="budget-modal-actions">
+          <button class="budget-modal-btn secondary" id="cancelAddCategoryBtn">Cancel</button>
+          <button class="budget-modal-btn primary" id="confirmAddCategoryBtn">Add Category</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reset Budget Modal -->
+    <div id="budgetResetModal" class="budget-modal">
+      <div class="budget-modal-content">
+        <div class="budget-modal-header">
+          <h3>Reset Budget</h3>
+          <span class="budget-modal-close" id="closeResetModal">&times;</span>
+        </div>
+        <div class="budget-modal-body">
+          <div class="budget-modal-message">
+            Are you sure you want to reset the budget for this month? This will clear all category budgets and cannot be undone.
+          </div>
+        </div>
+        <div class="budget-modal-actions">
+          <button class="budget-modal-btn secondary" id="cancelResetBtn">Cancel</button>
+          <button class="budget-modal-btn danger" id="confirmResetBtn">Reset Budget</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Category Modal -->
+    <div id="budgetDeleteCategoryModal" class="budget-modal">
+      <div class="budget-modal-content">
+        <div class="budget-modal-header">
+          <h3>Delete Category</h3>
+          <span class="budget-modal-close" id="closeDeleteCategoryModal">&times;</span>
+        </div>
+        <div class="budget-modal-body">
+          <div class="budget-modal-message">
+            Are you sure you want to delete the category "<span class="budget-modal-category-name" id="deleteCategoryName"></span>"?
+          </div>
+        </div>
+        <div class="budget-modal-actions">
+          <button class="budget-modal-btn secondary" id="cancelDeleteCategoryBtn">Cancel</button>
+          <button class="budget-modal-btn danger" id="confirmDeleteCategoryBtn">Delete Category</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="budgetSuccessModal" class="budget-modal">
+      <div class="budget-modal-content">
+        <div class="budget-modal-header">
+          <h3>Success</h3>
+          <span class="budget-modal-close" id="closeSuccessModal">&times;</span>
+        </div>
+        <div class="budget-modal-body">
+          <div class="budget-success-message" id="successMessage">
+            Budget data saved successfully!
+          </div>
+        </div>
+        <div class="budget-modal-actions">
+          <button class="budget-modal-btn primary" id="okSuccessBtn">OK</button>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -1563,7 +1585,7 @@
           });
         });
       }
-      // --- End Synchronized Timeframe Controls Setup ---
+      // --- End Synchronized Timeframe Controls ---
 
       function saveFileDataKeysMap() { // New name
         localStorage.setItem('financeFileDataKeysMap', JSON.stringify(fileDataKeysMap));
@@ -1821,6 +1843,9 @@
       }
 
 
+     
+
+
       // --- New: Category Chart Functions ---
       function populateCategoryMonthSelector() {
         const selector = document.getElementById('categoryMonthSelector');
@@ -1848,7 +1873,7 @@
             const option = document.createElement('option');
             option.value = monthKey_YYYY_MM;
             const [year, monthNum] = monthKey_YYYY_MM.split('-');
-            const monthName = new Date(year, parseInt(monthNum) - 1, 1).toLocaleString('default', { month: 'long' });
+            const monthName = new Date(year, parseInt(monthNum)-1, 1).toLocaleString('default', { month: 'long' });
             option.textContent = `${monthName} ${year}`;
             selector.appendChild(option);
         });
@@ -1859,7 +1884,7 @@
             selector.value = sortedMonths[0]; // Default to the latest month
         }
       }
-
+      
       document.getElementById('categoryMonthSelector').addEventListener('change', (event) => {
         renderCategoriesChart(event.target.value); // Value is YYYY-MM
       });
@@ -1868,6 +1893,8 @@
         const container = document.querySelector('.category-chart-inner-container');
         container.innerHTML = '<canvas id="categorySpendChart"></canvas>'; // Ensure fresh canvas
         const ctx = document.getElementById('categorySpendChart').getContext('2d');
+
+
 
         if (categoryChart) {
             categoryChart.destroy();
@@ -1889,6 +1916,10 @@
             if (dateKey_YYYY_MM_DD.startsWith(monthKey_YYYY_MM)) { // Check if the date belongs to the selected month
                 const dayData = dailyActivity[dateKey_YYYY_MM_DD];
                 if (dayData && dayData.categories) {
+
+
+
+
                     foundDataForMonth = true;
                     CATEGORIES.forEach(cat => {
                         if (dayData.categories[cat]) {
@@ -1936,6 +1967,7 @@
                         '#FF6B6B', // Groceries - Red
                         '#4CAF50', // Food Delivery/Restaurant - Green  
                         '#FFC107', // Gas - Amber
+
                         '#63FFDA', // Bills - Cyan
                         '#8B5CF6', // Other - Purple
                         '#FF9800'  // Extra color - Orange
@@ -2667,6 +2699,7 @@ The response MUST be only the valid JSON object, with no extra text, explanation
       const importBanksBtn = document.getElementById('importBanksBtn');
       const closeBanksImportModalBtn = document.getElementById('closeBanksImportModalBtn');
       const cancelBanksImportBtn = document.getElementById('cancelBanksImportBtn');
+      const saveBanksImportBtn = document.getElementById('saveBanksImportBtn');
       if (importBanksBtn && banksImportModal) {
         banksImportModal.style.display = 'none'; // Ensure it's hidden by default
         importBanksBtn.onclick = () => {
@@ -2685,7 +2718,6 @@ The response MUST be only the valid JSON object, with no extra text, explanation
       });
 
       // --- Banks Import Modal Save Logic ---
-      const saveBanksImportBtn = document.getElementById('saveBanksImportBtn');
       if (saveBanksImportBtn) {
         saveBanksImportBtn.onclick = () => {
           const name = document.getElementById('bankNameInput').value.trim();
@@ -2964,21 +2996,29 @@ The response MUST be only the valid JSON object, with no extra text, explanation
             budgetData = {};
           }
         }
-      }
-      
-      // Save budget data to localStorage
+      }        // Save budget data to localStorage
       function saveBudgetData() {
         try {
           localStorage.setItem(budgetStorageKey, JSON.stringify(budgetData));
+          showSuccessMessage('Budget saved successfully!');
         } catch (e) {
           console.error('Error saving budget data:', e);
-          alert('Error saving budget data. Please try again.');
+          showSuccessMessage('Error saving budget data. Please try again.');
         }
       }
-      
-      // Initialize budget widget
+
+      // Auto-save budget data to localStorage (silent save)
+      function autoSaveBudgetData() {
+        try {
+          localStorage.setItem(budgetStorageKey, JSON.stringify(budgetData));
+        } catch (e) {
+          console.error('Error auto-saving budget data:', e);
+        }
+      }
+        // Initialize budget widget
       function initializeBudgetWidget() {
         loadBudgetData();
+        setupBudgetModals();
         setupBudgetEventListeners();
         populateBudgetMonthSelector();
         renderBudgetCategories();
@@ -3004,14 +3044,12 @@ The response MUST be only the valid JSON object, with no extra text, explanation
             renderBudgetCategories();
             updateBudgetTotals();
           });
-        }
-          // Action buttons
+        }          // Action buttons
         const addCategoryBtn = document.getElementById('addCategoryBudgetBtn');
         const resetBudgetBtn = document.getElementById('resetBudgetBtn');
-        const saveBudgetBtn = document.getElementById('saveBudgetBtn');
         
         // Add mouse tracking for gradient effects
-        const budgetActionBtns = [addCategoryBtn, resetBudgetBtn, saveBudgetBtn];
+        const budgetActionBtns = [addCategoryBtn, resetBudgetBtn];
         budgetActionBtns.forEach(btn => {
           if (btn) {
             btn.addEventListener('mousemove', (e) => {
@@ -3022,24 +3060,14 @@ The response MUST be only the valid JSON object, with no extra text, explanation
               btn.style.setProperty('--mouse-y', `${y}%`);
             });
           }
-        });
-        
-        if (addCategoryBtn) {
+        });        if (addCategoryBtn) {
           addCategoryBtn.addEventListener('click', () => {
             showAddCategoryDialog();
           });
         }
-        
-        if (resetBudgetBtn) {
+          if (resetBudgetBtn) {
           resetBudgetBtn.addEventListener('click', () => {
             resetCurrentMonthBudget();
-          });
-        }
-        
-        if (saveBudgetBtn) {
-          saveBudgetBtn.addEventListener('click', () => {
-            saveBudgetData();
-            alert('Budget saved successfully!');
           });
         }
       }
@@ -3104,15 +3132,14 @@ The response MUST be only the valid JSON object, with no extra text, explanation
         Object.keys(budgetData[selectedMonth]).forEach(cat => allCategories.add(cat));
         
         const sortedCategories = Array.from(allCategories).sort();
-        
-        sortedCategories.forEach(category => {
+          sortedCategories.forEach(category => {
           const budgetAmount = budgetData[selectedMonth][category] || 0;
           const spentAmount = monthlySpending[category] || 0;
           const remaining = budgetAmount - spentAmount;
           const progressPercent = budgetAmount > 0 ? Math.min((spentAmount / budgetAmount) * 100, 100) : 0;
           
           const categoryRow = document.createElement('div');
-          categoryRow.className = 'budget-category-row';
+          categoryRow.className = 'budget-category-item';
           categoryRow.innerHTML = `
             <div class="budget-category-name">${category}</div>
             <div class="budget-category-budget">
@@ -3139,27 +3166,30 @@ The response MUST be only the valid JSON object, with no extra text, explanation
           
           container.appendChild(categoryRow);
         });
-        
-        // Add event listeners for budget inputs
+          // Add event listeners for budget inputs
         container.querySelectorAll('.budget-input').forEach(input => {
           input.addEventListener('change', (e) => {
             const category = e.target.dataset.category;
             const amount = parseFloat(e.target.value) || 0;
             budgetData[selectedMonth][category] = amount;
+            autoSaveBudgetData(); // Auto-save changes
             renderBudgetCategories(); // Re-render to update calculations
             updateBudgetTotals();
           });
         });
-        
-        // Add event listeners for delete buttons
+          // Add event listeners for delete buttons
         container.querySelectorAll('.budget-delete-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
             const category = e.target.dataset.category;
-            if (confirm(`Remove budget for "${category}"?`)) {
-              delete budgetData[selectedMonth][category];
-              renderBudgetCategories();
-              updateBudgetTotals();
+            categoryToDelete = category;
+            
+            // Update category name in modal
+            const deleteCategoryNameEl = document.getElementById('deleteCategoryName');
+            if (deleteCategoryNameEl) {
+              deleteCategoryNameEl.textContent = category;
             }
+            
+            showBudgetModal('budgetDeleteCategoryModal');
           });
         });
       }
@@ -3226,14 +3256,74 @@ The response MUST be only the valid JSON object, with no extra text, explanation
         remainingEl.textContent = `($${Math.abs(remaining).toFixed(2)} ${remaining >= 0 ? 'remaining' : 'over'})`;
         remainingEl.className = `budget-remaining ${remaining >= 0 ? 'positive' : 'negative'}`;
       }
-      
-      // Show dialog to add new category budget
+        // Show dialog to add new category budget
       function showAddCategoryDialog() {
-        const categoryName = prompt('Enter category name:');
-        if (!categoryName || categoryName.trim() === '') return;
+        // Clear previous inputs
+        const categoryNameInput = document.getElementById('budgetCategoryNameInput');
+        const categoryAmountInput = document.getElementById('budgetCategoryAmountInput');
         
-        const budgetAmount = prompt('Enter budget amount:', '0');
-        const amount = parseFloat(budgetAmount) || 0;
+        if (categoryNameInput) categoryNameInput.value = '';
+        if (categoryAmountInput) categoryAmountInput.value = '';
+        
+        showBudgetModal('budgetAddCategoryModal');
+        
+        // Focus on category name input
+        if (categoryNameInput) {
+          setTimeout(() => categoryNameInput.focus(), 100);
+        }
+      }
+        // Reset budget for current month
+      function resetCurrentMonthBudget() {
+        const monthSelector = document.getElementById('budgetMonthSelector');
+        const selectedMonth = monthSelector.value;
+        const resetMonthDisplay = document.getElementById('resetMonthDisplay');
+        
+        // Update month display in modal
+        if (resetMonthDisplay) {
+          const [year, monthNum] = selectedMonth.split('-');
+          const monthName = new Date(year, monthNum - 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+          resetMonthDisplay.textContent = monthName;
+        }
+        
+        showBudgetModal('budgetResetModal');
+      }
+        // Update budget widget when data changes
+      function updateBudgetOnDataChange() {
+        if (document.getElementById('budgetMonthSelector')) {
+          populateBudgetMonthSelector();
+          renderBudgetCategories();
+          updateBudgetTotals();
+        }
+      }
+      
+      // Budget Modal Helper Functions
+      function showBudgetModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = 'flex';
+        }
+      }
+      
+      function hideBudgetModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+          modal.style.display = 'none';
+        }
+      }
+      
+      // Modal Action Handlers
+      let categoryToDelete = '';
+        function handleAddCategoryConfirm() {
+        const categoryNameInput = document.getElementById('budgetCategoryNameInput');
+        const categoryAmountInput = document.getElementById('budgetCategoryAmountInput');
+        
+        const categoryName = categoryNameInput.value.trim();
+        const amount = parseFloat(categoryAmountInput.value) || 0;
+        
+        if (!categoryName) {
+          categoryNameInput.focus();
+          return;
+        }
         
         const monthSelector = document.getElementById('budgetMonthSelector');
         const selectedMonth = monthSelector.value;
@@ -3242,44 +3332,157 @@ The response MUST be only the valid JSON object, with no extra text, explanation
           budgetData[selectedMonth] = {};
         }
         
-        budgetData[selectedMonth][categoryName.trim()] = amount;
+        budgetData[selectedMonth][categoryName] = amount;
+        autoSaveBudgetData(); // Auto-save changes
         renderBudgetCategories();
         updateBudgetTotals();
+        
+        // Clear inputs and hide modal
+        categoryNameInput.value = '';
+        categoryAmountInput.value = '';
+        hideBudgetModal('budgetAddCategoryModal');
       }
-      
-      // Reset budget for current month
-      function resetCurrentMonthBudget() {
+        function handleResetConfirm() {
         const monthSelector = document.getElementById('budgetMonthSelector');
         const selectedMonth = monthSelector.value;
         
-        if (confirm(`Reset all budget data for ${selectedMonth}?`)) {
-          budgetData[selectedMonth] = {};
+        budgetData[selectedMonth] = {};
+        autoSaveBudgetData(); // Auto-save changes
+        renderBudgetCategories();
+        updateBudgetTotals();
+        hideBudgetModal('budgetResetModal');
+      }
+        function handleDeleteCategoryConfirm() {
+        const monthSelector = document.getElementById('budgetMonthSelector');
+        const selectedMonth = monthSelector.value;
+        
+        if (categoryToDelete && budgetData[selectedMonth]) {
+          delete budgetData[selectedMonth][categoryToDelete];
+          autoSaveBudgetData(); // Auto-save changes
           renderBudgetCategories();
           updateBudgetTotals();
         }
+        
+        categoryToDelete = '';
+        hideBudgetModal('budgetDeleteCategoryModal');
       }
       
-      // Update budget widget when data changes
-      function updateBudgetOnDataChange() {
-        if (document.getElementById('budgetMonthSelector')) {
-          populateBudgetMonthSelector();
-          renderBudgetCategories();
-          updateBudgetTotals();
+      function showSuccessMessage(message) {
+        const successMessageEl = document.getElementById('successMessage');
+        if (successMessageEl) {
+          successMessageEl.textContent = message;
         }
+        showBudgetModal('budgetSuccessModal');
       }
-        // Initialize budget widget when page loads
-      document.addEventListener('DOMContentLoaded', () => {
-        initializeBudgetWidget();
-      });
       
-      // Initialize budget widget immediately if DOM is already loaded
+      function setupBudgetModals() {
+        // Add Category Modal
+        const addCategoryModal = document.getElementById('budgetAddCategoryModal');
+        const closeAddCategoryModal = document.getElementById('closeAddCategoryModal');
+        const cancelAddCategoryBtn = document.getElementById('cancelAddCategoryBtn');
+        const confirmAddCategoryBtn = document.getElementById('confirmAddCategoryBtn');
+        const categoryNameInput = document.getElementById('budgetCategoryNameInput');
+        const categoryAmountInput = document.getElementById('budgetCategoryAmountInput');
+        
+        if (closeAddCategoryModal) {
+          closeAddCategoryModal.addEventListener('click', () => hideBudgetModal('budgetAddCategoryModal'));
+        }
+        if (cancelAddCategoryBtn) {
+          cancelAddCategoryBtn.addEventListener('click', () => hideBudgetModal('budgetAddCategoryModal'));
+        }
+        if (confirmAddCategoryBtn) {
+          confirmAddCategoryBtn.addEventListener('click', handleAddCategoryConfirm);
+        }
+        
+        // Add keyboard support for Add Category modal
+        if (categoryNameInput) {
+          categoryNameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+              categoryAmountInput.focus();
+            }
+          });
+        }
+        if (categoryAmountInput) {
+          categoryAmountInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+              handleAddCategoryConfirm();
+            }
+          });
+        }
+        
+        // Reset Budget Modal
+        const resetModal = document.getElementById('budgetResetModal');
+        const closeResetModal = document.getElementById('closeResetModal');
+        const cancelResetBtn = document.getElementById('cancelResetBtn');
+        const confirmResetBtn = document.getElementById('confirmResetBtn');
+        
+        if (closeResetModal) {
+          closeResetModal.addEventListener('click', () => hideBudgetModal('budgetResetModal'));
+        }
+        if (cancelResetBtn) {
+          cancelResetBtn.addEventListener('click', () => hideBudgetModal('budgetResetModal'));
+        }
+        if (confirmResetBtn) {
+          confirmResetBtn.addEventListener('click', handleResetConfirm);
+        }
+        
+        // Delete Category Modal
+        const deleteCategoryModal = document.getElementById('budgetDeleteCategoryModal');
+        const closeDeleteCategoryModal = document.getElementById('closeDeleteCategoryModal');
+        const cancelDeleteCategoryBtn = document.getElementById('cancelDeleteCategoryBtn');
+        const confirmDeleteCategoryBtn = document.getElementById('confirmDeleteCategoryBtn');
+        
+        if (closeDeleteCategoryModal) {
+          closeDeleteCategoryModal.addEventListener('click', () => hideBudgetModal('budgetDeleteCategoryModal'));
+        }
+        if (cancelDeleteCategoryBtn) {
+          cancelDeleteCategoryBtn.addEventListener('click', () => hideBudgetModal('budgetDeleteCategoryModal'));
+        }
+        if (confirmDeleteCategoryBtn) {
+          confirmDeleteCategoryBtn.addEventListener('click', handleDeleteCategoryConfirm);
+        }
+        
+        // Success Modal
+        const successModal = document.getElementById('budgetSuccessModal');
+        const closeSuccessModal = document.getElementById('closeSuccessModal');
+        const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+        
+        if (closeSuccessModal) {
+          closeSuccessModal.addEventListener('click', () => hideBudgetModal('budgetSuccessModal'));
+        }
+        if (closeSuccessBtn) {
+          closeSuccessBtn.addEventListener('click', () => hideBudgetModal('budgetSuccessModal'));
+        }
+        
+        // Close modal when clicking outside
+        [addCategoryModal, resetModal, deleteCategoryModal, successModal].forEach(modal => {
+          if (modal) {
+            modal.addEventListener('click', (e) => {
+              if (e.target === modal) {
+                modal.style.display = 'none';
+              }
+            });
+          }
+        });
+        
+        // Global keyboard event handler for modals
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            // Close any open budget modal
+            [addCategoryModal, resetModal, deleteCategoryModal, successModal].forEach(modal => {
+              if (modal && modal.style.display === 'flex') {
+                modal.style.display = 'none';
+              }
+            });
+          }
+        });
+      }      // Initialize budget widget
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initializeBudgetWidget);
       } else {
         initializeBudgetWidget();
       }
-      
-      // --- End Budget Widget Implementation ---
+        // --- End Budget Widget Implementation ---
 
       setupTimeframeControls(); // Call to initialize the new synchronized controls
     </script>
