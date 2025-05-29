@@ -4,6 +4,31 @@
   <meta charset="UTF-8">
   <title>Two‑Column Task Dashboard with Rounded Bars</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  
+  <!-- Immediate theme application to prevent white flash -->
+  <script>
+    (function() {
+      // Check for saved theme preference and apply immediately
+      let currentTheme = localStorage.getItem('dashboard-theme');
+      
+      // Migration: check for old theme key and migrate it
+      if (!currentTheme) {
+        const oldTheme = localStorage.getItem('theme');
+        if (oldTheme) {
+          currentTheme = oldTheme;
+          localStorage.setItem('dashboard-theme', oldTheme);
+          localStorage.removeItem('theme');
+        } else {
+          currentTheme = 'light';
+        }
+      }
+      
+      // Apply theme immediately to prevent flash
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    })();
+  </script>
+  
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!-- SortableJS -->

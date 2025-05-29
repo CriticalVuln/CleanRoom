@@ -3,16 +3,103 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
   <title>Quick Add Task</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">  <style>
+  
+  <!-- Immediate theme application to prevent white flash -->
+  <script>
+    (function() {
+      // Check for saved theme preference and apply immediately
+      let currentTheme = localStorage.getItem('dashboard-theme');
+      
+      // Migration: check for old theme key and migrate it
+      if (!currentTheme) {
+        const oldTheme = localStorage.getItem('theme');
+        if (oldTheme) {
+          currentTheme = oldTheme;
+          localStorage.setItem('dashboard-theme', oldTheme);
+          localStorage.removeItem('theme');
+        } else {
+          currentTheme = 'light';
+        }
+      }
+      
+      // Apply theme immediately to prevent flash
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    })();
+  </script>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"><style>
+    /* === CSS VARIABLES FOR THEMING === */
+    :root {
+      /* Light Mode (Default) */
+      --bg-primary: #FFFFFF;
+      --bg-secondary: #F8F9FA;
+      --bg-tertiary: #F5F5F5;
+      --text-primary: #333333;
+      --text-secondary: #6B7280;
+      --text-accent: #8B5CF6;
+      --border-color: #E0E0E0;
+      --shadow-light: rgba(0,0,0,0.08);
+      --shadow-medium: rgba(0,0,0,0.1);
+      --button-gradient-start: #8B5CF6;
+      --button-gradient-end: #A855F7;
+      --button-shadow: rgba(139, 92, 246, 0.3);
+      --button-hover-glow: rgba(139, 92, 246, 0.6);
+      --button-text-selected: #FFFFFF;
+      --button-hover-border: rgba(139, 92, 246, 0.4);
+      --button-hover-gradient-center: rgba(139, 92, 246, 0.4);
+      --button-hover-gradient-mid: rgba(139, 92, 246, 0.2);
+      --button-active-gradient-center: rgba(255, 255, 255, 0.3);
+      --button-active-gradient-mid: rgba(255, 255, 255, 0.1);
+      --switch-active: #8B5CF6;
+      --priority-low: #10B981;
+      --priority-medium: #F59E0B;
+      --priority-high: #EF4444;
+      --button-disabled-bg: #E5E7EB;
+      --button-disabled-text: #9CA3AF;
+    }
+
+    /* Dark Mode */
+    [data-theme="dark"] {
+      --bg-primary: #0D0B14;
+      --bg-secondary: #1A1625;
+      --bg-tertiary: #211D30;
+      --text-primary: #E0E0E0;
+      --text-secondary: #A0A0A0;
+      --text-accent: #63FFDA;
+      --border-color: #4F4B68;
+      --shadow-light: rgba(33,29,48,0.45);
+      --shadow-medium: rgba(0,0,0,0.7);
+      --button-gradient-start: #63FFDA;
+      --button-gradient-end: #63FFDA;
+      --button-shadow: rgba(99, 255, 218, 0.3);
+      --button-hover-glow: rgba(99, 255, 218, 1);
+      --button-text-selected: #000000;
+      --button-hover-border: rgba(99, 255, 218, 0.5);
+      --button-hover-gradient-center: rgba(99, 255, 218, 0.4);
+      --button-hover-gradient-mid: rgba(99, 255, 218, 0.2);
+      --button-active-gradient-center: rgba(0, 0, 0, 0.3);
+      --button-active-gradient-mid: rgba(0, 0, 0, 0.1);
+      --switch-active: #A076F9;
+      --priority-low: #4CAF50;
+      --priority-medium: #FFC107;
+      --priority-high: #F44336;
+      --button-disabled-bg: #4F4B68;
+      --button-disabled-text: #6B7280;
+    }
+
     /* Global Reset */
-    * { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
     html, body { margin: 0; padding: 0; overflow: hidden; }
     
     /* Layout */
     body { 
-      background: #0D0B14; 
-      color: #E0E0E0; 
+      background: var(--bg-primary); 
+      color: var(--text-primary); 
       font-family: Poppins, sans-serif; 
       display: flex; 
       align-items: center; 
@@ -21,10 +108,11 @@
     }
     
     .card { 
-      background: #1A1625; 
+      background: var(--bg-secondary); 
+      border: 1px solid var(--border-color);
       border-radius: 12px; 
       padding: 16px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
+      box-shadow: 0 4px 12px var(--shadow-medium); 
       max-width: 300px; 
       margin: auto; 
     }
@@ -41,23 +129,30 @@
       border-radius: 4px; 
       cursor: pointer; 
       opacity: 0.6; 
+      transition: opacity 0.3s ease;
     }
     .priority-btn.selected { opacity: 1; }
-    .priority-btn.low { background: #4CAF50; }
-    .priority-btn.med { background: #FFC107; }
-    .priority-btn.high { background: #F44336; }
+    .priority-btn.low { background: var(--priority-low); }
+    .priority-btn.med { background: var(--priority-medium); }
+    .priority-btn.high { background: var(--priority-high); }
     
     button, .task-dropdown summary { 
       height: 32px; 
       padding: 0 12px; 
       border: none; 
       border-radius: 4px; 
-      background: #63FFDA; 
-      color: #0D0B14; 
+      background: var(--text-accent); 
+      color: var(--button-text-selected); 
       font-weight: 600; 
       cursor: pointer; 
       font-size: 14px; 
       font-family: inherit;
+      transition: all 0.3s ease;
+    }
+
+    button:hover, .task-dropdown summary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--button-shadow);
     }
     
     /* Input Fields */
@@ -65,11 +160,17 @@
       flex: 1; 
       height: 32px; 
       padding: 4px 8px; 
-      border: none; 
+      border: 1px solid var(--border-color); 
       border-radius: 4px; 
-      background: #211D30; 
-      color: #FFF; 
+      background: var(--bg-tertiary); 
+      color: var(--text-primary); 
       font-size: 14px; 
+      transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+    }
+
+    input[type="text"]:focus, input[type="number"]:focus {
+      outline: none;
+      border-color: var(--text-accent);
     }
     
     /* Dropdown */
@@ -85,20 +186,20 @@
       position: absolute; 
       top: calc(100% + 4px); 
       left: 0; 
-      background: #211D30; 
+      background: var(--bg-tertiary); 
+      border: 1px solid var(--border-color);
       padding: 8px; 
       border-radius: 4px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
+      box-shadow: 0 4px 12px var(--shadow-medium); 
       display: none; 
       font-size: 14px; 
       font-weight: 600; 
-    }
-    .task-dropdown[open] .task-dropdown-content { display: block; }
+    }    .task-dropdown[open] .task-dropdown-content { display: block; }
     .task-dropdown-content label { 
       display: flex; 
       align-items: center; 
       gap: 4px; 
-      color: #E0E0E0; 
+      color: var(--text-primary); 
       font-size: 14px; 
     }
     
@@ -109,7 +210,7 @@
       position: absolute; 
       cursor: pointer; 
       top: 0; left: 0; right: 0; bottom: 0; 
-      background: #4F4B68; 
+      background: var(--border-color); 
       border-radius: 34px; 
       transition: .4s; 
     }
@@ -120,11 +221,11 @@
       width: 14px; 
       left: 2px; 
       bottom: 2px; 
-      background: #FFF; 
+      background: var(--bg-primary); 
       border-radius: 50%; 
       transition: .4s; 
     }
-    input:checked + .slider { background: #A076F9; }
+    input:checked + .slider { background: var(--switch-active); }
     input:checked + .slider:before { transform: translateX(14px); }
   </style>
 </head>
@@ -179,9 +280,11 @@
     window.onload = () => {
       const card = document.querySelector('.card');
       const w = card.offsetWidth + 16;
-      const h = card.offsetHeight + 16;
-      window.resizeTo(w, h);
+      const h = card.offsetHeight + 16;      window.resizeTo(w, h);
     };
   </script>
+  
+  <!-- Theme functionality -->
+  <script src="theme.js"></script>
 </body>
 </html>

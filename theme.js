@@ -1,6 +1,27 @@
 // === SHARED THEME FUNCTIONALITY ===
 // This file handles theme switching across all dashboard pages
 
+// Immediate theme application function - call this in <head> to prevent FOUC
+function applyThemeImmediately() {
+    // Check for saved theme preference, migrate old key if needed, or default to light mode
+    let currentTheme = localStorage.getItem('dashboard-theme');
+    
+    // Migration: check for old theme key and migrate it
+    if (!currentTheme) {
+        const oldTheme = localStorage.getItem('theme');
+        if (oldTheme) {
+            currentTheme = oldTheme;
+            localStorage.setItem('dashboard-theme', oldTheme);
+            localStorage.removeItem('theme'); // Clean up old key
+        } else {
+            currentTheme = 'light'; // Default to light mode
+        }
+    }
+    
+    // Apply theme immediately to prevent flash
+    document.documentElement.setAttribute('data-theme', currentTheme);
+}
+
 // Initialize theme immediately when script loads
 document.addEventListener('DOMContentLoaded', function() {
     initializeTheme();

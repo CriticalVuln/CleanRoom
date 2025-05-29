@@ -3,7 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Landing Page</title>  <style>
+  <meta name="color-scheme" content="light dark">
+  <title>Landing Page</title>
+  
+  <!-- Immediate theme application to prevent white flash -->
+  <script>
+    (function() {
+      // Check for saved theme preference and apply immediately
+      let currentTheme = localStorage.getItem('dashboard-theme');
+      
+      // Migration: check for old theme key and migrate it
+      if (!currentTheme) {
+        const oldTheme = localStorage.getItem('theme');
+        if (oldTheme) {
+          currentTheme = oldTheme;
+          localStorage.setItem('dashboard-theme', oldTheme);
+          localStorage.removeItem('theme');
+        } else {
+          currentTheme = 'light';
+        }
+      }
+      
+      // Apply theme immediately to prevent flash
+      document.documentElement.setAttribute('data-theme', currentTheme);
+    })();
+  </script><style>
     /* === CSS VARIABLES FOR THEMING === */    :root {
       /* Light Mode (Default) */
       --bg-primary: #FFFFFF;
