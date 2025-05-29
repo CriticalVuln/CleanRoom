@@ -1208,13 +1208,15 @@
     <button id="closeDailyNotesBtn">Close</button>
   </dialog>
 
-  <!-- Weekly Review Box -->
-  <div id="weeklyReviewBox" style="display: none; position: fixed; top: 60px; right: 60px; background: #18142A; border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(33,29,48,0.45); padding: 32px 28px 24px 28px; border: none; max-width: 420px; width: 90%; color: #E0E0E0; font-family: Poppins, Arial, sans-serif; z-index: 2000; transition: opacity 0.2s;">
+  <!-- Weekly Review Box -->  <div id="weeklyReviewBox" style="display: none; position: fixed; top: 60px; right: 60px; background: #18142A; border-radius: 18px; box-shadow: 0 8px 32px 0 rgba(33,29,48,0.45); padding: 32px 28px 24px 28px; border: none; max-width: 420px; width: 90%; color: #E0E0E0; font-family: Poppins, Arial, sans-serif; z-index: 2000; transition: opacity 0.2s;">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
       <div style="font-weight: 600; font-size: 1.18rem; letter-spacing: 0.01em;">Weekly Review</div>
       <button id="closeWeeklyReviewBoxBtn" style="background: none; border: none; cursor: pointer; font-size: 1.5rem; line-height: 1; color: #63FFDA; font-weight: bold; padding: 0 4px;">&times;</button>
     </div>
-    <div id="weeklyReviewBoxContent" style="background: #211D30; color: #E0E0E0; border: none; border-radius: 12px; padding: 18px 16px; font-family: Poppins, Arial, sans-serif; font-size: 1rem; min-height: 120px; resize: none; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.12); margin: 0 0 12px 0; width: 100%; height: 180px; box-sizing: border-box; display: block; white-space: pre-wrap; overflow-y: auto;"></div>
+    <textarea id="weeklyReviewBoxContent" placeholder="Click to add your weekly review notes..." style="background: #211D30; color: #E0E0E0; border: 1px solid #4F4B68; border-radius: 12px; padding: 18px 16px; font-family: Poppins, Arial, sans-serif; font-size: 1rem; min-height: 120px; resize: vertical; box-shadow: 0 2px 12px 0 rgba(0,0,0,0.12); margin: 0 0 12px 0; width: 100%; height: 180px; box-sizing: border-box; display: block; white-space: pre-wrap; overflow-y: auto;"></textarea>
+    <div style="display: flex; justify-content: flex-end; gap: 12px;">
+      <button id="saveWeeklyReviewBtn" style="background: linear-gradient(135deg, #8B5CF6, #A855F7); color: #FFFFFF; border: none; border-radius: 6px; padding: 8px 16px; font-weight: 600; font-size: 0.9em; cursor: pointer; transition: all 0.3s ease;">Save</button>
+    </div>
   </div>
 
   <script>
@@ -1282,11 +1284,11 @@
     const dailyNotesModal = document.getElementById('dailyNotesModal');
     const dailyNotesTitle = document.getElementById('dailyNotesTitle');
     const dailyNotesContent = document.getElementById('dailyNotesContent');
-    const closeDailyNotesBtn = document.getElementById('closeDailyNotesBtn');
-    // Weekly Review Box Elements
+    const closeDailyNotesBtn = document.getElementById('closeDailyNotesBtn');    // Weekly Review Box Elements
     const weeklyReviewBox = document.getElementById('weeklyReviewBox');
     const weeklyReviewBoxContent = document.getElementById('weeklyReviewBoxContent');
     const closeWeeklyReviewBoxBtn = document.getElementById('closeWeeklyReviewBoxBtn');
+    const saveWeeklyReviewBtn = document.getElementById('saveWeeklyReviewBtn');
 
     // --- LOCAL STORAGE FUNCTIONS ---
     function saveTasks() {
@@ -2240,15 +2242,13 @@
 
         const sq = document.createElement('div');
         sq.classList.add('activity-square', `heatmap-level-${level}`);
-        sq.dataset.date = d.toISOString().split('T')[0]; // Store date for tooltip
-
-        // Highlight Fridays in month view AND add click listener
+        sq.dataset.date = d.toISOString().split('T')[0]; // Store date for tooltip        // Highlight Fridays in month view AND add click listener
         if (month !== undefined && month !== null && d.getDay() === 5) {
           sq.style.outline = '2px solid #FF6B6B'; // Red outline for Friday
           sq.style.outlineOffset = '-2px';
           sq.addEventListener('click', (e) => {
             e.stopPropagation();
-            showWeeklyReviewBox();
+            showWeeklyReviewBox(d); // Pass the specific Friday date
           });
         }
 
@@ -2366,23 +2366,110 @@
         if (dailyNotesModal.open) {
             dailyNotesModal.close();
         }
-    });
-
-    // --- NEW: Weekly Review Box Logic ---
-    function showWeeklyReviewBox() {
-        const now = new Date();
-        const weekNum = getWeekNumber(now);
-        const year = now.getFullYear();
+    });    // --- NEW: Weekly Review Box Logic ---
+    function showWeeklyReviewBox(dateForWeek = null) {
+        const targetDate = dateForWeek || new Date();
+        const weekNum = getWeekNumber(targetDate);
+        const year = targetDate.getFullYear();
         const weekKey = `weeklyReview_${year}_${weekNum}`;
-        const review = localStorage.getItem(weekKey) || 'No review saved for this week.';
-        weeklyReviewBoxContent.textContent = review;
+        const review = localStorage.getItem(weekKey) || '';
+        
+        // Update the header to show which week we're reviewing
+        const weekTitle = weeklyReviewBox.querySelector('div > div');
+        const weekStart = getStartOfWeek(targetDate);
+        const weekEnd = new Date(weekStart);
+        weekEnd.setDate(weekStart.getDate() + 6);
+        weekTitle.textContent = `Weekly Review - Week ${weekNum}, ${year} (${weekStart.toLocaleDateString()} - ${weekEnd.toLocaleDateString()})`;
+        
+        weeklyReviewBoxContent.value = review;
         weeklyReviewBox.style.display = 'block';
         weeklyReviewBox.style.opacity = '1';
+        
+        // Store the current week key for saving
+        weeklyReviewBox.dataset.weekKey = weekKey;
+        
+        // Make review non-editable if it's already saved (has content)
+        const hasSavedContent = review.trim().length > 0;
+        weeklyReviewBoxContent.readOnly = hasSavedContent;
+        saveWeeklyReviewBtn.style.display = hasSavedContent ? 'none' : 'inline-block';
+        
+        // Update placeholder and styling based on edit state
+        if (hasSavedContent) {
+            weeklyReviewBoxContent.placeholder = 'This weekly review has been completed and is now read-only.';
+            weeklyReviewBoxContent.style.cursor = 'default';
+            weeklyReviewBoxContent.style.backgroundColor = '#1A1625';
+            weeklyReviewBoxContent.style.borderColor = '#3A3651';
+        } else {
+            weeklyReviewBoxContent.placeholder = 'Click to add your weekly review notes...';
+            weeklyReviewBoxContent.style.cursor = 'text';
+            weeklyReviewBoxContent.style.backgroundColor = '#211D30';
+            weeklyReviewBoxContent.style.borderColor = '#4F4B68';
+            // Focus the textarea for immediate editing only if editable
+            setTimeout(() => weeklyReviewBoxContent.focus(), 100);
+        }
     }
-
-    closeWeeklyReviewBoxBtn.addEventListener('click', () => {
+    
+    // Helper function to get the start of the week (Monday)
+    function getStartOfWeek(date) {
+        const d = new Date(date);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust when day is Sunday
+        return new Date(d.setDate(diff));
+    }    closeWeeklyReviewBoxBtn.addEventListener('click', () => {
         weeklyReviewBox.style.opacity = '0';
         setTimeout(() => { weeklyReviewBox.style.display = 'none'; }, 200);
+    });
+    
+    // Add click-outside-to-close functionality for weekly review box
+    document.addEventListener('click', (e) => {
+        // Check if weekly review box is open and click is outside of it
+        if (weeklyReviewBox.style.display === 'block' && 
+            !weeklyReviewBox.contains(e.target)) {
+            // Close the weekly review box
+            weeklyReviewBox.style.opacity = '0';
+            setTimeout(() => { weeklyReviewBox.style.display = 'none'; }, 200);
+        }
+    });      saveWeeklyReviewBtn.addEventListener('click', () => {
+        const weekKey = weeklyReviewBox.dataset.weekKey;
+        const reviewText = weeklyReviewBoxContent.value.trim();
+        
+        if (weekKey) {
+            if (reviewText) {
+                localStorage.setItem(weekKey, reviewText);
+                
+                // Make the review non-editable after saving
+                weeklyReviewBoxContent.readOnly = true;
+                weeklyReviewBoxContent.placeholder = 'This weekly review has been completed and is now read-only.';
+                weeklyReviewBoxContent.style.cursor = 'default';
+                weeklyReviewBoxContent.style.backgroundColor = '#1A1625';
+                weeklyReviewBoxContent.style.borderColor = '#3A3651';
+                
+                // Hide the save button
+                saveWeeklyReviewBtn.style.display = 'none';
+                
+                // Show a brief success indicator on the close button
+                const originalText = closeWeeklyReviewBoxBtn.innerHTML;
+                closeWeeklyReviewBoxBtn.innerHTML = '✓';
+                closeWeeklyReviewBoxBtn.style.color = '#10b981';
+                setTimeout(() => {
+                    closeWeeklyReviewBoxBtn.innerHTML = originalText;
+                    closeWeeklyReviewBoxBtn.style.color = '#63FFDA';
+                }, 1500);
+            } else {
+                // Remove empty reviews from localStorage
+                localStorage.removeItem(weekKey);
+            }
+        }
+    });
+      // Add keyboard shortcuts for the weekly review
+    weeklyReviewBoxContent.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeWeeklyReviewBoxBtn.click();
+        } else if (e.key === 'Enter' && (e.ctrlKey || e.metaKey) && !weeklyReviewBoxContent.readOnly) {
+            // Only allow save shortcut if not read-only
+            e.preventDefault();
+            saveWeeklyReviewBtn.click();
+        }
     });
 
     function getWeekNumber(d) {

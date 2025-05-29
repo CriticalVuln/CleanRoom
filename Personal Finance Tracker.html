@@ -387,8 +387,69 @@
       flex: 1 1 calc(50% - 12px);
       min-width: 300px;
       margin-bottom: 0;
+    }      /* Recent Transactions Table */
+    .recent-transactions-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
     }
-      /* Recent Transactions Table */
+
+    .recent-transactions-header h2 {
+      margin: 0;
+      color: var(--text-accent);
+      font-weight: 600;
+      font-size: 1.2em;
+    }
+
+    .search-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      max-width: 280px;
+      flex: 1;
+      margin-left: 20px;
+    }
+
+    #transactionSearchInput {
+      width: 100%;
+      padding: 8px 40px 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.9em;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    #transactionSearchInput:focus {
+      border-color: var(--text-accent);
+      box-shadow: 0 0 0 2px rgba(99, 255, 218, 0.2);
+    }
+
+    #transactionSearchInput::placeholder {
+      color: var(--text-secondary);
+      opacity: 1;
+    }
+
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-secondary);
+      fill: none;
+      stroke-width: 2;
+      pointer-events: none;
+      transition: stroke 0.3s ease;
+    }
+
+    #transactionSearchInput:focus + .search-icon {
+      stroke: var(--text-accent);
+    }
+
     .recent-transactions-table-container {
       max-height: 300px;
       overflow-y: auto;
@@ -853,11 +914,9 @@
 
     .budget-remaining.negative {
       color: #ef4444;
-    }
-
-    .budget-toggle-btn {
-      background: none;
-      border: none;
+    }    .budget-toggle-btn {
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
       padding: 8px;
       cursor: pointer;
       border-radius: 8px;
@@ -865,18 +924,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      min-width: 40px;
+      min-height: 40px;
     }
 
     .budget-toggle-btn:hover {
-      background: rgba(139, 92, 246, 0.1);
+      background: rgba(139, 92, 246, 0.2);
+      border-color: rgba(139, 92, 246, 0.4);
+      transform: scale(1.05);
     }
 
     .budget-chevron {
-      width: 24px;
-      height: 24px;
-      stroke: var(--text-muted);
+      width: 20px;
+      height: 20px;
+      stroke: var(--text-accent);
       fill: none;
-      stroke-width: 2;
+      stroke-width: 2.5;
       transition: transform 0.3s ease;
     }
 
@@ -1516,15 +1579,27 @@
           <canvas id="categorySpendChart"></canvas>
         </div>
       </div>
-    </div>
-
-    <!-- New Recent Transactions Widget -->
+    </div>    <!-- New Recent Transactions Widget -->
     <div class="recent-transactions-container card">
-      <h2>Recent Transactions</h2>
-      <div class="recent-transactions-table-container">
-        <table class="recent-transactions-table">
+      <div class="recent-transactions-header">
+        <h2>Recent Transactions</h2>
+        <div class="search-container">
+          <input type="text" id="transactionSearchInput" placeholder="Search transactions..." />
+          <svg class="search-icon" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="M21 21l-4.35-4.35"></path>
+          </svg>
+        </div>
+      </div>
+      <div class="recent-transactions-table-container">        <table class="recent-transactions-table">
           <thead>
-            <!-- Headers will be populated by JS or can be static if known -->
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th>Amount</th>
+              <th>Source</th>
+            </tr>
           </thead>
           <tbody id="recentTransactionsBody">
             <!-- Transactions will be populated here by JavaScript -->
@@ -1942,17 +2017,14 @@
         
         // Update budget widget
         updateBudgetOnDataChange();
-      }
-
-      // --- New: Update and Save all data ---
+      }      // --- New: Update and Save all data ---
       function updateAndSaveData() {
         updateDisplay(); // This now handles saving all primary data to localStorage
         // fileMonthMap is saved by its own function saveFileMonthMap()
       }
 
-
-      // --- New: Render Recent Transactions ---
-      function renderRecentTransactions() {
+      // --- New: Render Recent Transactions with Search Support ---
+      function renderRecentTransactions(searchQuery = '') {
         const tbody = document.getElementById('recentTransactionsBody');
         tbody.innerHTML = ''; // Clear existing rows
 
@@ -1969,7 +2041,34 @@
         // Sort transactions by date, most recent first
         const sortedTransactions = [...globalAllTransactions].sort((a, b) => new Date(b.date) - new Date(a.date));
         
-        const recentTransactions = sortedTransactions.slice(0, 10);
+        // Filter transactions based on search query
+        let filteredTransactions = sortedTransactions;
+        if (searchQuery.trim()) {
+          const query = searchQuery.toLowerCase().trim();
+          filteredTransactions = sortedTransactions.filter(tx => {
+            return (
+              tx.date.toLowerCase().includes(query) ||
+              tx.description.toLowerCase().includes(query) ||
+              (tx.category && tx.category.toLowerCase().includes(query)) ||
+              tx.amount.toString().includes(query) ||
+              tx.sourceFile.toLowerCase().includes(query)
+            );
+          });
+        }
+
+        // Show message if no results found
+        if (filteredTransactions.length === 0) {
+          const tr = tbody.insertRow();
+          const td = tr.insertCell();
+          td.colSpan = 5;
+          td.textContent = searchQuery.trim() ? `No transactions found matching "${searchQuery}"` : 'No transactions to display yet.';
+          td.style.textAlign = 'center';
+          td.style.color = '#A0A0A0';
+          return;
+        }
+
+        // Limit to 50 results for performance (can be adjusted)
+        const recentTransactions = filteredTransactions.slice(0, 50);
 
         recentTransactions.forEach(tx => {
           const tr = tbody.insertRow();
@@ -2000,9 +2099,30 @@
         });
       }
 
+      // --- New: Setup Search Functionality ---
+      function setupTransactionSearch() {
+        const searchInput = document.getElementById('transactionSearchInput');
+        if (!searchInput) return;
 
-     
+        let searchTimeout;
 
+        searchInput.addEventListener('input', (e) => {
+          // Clear previous timeout to debounce search
+          clearTimeout(searchTimeout);
+          
+          // Wait 300ms after user stops typing before searching
+          searchTimeout = setTimeout(() => {
+            renderRecentTransactions(e.target.value);
+          }, 300);
+        });
+
+        // Also search on Enter key
+        searchInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') {
+            clearTimeout(searchTimeout);
+            renderRecentTransactions(e.target.value);          }
+        });
+      }
 
       // --- New: Category Chart Functions ---
       function populateCategoryMonthSelector() {
@@ -2355,6 +2475,7 @@
           fileDataKeysMap = {}; // Initialize if nothing is saved
         }        updateDisplay(); // Call once after all data is loaded
         setupAnimatedButtons(); // Initialize animated gradient effects
+        setupTransactionSearch(); // Initialize search functionality
       });
 
       // --- New: PDF Upload Modal Logic ---

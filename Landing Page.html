@@ -1210,9 +1210,7 @@
         });
       });
     }    // Initialize animated buttons
-    setupAnimatedTimeframeButtons();
-
-    // === BUDGET PROGRESS WIDGET FUNCTIONALITY ===
+    setupAnimatedTimeframeButtons();    // === BUDGET PROGRESS WIDGET FUNCTIONALITY ===
     function updateBudgetProgressWidget() {
       const currentDate = new Date();
       const currentMonth = currentDate.getMonth();
@@ -1223,40 +1221,38 @@
                          'July', 'August', 'September', 'October', 'November', 'December'];
       document.getElementById('budgetMonthDisplay').textContent = `${monthNames[currentMonth]} ${currentYear}`;
       
-      // Get budget data from localStorage
-      const budgetData = JSON.parse(localStorage.getItem('financeTrackerBudgets') || '{}');
+      // Get budget data from Personal Finance Tracker (correct localStorage key)
+      const budgetData = JSON.parse(localStorage.getItem('financeBudgetData') || '{}');
       const monthKey = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}`;
       const monthBudgets = budgetData[monthKey] || {};
       
-      // Get transactions for current month
-      const transactions = JSON.parse(localStorage.getItem('financeTrackerTransactions') || '[]');
-      const currentMonthTransactions = transactions.filter(t => {
-        if (!t.date) return false;
-        const transactionDate = new Date(t.date);
-        return transactionDate.getFullYear() === currentYear && 
-               transactionDate.getMonth() === currentMonth;
-      });
+      // Get daily activity data from Personal Finance Tracker
+      const dailyActivity = JSON.parse(localStorage.getItem('financeDailyActivity') || '{}');
       
       // Calculate totals
       let totalBudget = 0;
       let totalSpent = 0;
       
-      // Sum up all budget categories
+      // Sum up all budget categories from Personal Finance Tracker
       Object.values(monthBudgets).forEach(budget => {
         if (typeof budget === 'number') {
           totalBudget += budget;
         }
       });
       
-      // Calculate spent amount for budget categories
-      const budgetCategories = Object.keys(monthBudgets);
-      budgetCategories.forEach(category => {
-        const categoryTransactions = currentMonthTransactions.filter(t => 
-          t.category && t.category.toLowerCase() === category.toLowerCase() && 
-          t.amount < 0 // Only expenses
-        );
-        const categorySpent = categoryTransactions.reduce((sum, t) => sum + Math.abs(t.amount), 0);
-        totalSpent += categorySpent;
+      // Calculate spent amount using Personal Finance Tracker's dailyActivity data
+      // This aggregates spending across all categories for the current month
+      Object.keys(dailyActivity).forEach(dateKey => {
+        if (dateKey.startsWith(monthKey)) { // Check if date belongs to current month
+          const dayData = dailyActivity[dateKey];
+          if (dayData && dayData.categories) {
+            // Sum all category spending for this day
+            Object.keys(dayData.categories).forEach(category => {
+              const categorySpending = dayData.categories[category] || 0;
+              totalSpent += categorySpending;
+            });
+          }
+        }
       });
       
       // Update display elements
@@ -1302,11 +1298,9 @@
     }
 
     // Initialize budget widget
-    updateBudgetProgressWidget();
-
-    // Update budget widget when localStorage changes (for cross-tab sync)
+    updateBudgetProgressWidget();    // Update budget widget when localStorage changes (for cross-tab sync)
     window.addEventListener('storage', (e) => {
-      if (e.key === 'financeTrackerBudgets' || e.key === 'financeTrackerTransactions') {
+      if (e.key === 'financeBudgetData' || e.key === 'financeDailyActivity') {
         updateBudgetProgressWidget();
       }
     });
