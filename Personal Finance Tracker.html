@@ -245,43 +245,7 @@
       align-items: center;
       gap: 8px;
       width: 100%;
-      justify-content: center;
-    }
-
-    .sidebar-dropdown-arrow {
-      width: 12px;
-      height: 12px;
-      cursor: pointer;
-      background: var(--bg-tertiary);
-      border: 1px solid var(--border-color);
-      border-radius: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
-    }
-
-    .sidebar-dropdown-arrow:hover {
-      background: var(--text-accent);
-      border-color: var(--text-accent);
-    }
-
-    .sidebar-dropdown-arrow svg {
-      width: 8px;
-      height: 8px;
-      stroke: var(--text-accent);
-      stroke-width: 3;
-      transition: all 0.3s ease;
-    }
-
-    .sidebar-dropdown-arrow:hover svg {
-      stroke: var(--bg-primary);
-    }
-
-    .sidebar-dropdown-arrow.expanded svg {
-      transform: rotate(180deg);
-    }
+      justify-content: center;    }
 
     .sidebar-item-main {
       display: flex;
@@ -324,8 +288,8 @@
       color: var(--text-accent);
       text-decoration: none;
       transition: all 0.3s ease;
-      margin: 0;
-      padding: 8px;
+      margin: 8px 0;
+      padding: 16px;
       border-radius: 6px;
     }
 
@@ -1589,39 +1553,27 @@
       </a>      <!-- Personal Finance Tracker with Dropdown -->
       <div class="sidebar-item">
         <div class="sidebar-item-container">
-          <div class="sidebar-dropdown-arrow" id="financeDropdownArrow">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <a href="Personal Finance Tracker.html" title="Finance Tracker" class="sidebar-item-main">
+          <a href="Personal Finance Tracker.html" title="Finance Tracker" class="sidebar-item-main" id="financeMainIcon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <polyline points="3 17 8 12 13 16 21 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
-        </div>        <div class="sidebar-submenu" id="financeSubmenu">
+        </div><div class="sidebar-submenu" id="financeSubmenu">
           <a href="#" title="Investment Tracker">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               <path d="M7 12l3-3 4 4 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
-        </div>      </div>
-
-      <div class="sidebar-item">
+        </div>      </div>      <div class="sidebar-item">
         <div class="sidebar-item-container">
-          <div class="sidebar-dropdown-arrow" id="productivityDropdownArrow">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <polyline points="6 9 12 15 18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <a href="Productivity Tracker.html" class="sidebar-item-main" title="Productivity Tracker">
+          <a href="Productivity Tracker.html" class="sidebar-item-main" title="Productivity Tracker" id="productivityMainIcon">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
               <polyline points="12 7 12 12 15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </a>
-        </div>        <div class="sidebar-submenu" id="productivitySubmenu">          <a href="#" title="Nutrition Tracker">
+        </div><div class="sidebar-submenu" id="productivitySubmenu">          <a href="#" title="Nutrition Tracker">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <!-- Stylized Apple icon for nutrition/food tracking -->
               <path d="M12 4C9.5 4 7.5 5.5 7 8C6.5 10.5 7 13.5 8.5 16C9.5 17.5 10.5 19 12 19C13.5 19 14.5 17.5 15.5 16C17 13.5 17.5 10.5 17 8C16.5 5.5 14.5 4 12 4Z" fill="currentColor"/>
@@ -3963,52 +3915,58 @@ The response MUST be only the valid JSON object, with no extra text, explanation
       }        // --- End Budget Widget Implementation ---      // --- Sidebar Dropdown Functionality ---
       function initializeSidebarDropdown() {
         // Finance dropdown
-        const financeDropdownArrow = document.getElementById('financeDropdownArrow');
+        const financeMainIcon = document.getElementById('financeMainIcon');
         const financeSubmenu = document.getElementById('financeSubmenu');
         
         // Productivity dropdown
-        const productivityDropdownArrow = document.getElementById('productivityDropdownArrow');
+        const productivityMainIcon = document.getElementById('productivityMainIcon');
         const productivitySubmenu = document.getElementById('productivitySubmenu');
-        
-        // Function to toggle a specific dropdown
-        function toggleDropdown(arrow, submenu) {
-          if (!arrow || !submenu) return;
+          // Function to toggle a specific dropdown
+        function toggleDropdown(icon, submenu) {
+          if (!icon || !submenu) return;
           
           const isExpanded = submenu.classList.contains('expanded');
           
           // Close all dropdowns first
           document.querySelectorAll('.sidebar-submenu').forEach(menu => menu.classList.remove('expanded'));
-          document.querySelectorAll('.sidebar-dropdown-arrow').forEach(arr => arr.classList.remove('expanded'));
           
-          // If it wasn't expanded, expand this one
+          // If it wasn't expanded, expand this one and return true (indicating we toggled)
           if (!isExpanded) {
             submenu.classList.add('expanded');
-            arrow.classList.add('expanded');
+            return true;
           }
+          return false; // Indicate we just closed it
         }
         
         // Finance dropdown event listener
-        if (financeDropdownArrow && financeSubmenu) {
-          financeDropdownArrow.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleDropdown(financeDropdownArrow, financeSubmenu);
+        if (financeMainIcon && financeSubmenu) {
+          financeMainIcon.addEventListener('click', (e) => {
+            const wasToggled = toggleDropdown(financeMainIcon, financeSubmenu);
+            if (wasToggled) {
+              e.preventDefault(); // Only prevent navigation if we opened a dropdown
+              e.stopPropagation();
+            }
+            // If wasToggled is false, allow normal navigation behavior
           });
         }
         
         // Productivity dropdown event listener
-        if (productivityDropdownArrow && productivitySubmenu) {
-          productivityDropdownArrow.addEventListener('click', (e) => {
-            e.stopPropagation();
-            toggleDropdown(productivityDropdownArrow, productivitySubmenu);
+        if (productivityMainIcon && productivitySubmenu) {
+          productivityMainIcon.addEventListener('click', (e) => {
+            const wasToggled = toggleDropdown(productivityMainIcon, productivitySubmenu);
+            if (wasToggled) {
+              e.preventDefault(); // Only prevent navigation if we opened a dropdown
+              e.stopPropagation();
+            }
+            // If wasToggled is false, allow normal navigation behavior
           });
         }
         
         // Close dropdown when clicking elsewhere
         document.addEventListener('click', (e) => {
-          const isDropdownClick = e.target.closest('.sidebar-dropdown-arrow') || e.target.closest('.sidebar-submenu');
+          const isDropdownClick = e.target.closest('.sidebar-item-main') || e.target.closest('.sidebar-submenu');
           if (!isDropdownClick) {
             document.querySelectorAll('.sidebar-submenu').forEach(menu => menu.classList.remove('expanded'));
-            document.querySelectorAll('.sidebar-dropdown-arrow').forEach(arrow => arrow.classList.remove('expanded'));
           }
         });
         
@@ -4016,7 +3974,6 @@ The response MUST be only the valid JSON object, with no extra text, explanation
         document.addEventListener('keydown', (e) => {
           if (e.key === 'Escape') {
             document.querySelectorAll('.sidebar-submenu').forEach(menu => menu.classList.remove('expanded'));
-            document.querySelectorAll('.sidebar-dropdown-arrow').forEach(arrow => arrow.classList.remove('expanded'));
           }
         });
       }
