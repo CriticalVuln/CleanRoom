@@ -231,84 +231,6 @@
       fill: none;
       stroke: var(--text-accent);
       stroke-width: 2;
-    }    /* Sidebar Dropdown Functionality */
-    .sidebar-item {
-      position: relative;
-      margin: 16px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .sidebar-item-container {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      width: 100%;
-      justify-content: center;    }
-
-    .sidebar-item-main {
-      display: flex;
-      align-items: center;
-      color: var(--text-accent);
-      text-decoration: none;
-      transition: all 0.3s ease;
-      flex-shrink: 0;
-    }
-
-    .sidebar-item-main:hover {
-      transform: scale(1.1);
-      color: var(--text-accent);
-    }
-
-    .sidebar-item-main svg {
-      width: 24px;
-      height: 24px;
-      fill: none;
-      stroke: var(--text-accent);
-      stroke-width: 2;
-    }    .sidebar-submenu {
-      position: absolute;
-      top: 35px;
-      left: 50%;
-      transform: translateX(-50%);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateX(-50%) translateY(-10px);
-      transition: all 0.3s ease;
-      z-index: 1200;
-    }.sidebar-submenu.expanded {
-      opacity: 1;
-      visibility: visible;
-      transform: translateX(-50%) translateY(0);
-    }    .sidebar-submenu a {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--text-accent);
-      text-decoration: none;
-      transition: all 0.3s ease;
-      margin: 8px 0;
-      padding: 16px;
-      border-radius: 6px;
-    }
-
-    .sidebar-submenu a:last-child {
-      border-bottom: none;
-    }
-
-    .sidebar-submenu a:hover {
-      color: var(--text-accent);
-      transform: scale(1.1);
-      background: var(--bg-tertiary);
-    }
-
-    .sidebar-submenu a svg {
-      width: 20px;
-      height: 20px;
-      stroke: var(--text-accent);
-      stroke-width: 2;
-      transition: all 0.3s ease;
     }/* Theme Toggle Button */
     .theme-toggle {
       width: 32px;
@@ -1550,57 +1472,18 @@
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M3 10L12 3l9 7v11a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </a>      <!-- Personal Finance Tracker with Dropdown -->
-      <div class="sidebar-item">
-        <div class="sidebar-item-container">
-          <a href="Personal Finance Tracker.html" title="Finance Tracker" class="sidebar-item-main" id="financeMainIcon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <polyline points="3 17 8 12 13 16 21 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </div><div class="sidebar-submenu" id="financeSubmenu">
-          <a href="#" title="Investment Tracker">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M3 3v18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M7 12l3-3 4 4 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </div>      </div>      <div class="sidebar-item">
-        <div class="sidebar-item-container">
-          <a href="Productivity Tracker.html" class="sidebar-item-main" title="Productivity Tracker" id="productivityMainIcon">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
-              <polyline points="12 7 12 12 15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-        </div><div class="sidebar-submenu" id="productivitySubmenu">          <a href="#" title="Nutrition Tracker">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Stylized Apple icon for nutrition/food tracking -->
-              <path d="M12 4C9.5 4 7.5 5.5 7 8C6.5 10.5 7 13.5 8.5 16C9.5 17.5 10.5 19 12 19C13.5 19 14.5 17.5 15.5 16C17 13.5 17.5 10.5 17 8C16.5 5.5 14.5 4 12 4Z" fill="currentColor"/>
-              <!-- Apple dent/dimple at top -->
-              <path d="M12 4C11.5 4.5 11 5 11.5 5.5C12 6 12.5 5.5 13 5C13.5 4.5 13 4 12.5 3.8C12.2 3.9 12 4 12 4Z" fill="currentColor"/>
-              <!-- Apple stem -->
-              <rect x="11.5" y="2" width="1" height="2.5" rx="0.5" fill="currentColor"/>
-              <!-- Apple leaf -->
-              <ellipse cx="13.5" cy="3" rx="1.5" ry="0.8" fill="currentColor" opacity="0.8" transform="rotate(30 13.5 3)"/>
-              <!-- Apple highlight/shine -->
-              <ellipse cx="10" cy="8" rx="1" ry="2" fill="currentColor" opacity="0.3"/>
-            </svg>
-          </a>
-          <a href="#" title="Fitness Tracker">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Dumbbell icon for fitness tracking -->
-              <rect x="2" y="9" width="4" height="6" rx="2" fill="currentColor"/>
-              <rect x="18" y="9" width="4" height="6" rx="2" fill="currentColor"/>
-              <rect x="6" y="11" width="12" height="2" fill="currentColor"/>
-              <circle cx="4" cy="8" r="1.5" fill="currentColor"/>
-              <circle cx="4" cy="16" r="1.5" fill="currentColor"/>
-              <circle cx="20" cy="8" r="1.5" fill="currentColor"/>
-              <circle cx="20" cy="16" r="1.5" fill="currentColor"/>
-            </svg>
-          </a>
-        </div>
-      </div>
+      </a>      <a href="Personal Finance Tracker.html" title="Finance Tracker">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="3 17 8 12 13 16 21 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+
+      <a href="Productivity Tracker.html" title="Productivity Tracker">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+          <polyline points="12 7 12 12 15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
     </div>
     
     <!-- Theme Toggle Button -->
@@ -3912,78 +3795,9 @@ The response MUST be only the valid JSON object, with no extra text, explanation
         document.addEventListener('DOMContentLoaded', initializeBudgetWidget);
       } else {
         initializeBudgetWidget();
-      }        // --- End Budget Widget Implementation ---      // --- Sidebar Dropdown Functionality ---
-      function initializeSidebarDropdown() {
-        // Finance dropdown
-        const financeMainIcon = document.getElementById('financeMainIcon');
-        const financeSubmenu = document.getElementById('financeSubmenu');
-        
-        // Productivity dropdown
-        const productivityMainIcon = document.getElementById('productivityMainIcon');
-        const productivitySubmenu = document.getElementById('productivitySubmenu');
-          // Function to toggle a specific dropdown
-        function toggleDropdown(icon, submenu) {
-          if (!icon || !submenu) return;
-          
-          const isExpanded = submenu.classList.contains('expanded');
-          
-          // Close all dropdowns first
-          document.querySelectorAll('.sidebar-submenu').forEach(menu => menu.classList.remove('expanded'));
-          
-          // If it wasn't expanded, expand this one and return true (indicating we toggled)
-          if (!isExpanded) {
-            submenu.classList.add('expanded');
-            return true;
-          }
-          return false; // Indicate we just closed it
-        }
-        
-        // Finance dropdown event listener
-        if (financeMainIcon && financeSubmenu) {
-          financeMainIcon.addEventListener('click', (e) => {
-            const wasToggled = toggleDropdown(financeMainIcon, financeSubmenu);
-            if (wasToggled) {
-              e.preventDefault(); // Only prevent navigation if we opened a dropdown
-              e.stopPropagation();
-            }
-            // If wasToggled is false, allow normal navigation behavior
-          });
-        }
-        
-        // Productivity dropdown event listener
-        if (productivityMainIcon && productivitySubmenu) {
-          productivityMainIcon.addEventListener('click', (e) => {
-            const wasToggled = toggleDropdown(productivityMainIcon, productivitySubmenu);
-            if (wasToggled) {
-              e.preventDefault(); // Only prevent navigation if we opened a dropdown
-              e.stopPropagation();
-            }
-            // If wasToggled is false, allow normal navigation behavior
-          });
-        }
-        
-        // Close dropdown when clicking elsewhere
-        document.addEventListener('click', (e) => {
-          const isDropdownClick = e.target.closest('.sidebar-item-main') || e.target.closest('.sidebar-submenu');
-          if (!isDropdownClick) {
-            document.querySelectorAll('.sidebar-submenu').forEach(menu => menu.classList.remove('expanded'));
-          }
-        });
-        
-        // Close dropdown on escape key
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape') {
-            document.querySelectorAll('.sidebar-submenu').forEach(menu => menu.classList.remove('expanded'));
-          }
-        });
       }
-      
-      // Initialize sidebar dropdown
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeSidebarDropdown);
-      } else {
-        initializeSidebarDropdown();
-      }
+
+      // --- End Budget Widget Implementation ---
 
       setupTimeframeControls(); // Call to initialize the new synchronized controls
     </script>
